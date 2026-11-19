@@ -1,155 +1,45 @@
-<main class="tavolo">
-  <header class="barra">
-    <h1 class="marchio">{{ titolo }}</h1>
-    @if (stato(); as s) {
-      <div class="dati">
-        <span>Mano {{ s.mano.numero }}/{{ s.mano.maniTotali }}</span>
-        <span>Cartaro: {{ s.mano.cartaro }}</span>
-        <span class="con-ficha">Piatto <span class="ficha">{{ s.mano.piatto }}</span></span>
-      </div>
-    }
-    <button type="button" class="fantasma" (click)="nuovaPartita()" [disabled]="attesa()">Nuova partita</button>
+<div class="app">
+  <header class="topbar">
+    <h1 class="marchio">Stoppa</h1>
+
+    <div class="topbar-destra">
+      @if (schermata() === 'tavolo') {
+        <span class="pillola">Stanza {{ stanza() }}</span>
+      } @else if (nome()) {
+        <span class="pillola">{{ nome() }}</span>
+      }
+
+      <button
+        type="button"
+        class="ghost icona"
+        (click)="alternaAudio()"
+        [attr.aria-label]="audio() ? 'Disattiva i suoni' : 'Attiva i suoni'"
+      >
+        @if (audio()) {
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <path d="M4 9.5v5h3l4.5 3.6V5.9L7 9.5H4z" />
+            <path d="M15.5 9a4.2 4.2 0 0 1 0 6" />
+            <path d="M18 6.6a7.6 7.6 0 0 1 0 10.8" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <path d="M4 9.5v5h3l4.5 3.6V5.9L7 9.5H4z" />
+            <path d="M16 9.5l5 5M21 9.5l-5 5" />
+          </svg>
+        }
+      </button>
+    </div>
   </header>
 
-  @if (stato(); as s) {
-    <section class="avversari">
-      @for (g of avversari(); track g.indice) {
-        <article class="posto" [class.turno]="g.diTurno" [class.fuori]="!g.inGioco">
-          <header class="posto-testa">
-            <strong>{{ g.nome }}</strong>
-            <span class="ficha">{{ g.fiches }}</span>
-          </header>
-          <div class="dorsi">
-            @for (d of dorsi(g.numeroCarte); track d) {
-              <img class="carta piccola" src="/assets/carte/dorso.svg" alt="carta coperta" />
-            }
-          </div>
-          <footer class="posto-piede">
-            @if (g.puntata > 0) {
-              <span class="in-gioco">{{ g.puntata }} in gioco</span>
-            }
-            @if (!g.inGioco) {
-              <span class="etichetta">passato</span>
-            }
-            @if (g.debito > 0) {
-              <span class="debito">debito {{ g.debito }}</span>
-            }
-          </footer>
-        </article>
-      }
-    </section>
-
-    <section class="centro">
-      @if (s.mano.chiusa) {
-        <div class="esito">
-          @if (s.mano.senzaPuntate) {
-            <p class="titolo-esito">Nessuno ha puntato</p>
-            <p class="sotto">Un gettone del piatto va al cartaro.</p>
-          } @else {
-            <p class="titolo-esito">Mano vinta da {{ s.mano.vincitori.join(' e ') }}</p>
-            <div class="carte-vinte">
-              @for (c of s.mano.carteVincenti; track c.file) {
-                <img class="carta" [src]="immagine(c.file)" [alt]="c.valore + ' di ' + c.seme" />
-              }
-            </div>
-          }
-          @if (!s.finita) {
-            <button type="button" class="primario" (click)="prossimaMano()" [disabled]="attesa()">
-              Prossima mano
-            </button>
-          }
-        </div>
-      } @else {
-        <p class="turno">
-          @if (s.toccaATe) {
-            <span class="tocca">Tocca a te</span>
-          } @else {
-            Gioca {{ turnoNome() }}…
-          }
-        </p>
-        @if (s.mano.puntataMassima > 0) {
-          <p class="puntata-massima">Puntata più alta <span class="ficha">{{ s.mano.puntataMassima }}</span></p>
-        }
-      }
-    </section>
-
-    @if (s.finita) {
-      <section class="classifica">
-        <h2>Punto finale</h2>
-        <ol>
-          @for (riga of s.classifica; track riga.nome) {
-            <li [class.vincitore]="riga.posizione === 1">
-              <span class="pos">{{ riga.posizione }}</span>
-              <span class="nome">{{ riga.nome }}</span>
-              <span class="punti">{{ riga.punteggio }} punti</span>
-              <span class="ficha">{{ riga.fiches }}</span>
-            </li>
-          }
-        </ol>
-      </section>
+  @switch (schermata()) {
+    @case ('home') {
+      <app-home [nomeIniziale]="nome()" (entra)="vaiAllaLobby($event)" />
     }
-
-    <section class="mio" [class.turno]="s.toccaATe">
-      <div class="mio-testa">
-        <span class="mio-nome">{{ s.nomeTuo }}</span>
-        <span class="ficha grande">{{ io()?.fiches }}</span>
-        @if ((io()?.puntata ?? 0) > 0) {
-          <span class="in-gioco">{{ io()?.puntata }} in gioco</span>
-        }
-        @if ((io()?.debito ?? 0) > 0) {
-          <span class="debito">debito {{ io()?.debito }}</span>
-        }
-      </div>
-
-      <div class="mano-mia">
-        @for (c of io()?.carte ?? []; track c.file) {
-          <img class="carta" [src]="immagine(c.file)" [alt]="c.valore + ' di ' + c.seme" />
-        }
-        @if ((io()?.carte?.length ?? 0) === 0) {
-          <p class="sotto">Nessuna carta in questa mano.</p>
-        }
-      </div>
-
-      <div class="azioni">
-        <button type="button" class="azione" (click)="passa()" [disabled]="!s.toccaATe || attesa()">Passa</button>
-        <button
-          type="button"
-          class="azione"
-          (click)="vedo()"
-          [disabled]="!s.toccaATe || attesa() || s.mano.puntataMassima === 0"
-        >
-          Vedo
-          @if (costoVedo() > 0) {
-            <span class="costo">({{ costoVedo() }})</span>
-          }
-        </button>
-        <span class="rilancio">
-          <select
-            [value]="puntata()"
-            (change)="cambiaPuntata($event)"
-            [disabled]="!s.toccaATe || attesa() || !puoPuntare()"
-          >
-            @for (n of opzioniPuntata(); track n) {
-              <option [value]="n">{{ n }}</option>
-            }
-          </select>
-          <button type="button" class="azione primario" (click)="punta()" [disabled]="!s.toccaATe || attesa() || !puoPuntare()">
-            Punta {{ puntata() }}
-          </button>
-        </span>
-      </div>
-    </section>
-
-    <section class="registro">
-      @for (evento of s.eventi; track $index) {
-        <p>{{ evento }}</p>
-      }
-    </section>
-  } @else {
-    <p class="sotto">Caricamento del tavolo…</p>
+    @case ('lobby') {
+      <app-lobby [nome]="nome()" (indietro)="tornaHome()" (inizia)="avviaPartita($event)" />
+    }
+    @case ('tavolo') {
+      <app-tavolo [nome]="nome()" (esci)="tornaAllaLobby()" />
+    }
   }
-
-  @if (errore(); as messaggio) {
-    <p class="errore">{{ messaggio }}</p>
-  }
-</main>
+</div>

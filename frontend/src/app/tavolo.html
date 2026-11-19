@@ -1,0 +1,165 @@
+<section class="scena">
+  @if (stato(); as s) {
+    <div class="rail">
+      <div class="feltro">
+        <div class="avversari">
+          @for (g of avversari(); track g.indice) {
+            <article class="posto" [class.turno]="g.diTurno" [class.fuori]="!g.inGioco">
+              <header class="posto-testa">
+                <span class="posto-nome">{{ g.nome }}</span>
+                <span class="ficha piccola oro">{{ g.fiches }}</span>
+              </header>
+              <div class="dorsi">
+                @for (d of dorsi(g.numeroCarte); track d) {
+                  <img class="dorso" src="/assets/carte/dorso.svg" alt="" />
+                }
+              </div>
+              <footer class="posto-piede">
+                @if (g.puntata > 0) {
+                  <span class="gettoni">{{ g.puntata }} sul tavolo</span>
+                }
+                @if (!g.inGioco) {
+                  <span class="passato">passato</span>
+                }
+              </footer>
+            </article>
+          }
+        </div>
+
+        <div class="centro">
+          @if (s.mano.chiusa) {
+            <div class="esito">
+              <p class="occhiello">Mano {{ s.mano.numero }} di {{ s.mano.maniTotali }}</p>
+              @if (s.mano.senzaPuntate) {
+                <p class="esito-titolo">Nessuno ha puntato</p>
+                <p class="testo">Un gettone del piatto va al cartaro.</p>
+              } @else {
+                <p class="esito-titolo">{{ s.mano.vincitori.join(' e ') }}<span> si prende la mano</span></p>
+                <div class="carte-vinte">
+                  @for (c of s.mano.carteVincenti; track c.file; let i = $index) {
+                    <img class="carta gira" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
+                  }
+                </div>
+              }
+              @if (!s.finita) {
+                <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
+              }
+            </div>
+          } @else {
+            <div class="piatto">
+              <span class="ficha oro">{{ s.mano.piatto }}</span>
+              <span class="occhiello">nel piatto</span>
+            </div>
+            @if (s.mano.puntataMassima > 0) {
+              <p class="sul-tavolo"><span class="ficha">{{ s.mano.puntataMassima }}</span> puntata più alta</p>
+            }
+            <p class="turno" [class.mio-turno]="s.toccaATe">
+              @if (s.toccaATe) {
+                Tocca a te
+              } @else {
+                {{ turnoNome() }} sta giocando…
+              }
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="striscia"
+      (pointerdown)="iniziaTrascinamento($event)"
+      (pointermove)="muoviTrascinamento($event)"
+      (pointerup)="fineTrascinamento($event)"
+      (pointercancel)="fineTrascinamento($event)"
+    >
+      @for (g of s.giocatori; track g.indice) {
+        <article class="scheda" [class.tuo]="g.indice === s.tuoIndice" [class.turno]="g.diTurno">
+          <span class="scheda-nome">{{ g.nome }}</span>
+          <span class="scheda-fiches"><span class="ficha piccola oro">{{ g.fiches }}</span></span>
+          @if (g.puntata > 0) {
+            <span class="scheda-nota">{{ g.puntata }} in gioco</span>
+          }
+          @if (g.debito > 0) {
+            <span class="scheda-nota rosso">debito {{ g.debito }}</span>
+          }
+        </article>
+      }
+    </div>
+
+    <div class="mano-mia" [class.turno]="s.toccaATe">
+      <div class="carte-mia">
+        @for (c of io()?.carte ?? []; track c.file; let i = $index) {
+          <span class="slot" [style.transform]="rotazione(i)">
+            <img class="carta mia" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
+          </span>
+        }
+      </div>
+
+      <div class="comandi">
+        <div class="comandi-riga">
+          <button type="button" class="ghost" (click)="passa()" [disabled]="!s.toccaATe || attesa()">Passa</button>
+          <button
+            type="button"
+            class="ghost"
+            (click)="vedo()"
+            [disabled]="!s.toccaATe || attesa() || s.mano.puntataMassima === 0"
+          >
+            Vedo
+            @if (costoVedo() > 0) {
+              <span class="costo">{{ costoVedo() }}</span>
+            }
+          </button>
+        </div>
+        <div class="comandi-riga">
+          <input
+            type="range"
+            [min]="s.puntataMinima"
+            [max]="s.puntataMassima"
+            step="1"
+            [value]="puntata()"
+            (input)="cambiaPuntata($event)"
+            [disabled]="!s.toccaATe || attesa()"
+            aria-label="Gettoni da puntare"
+          />
+          <button type="button" class="cta" (click)="punta()" [disabled]="!s.toccaATe || attesa()">
+            Punta {{ puntata() }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="registro">
+      <div class="registro-righe">
+        @for (evento of s.eventi; track $index) {
+          <p>{{ evento }}</p>
+        }
+      </div>
+      <div class="registro-azioni">
+        <button type="button" class="ghost" (click)="esci.emit()">Lobby</button>
+        <button type="button" class="ghost" (click)="nuovaPartita()" [disabled]="attesa()">Nuova partita</button>
+      </div>
+    </footer>
+
+    @if (s.finita) {
+      <section class="pannello classifica">
+        <p class="occhiello">Punto finale</p>
+        <ol>
+          @for (riga of s.classifica; track riga.nome) {
+            <li [class.vincitore]="riga.posizione === 1">
+              <span class="pos">{{ riga.posizione }}</span>
+              <span class="nome">{{ riga.nome }}</span>
+              <span class="punti">{{ riga.punteggio }} punti</span>
+              <span class="ficha piccola oro">{{ riga.fiches }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+  } @else {
+    <p class="caricamento">Preparo il tavolo…</p>
+  }
+
+  @if (errore(); as messaggio) {
+    <p class="errore">{{ messaggio }}</p>
+  }
+</section>

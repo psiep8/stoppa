@@ -1,0 +1,432 @@
+.scena {
+  display: grid;
+  gap: 0.85rem;
+}
+
+/* ---------- tavolo ---------- */
+
+.rail {
+  padding: 10px;
+  border-radius: 40px;
+  background: linear-gradient(180deg, #5a3623 0%, #3a2114 55%, #22120a 100%);
+  box-shadow:
+    0 34px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.feltro {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
+  min-height: clamp(250px, 36vh, 380px);
+  padding: clamp(0.8rem, 2vw, 1.3rem);
+  border-radius: 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(35, 130, 94, 0.55) 0%, transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.014) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, #0f5c40 0%, #0a4630 45%, #062b1e 100%);
+  box-shadow:
+    inset 0 0 90px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- avversari ---------- */
+
+.avversari {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.posto {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(2, 20, 13, 0.42);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
+
+.posto.turno {
+  border-color: rgba(216, 169, 74, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(216, 169, 74, 0.3),
+    0 0 26px rgba(216, 169, 74, 0.16);
+}
+
+.posto.fuori {
+  opacity: 0.45;
+}
+
+.posto-testa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.posto-nome {
+  font-size: 0.86rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dorsi {
+  display: flex;
+  align-items: center;
+}
+
+.dorso {
+  width: clamp(22px, 3.2vw, 30px);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.42);
+  margin-left: -10px;
+  animation: distribuisci 0.45s var(--molla) both;
+}
+
+.dorso:first-child {
+  margin-left: 0;
+}
+
+.posto-piede {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 0.95rem;
+}
+
+.gettoni,
+.scheda-nota {
+  font-size: 0.68rem;
+  color: var(--oro-chiaro);
+}
+
+.passato {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(246, 239, 223, 0.45);
+}
+
+/* ---------- centro ---------- */
+
+.centro {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.55rem;
+  text-align: center;
+}
+
+.piatto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sul-tavolo {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: rgba(246, 239, 223, 0.68);
+}
+
+.turno {
+  margin: 0;
+  font-size: 0.92rem;
+  color: rgba(246, 239, 223, 0.62);
+  letter-spacing: 0.02em;
+}
+
+.turno.mio-turno {
+  color: var(--oro-chiaro);
+  font-weight: 700;
+}
+
+.esito {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+}
+
+.esito-titolo {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  font-weight: 700;
+}
+
+.esito-titolo span {
+  font-weight: 400;
+  color: var(--oro-chiaro);
+}
+
+.carte-vinte {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carte-vinte .carta {
+  animation: gira 0.55s var(--molla) both;
+  animation-delay: calc(var(--i) * 90ms);
+}
+
+/* ---------- striscia fiches ---------- */
+
+.striscia {
+  display: flex;
+  gap: 0.55rem;
+  padding: 0.15rem 0.1rem 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(216, 169, 74, 0.45) transparent;
+}
+
+.striscia:active {
+  cursor: grabbing;
+}
+
+.striscia::-webkit-scrollbar {
+  height: 6px;
+}
+
+.striscia::-webkit-scrollbar-thumb {
+  background: rgba(216, 169, 74, 0.4);
+  border-radius: 999px;
+}
+
+.scheda {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  min-width: 126px;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 24, 16, 0.55);
+  transition: border-color 0.2s ease;
+}
+
+.scheda.tuo {
+  border-color: rgba(216, 169, 74, 0.45);
+}
+
+.scheda.turno {
+  border-color: rgba(216, 169, 74, 0.8);
+}
+
+.scheda-nome {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scheda-fiches {
+  display: flex;
+  align-items: center;
+}
+
+.scheda-nota.rosso {
+  color: #f0a89f;
+}
+
+/* ---------- la mia mano ---------- */
+
+.mano-mia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 24, 16, 0.62);
+  transition: border-color 0.25s ease;
+}
+
+.mano-mia.turno {
+  border-color: rgba(216, 169, 74, 0.5);
+}
+
+.carte-mia {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.1rem;
+  min-height: 96px;
+}
+
+.slot {
+  display: inline-block;
+  transform-origin: bottom center;
+}
+
+.carta.mia {
+  width: clamp(58px, 8.5vw, 84px);
+  transition: transform 0.2s var(--molla);
+}
+
+.carta.mia:hover {
+  transform: translateY(-6px);
+}
+
+.comandi {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: end;
+}
+
+.comandi-riga {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.costo {
+  margin-left: 0.25rem;
+  color: var(--oro-chiaro);
+  font-size: 0.75rem;
+}
+
+input[type='range'] {
+  width: clamp(90px, 18vw, 150px);
+  accent-color: var(--oro);
+}
+
+/* ---------- registro ---------- */
+
+.registro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.26);
+  font-size: 0.75rem;
+  color: rgba(246, 239, 223, 0.55);
+}
+
+.registro-righe {
+  display: grid;
+  gap: 0.12rem;
+  max-height: 84px;
+  overflow-y: auto;
+}
+
+.registro-righe p {
+  margin: 0;
+}
+
+.registro-azioni {
+  display: flex;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+/* ---------- classifica ---------- */
+
+.classifica {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+
+.classifica ol {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.classifica li {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr auto auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.88rem;
+}
+
+.classifica li.vincitore {
+  background: rgba(216, 169, 74, 0.16);
+  font-weight: 700;
+}
+
+.classifica .pos {
+  color: var(--oro);
+}
+
+.classifica .punti {
+  font-size: 0.78rem;
+  color: rgba(246, 239, 223, 0.7);
+}
+
+/* ---------- stati ---------- */
+
+.caricamento {
+  padding: 3rem 0;
+  text-align: center;
+  color: rgba(246, 239, 223, 0.5);
+}
+
+.errore {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  background: rgba(127, 29, 29, 0.4);
+  color: #fecaca;
+  font-size: 0.82rem;
+}
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 620px) {
+  .rail {
+    border-radius: 28px;
+    padding: 7px;
+  }
+
+  .feltro {
+    border-radius: 22px;
+    min-height: 230px;
+  }
+
+  .mano-mia {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .carte-mia {
+    justify-content: center;
+  }
+
+  .comandi {
+    justify-items: stretch;
+  }
+
+  .comandi-riga {
+    justify-content: space-between;
+  }
+
+  .registro {
+    flex-direction: column;
+  }
+}
