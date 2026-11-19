@@ -217,22 +217,21 @@ button:disabled {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 800;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   background:
-    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.9) 0deg 11deg, transparent 11deg 30deg),
-    radial-gradient(circle, var(--colore) 0 46%, transparent 46%),
-    radial-gradient(circle, transparent 0 60%, rgba(255, 255, 255, 0.16) 60% 68%, transparent 68%),
-    radial-gradient(circle, #e9e2d2 0 100%);
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.38) 0%, transparent 58%),
+    var(--colore);
+  border: 3px dashed rgba(250, 245, 232, 0.92);
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.35),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
-    0 5px 10px rgba(0, 0, 0, 0.45);
+    inset 0 0 0 2px rgba(0, 0, 0, 0.16),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.32),
+    0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .ficha.oro {
@@ -248,9 +247,13 @@ button:disabled {
 }
 
 .ficha.piccola {
-  width: 24px;
-  height: 24px;
-  font-size: 0.62rem;
+  width: 22px;
+  height: 22px;
+  font-size: 0.6rem;
+  border-width: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
+    0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 /* ---------- movimento ridotto ---------- */
