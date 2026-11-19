@@ -1,0 +1,26 @@
+<main class="shell">
+  <header>
+    <h1>{{ title() }}</h1>
+    <p class="tagline">Lobby di gioco &mdash; solo fiches virtuali, nessuna vincita in denaro.</p>
+  </header>
+
+  <section class="checks">
+    <div class="row">
+      <span>Backend</span>
+      <strong class="state" [class.ok]="backend() === 'up'" [class.ko]="backend() === 'down'">
+        {{ backend() }}
+      </strong>
+    </div>
+
+    <div class="row">
+      <span>WebSocket lobby</span>
+      <strong class="state" [class.ok]="lobby() === 'open'" [class.ko]="lobby() === 'closed'">
+        {{ lobby() }}
+      </strong>
+    </div>
+
+    <button type="button" (click)="connectLobby()">Prova connessione lobby</button>
+  </section>
+
+  <router-outlet />
+</main>
