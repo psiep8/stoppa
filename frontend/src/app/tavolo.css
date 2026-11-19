@@ -456,6 +456,16 @@ input[type='range'] {
     min-height: 0;
   }
 
+  .avversari,
+  .striscia {
+    scrollbar-width: none;
+  }
+
+  .avversari::-webkit-scrollbar,
+  .striscia::-webkit-scrollbar {
+    display: none;
+  }
+
   .rail {
     border-radius: 28px;
     padding: 7px;
