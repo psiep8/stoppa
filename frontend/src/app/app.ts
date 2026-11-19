@@ -1,18 +1,14 @@
-import { Component, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
 
 type BackendStatus = 'checking' | 'up' | 'down';
 type LobbyStatus = 'idle' | 'connecting' | 'open' | 'closed';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
-  private readonly http = inject(HttpClient);
   private socket?: WebSocket;
 
   protected readonly title = signal('Stoppa');
@@ -20,10 +16,7 @@ export class App {
   protected readonly lobby = signal<LobbyStatus>('idle');
 
   constructor() {
-    this.http.get<{ status: string }>('/api/health').subscribe({
-      next: () => this.backend.set('up'),
-      error: () => this.backend.set('down'),
-    });
+    void this.checkBackend();
   }
 
   protected connectLobby(): void {
@@ -35,5 +28,14 @@ export class App {
     socket.onopen = () => this.lobby.set('open');
     socket.onclose = () => this.lobby.set('closed');
     socket.onerror = () => this.lobby.set('closed');
+  }
+
+  private async checkBackend(): Promise<void> {
+    try {
+      const response = await fetch('/api/health');
+      this.backend.set(response.ok ? 'up' : 'down');
+    } catch {
+      this.backend.set('down');
+    }
   }
 }

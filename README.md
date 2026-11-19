@@ -8,7 +8,7 @@ Nessuna vincita in denaro, nessun acquisto di fiches con denaro reale, nessun ca
 | Parte | Tecnologia | Versione |
 | --- | --- | --- |
 | Backend | Java + Spring Boot (Maven) | Java 25 LTS / Spring Boot 4.1.2 |
-| Frontend | Angular (standalone, zoneless) | 22.3.x |
+| Frontend | Angular (standalone) | 22.3.x |
 | Trasporto | REST (`/api/**`) + WebSocket (`/ws/lobby`) | — |
 
 ## Struttura
@@ -39,9 +39,13 @@ Poi apri http://localhost:4200: la pagina mostra lo stato di backend e WebSocket
 
 ## Stato del progetto
 
-Scheletro pronto: health endpoint, CORS, endpoint WebSocket della lobby, proxy di sviluppo,
+Scheletro pronto: health endpoint, endpoint WebSocket della lobby, proxy di sviluppo,
 pagina di verifica. La logica di gioco (regole della stoppa, turni, punteggi, puntate) va
 ancora implementata.
+
+## CI
+
+`.github/workflows/ci.yml` compila e testa backend e frontend a ogni push e pull request.
 
 ## Nota legale
 
