@@ -5,31 +5,27 @@ import { Component, input, linkedSignal, output } from '@angular/core';
   template: `
     <section class="home">
       <div class="intro">
-        <p class="occhiello">Tavolo di carte · 4–8 giocatori</p>
-        <h2 class="titolo">
-          Tre carte.<br />
-          Un piatto.<br />
-          <em>Nessuna certezza.</em>
-        </h2>
-        <p class="testo">
-          La stoppa si gioca di bluff: punti, vedi, rilanci. Chi resta con il punto più alto porta a casa le fiches.
-        </p>
+        <ul class="dati-partita">
+          <li><strong>4–8</strong><span>giocatori</span></li>
+          <li><strong>3</strong><span>carte a testa</span></li>
+          <li><strong>1–10</strong><span>gettoni a puntata</span></li>
+        </ul>
 
         <form class="accesso" (submit)="invia($event)">
           <label class="campo">
-            <span>Come ti chiami</span>
+            <span>Nome</span>
             <input
               [value]="nome()"
               (input)="aggiorna($event)"
               maxlength="14"
-              placeholder="Il tuo nome al tavolo"
+              placeholder="Nome del giocatore"
               autocomplete="off"
             />
           </label>
-          <button class="cta" type="submit" [disabled]="nome().trim().length < 2">Siediti al tavolo</button>
+          <button class="cta" type="submit" [disabled]="nome().trim().length < 2">Entra nella lobby</button>
         </form>
 
-        <p class="nota">Solo fiches virtuali. Nessuna vincita in denaro, nessun acquisto.</p>
+        <p class="nota">Fiches virtuali. Nessun denaro reale.</p>
       </div>
 
       <div class="vetrina" aria-hidden="true">
@@ -60,19 +56,32 @@ import { Component, input, linkedSignal, output } from '@angular/core';
         max-width: 34rem;
       }
 
-      .titolo {
+      .dati-partita {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.6rem;
         margin: 0;
-        font-size: clamp(2.1rem, 6vw, 3.6rem);
-        line-height: 1.02;
-        letter-spacing: -0.02em;
-        font-weight: 700;
+        padding: 0;
+        list-style: none;
       }
 
-      .titolo em {
-        font-family: Georgia, 'Times New Roman', serif;
-        font-style: italic;
-        font-weight: 400;
+      .dati-partita li {
+        display: grid;
+        gap: 0.15rem;
+      }
+
+      .dati-partita strong {
+        font-size: 1.45rem;
+        font-weight: 700;
         color: var(--oro-chiaro);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .dati-partita span {
+        font-size: 0.66rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(246, 239, 223, 0.5);
       }
 
       .accesso {

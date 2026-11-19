@@ -32,9 +32,9 @@
               <p class="occhiello">Mano {{ s.mano.numero }} di {{ s.mano.maniTotali }}</p>
               @if (s.mano.senzaPuntate) {
                 <p class="esito-titolo">Nessuno ha puntato</p>
-                <p class="testo">Un gettone del piatto va al cartaro.</p>
+                <p class="testo">1 gettone al cartaro.</p>
               } @else {
-                <p class="esito-titolo">{{ s.mano.vincitori.join(' e ') }}<span> si prende la mano</span></p>
+                <p class="esito-titolo">{{ s.mano.vincitori.join(' e ') }}<span> vince la mano</span></p>
                 <div class="carte-vinte">
                   @for (c of s.mano.carteVincenti; track c.file; let i = $index) {
                     <img class="carta gira" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
@@ -156,7 +156,7 @@
       </section>
     }
   } @else {
-    <p class="caricamento">Preparo il tavolo…</p>
+    <p class="caricamento">Caricamento…</p>
   }
 
   @if (errore(); as messaggio) {

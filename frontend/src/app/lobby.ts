@@ -11,9 +11,7 @@ const POSTI = 8;
       <header class="testata">
         <p class="occhiello">Lobby</p>
         <h2>Stanza <span class="codice">{{ codice }}</span></h2>
-        <p class="testo">
-          Tocca un posto libero per far sedere un bot, oppure passa il codice a chi vuoi invitare.
-        </p>
+        <p class="testo">Tocca un posto libero per aggiungere un bot.</p>
       </header>
 
       <div class="posti">
@@ -49,7 +47,7 @@ const POSTI = 8;
       </footer>
 
       @if (occupati() < 4) {
-        <p class="nota">Servono almeno quattro giocatori: aggiungi qualche bot per iniziare subito.</p>
+        <p class="nota">Minimo 4 giocatori.</p>
       }
     </section>
   `,

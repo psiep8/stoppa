@@ -47,7 +47,7 @@ public class TavoloService {
 		nomi.add("Bot 3");
 		partita = new Partita(nomi, random);
 		eventi.clear();
-		aggiungiEvento("Carte distribuite: " + partita.maniTotali() + " mani da giocare");
+		aggiungiEvento("Carte distribuite · " + partita.maniTotali() + " mani");
 		giocaBot();
 		if (partita.mano().chiusa()) {
 			aggiungiEvento(esitoMano());
@@ -88,12 +88,11 @@ public class TavoloService {
 		}
 		partita.prossimaMano();
 		if (partita.finita()) {
-			aggiungiEvento("Partita finita: " + partita.giocatori().get(partita.classifica().getFirst()).nome()
-					+ " vince con " + partita.giocatori().get(partita.classifica().getFirst()).punteggio() + " punti");
+			Giocatore primo = partita.giocatori().get(partita.classifica().getFirst());
+			aggiungiEvento("Partita finita · vince " + primo.nome() + " con " + primo.punteggio() + " punti");
 			return statoCorrente();
 		}
-		aggiungiEvento("Mano " + partita.numeroMano() + ": " + partita.giocatori().get(partita.cartaro()).nome()
-				+ " e' il cartaro");
+		aggiungiEvento("Mano " + partita.numeroMano() + " · cartaro " + partita.giocatori().get(partita.cartaro()).nome());
 		giocaBot();
 		if (partita.mano().chiusa()) {
 			aggiungiEvento(esitoMano());
@@ -171,10 +170,10 @@ public class TavoloService {
 	private String esitoMano() {
 		Mano mano = partita.mano();
 		if (mano.senzaPuntate()) {
-			return "Nessuno ha puntato: un gettone del piatto va al cartaro";
+			return "Mano " + mano.numero() + ": nessuno ha puntato, 1 gettone al cartaro";
 		}
 		String vincitore = partita.giocatori().get(mano.vincitori().getFirst()).nome();
-		return "Mano " + mano.numero() + " vinta da " + vincitore + " con le carte in tavola";
+		return "Mano " + mano.numero() + ": vince " + vincitore;
 	}
 
 	private StatoTavolo statoCorrente() {
