@@ -397,6 +397,34 @@ input[type='range'] {
   font-size: 0.82rem;
 }
 
+/* ---------- schermi bassi (laptop) ---------- */
+
+@media (max-height: 940px) and (min-width: 621px) {
+  .feltro {
+    min-height: 170px;
+  }
+
+  .dorso {
+    width: 24px;
+  }
+
+  .carte-vinte .carta {
+    width: 52px;
+  }
+
+  .carta.mia {
+    width: 66px;
+  }
+
+  .mano-mia {
+    padding: 0.45rem 0.75rem;
+  }
+
+  .carte-mia {
+    min-height: 72px;
+  }
+}
+
 /* ---------- mobile ---------- */
 
 @media (max-width: 620px) {
