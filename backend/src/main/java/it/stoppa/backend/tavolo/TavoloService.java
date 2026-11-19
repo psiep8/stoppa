@@ -32,6 +32,8 @@ public class TavoloService {
 
 	private Partita partita;
 
+	private List<String> nomiCorrenti = List.of(NOME_UMANO, "Bot 1", "Bot 2", "Bot 3");
+
 	public synchronized StatoTavolo stato() {
 		if (partita == null) {
 			return nuovaPartita();
@@ -40,12 +42,12 @@ public class TavoloService {
 	}
 
 	public synchronized StatoTavolo nuovaPartita() {
-		List<String> nomi = new ArrayList<>();
-		nomi.add(NOME_UMANO);
-		nomi.add("Bot 1");
-		nomi.add("Bot 2");
-		nomi.add("Bot 3");
-		partita = new Partita(nomi, random);
+		return nuovaPartita(nomiCorrenti);
+	}
+
+	public synchronized StatoTavolo nuovaPartita(List<String> nomi) {
+		this.nomiCorrenti = List.copyOf(nomi);
+		partita = new Partita(this.nomiCorrenti, random);
 		eventi.clear();
 		aggiungiEvento("Carte distribuite · " + partita.maniTotali() + " mani");
 		giocaBot();

@@ -52,22 +52,25 @@ export type StatoTavolo = {
 
 export type ErroreApi = { errore?: string };
 
-export async function chiamataApi<T>(url: string, corpo?: unknown): Promise<T> {
-  const risposta = await fetch(
-    url,
-    corpo === undefined
-      ? undefined
-      : {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(corpo),
-        },
-  );
+export async function inviaApi<T>(
+  url: string,
+  metodo: 'GET' | 'POST' | 'DELETE',
+  corpo?: unknown,
+): Promise<T> {
+  const risposta = await fetch(url, {
+    method: metodo,
+    headers: corpo === undefined ? undefined : { 'Content-Type': 'application/json' },
+    body: corpo === undefined ? undefined : JSON.stringify(corpo),
+  });
   const dati = (await risposta.json()) as T & ErroreApi;
   if (!risposta.ok) {
     throw new Error(dati.errore ?? `Errore ${risposta.status}`);
   }
   return dati;
+}
+
+export function chiamataApi<T>(url: string, corpo?: unknown): Promise<T> {
+  return inviaApi<T>(url, corpo === undefined ? 'GET' : 'POST', corpo);
 }
 
 export function etichettaSeme(seme: string): string {
