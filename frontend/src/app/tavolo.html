@@ -86,6 +86,7 @@
       }
     </div>
 
+    @if (!s.mano.chiusa) {
     <div class="mano-mia" [class.turno]="s.toccaATe">
       <div class="carte-mia">
         @for (c of io()?.carte ?? []; track c.file; let i = $index) {
@@ -127,6 +128,7 @@
         </div>
       </div>
     </div>
+    }
 
     <footer class="registro">
       <div class="registro-righe">

@@ -51,6 +51,10 @@
 }
 
 @media (max-width: 620px) {
+  .app {
+    padding-bottom: 1rem;
+  }
+
   .topbar {
     position: relative;
     justify-content: center;

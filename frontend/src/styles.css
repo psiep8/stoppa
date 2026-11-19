@@ -213,47 +213,61 @@ button:disabled {
 /* ---------- fiches ---------- */
 
 .ficha {
-  --colore: var(--rosso);
+  --chip: var(--rosso);
+  --inlay: #f8f2e2;
+  --spicchio: 10deg;
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 800;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--chip) 78%, #000);
   background:
-    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.38) 0%, transparent 58%),
-    var(--colore);
-  border: 3px dashed rgba(250, 245, 232, 0.92);
+    radial-gradient(circle at 33% 22%, rgba(255, 255, 255, 0.5), transparent 46%),
+    radial-gradient(circle, transparent 0 45%, rgba(0, 0, 0, 0.14) 45.6% 47.6%, transparent 48%),
+    radial-gradient(circle, var(--inlay) 0 48%, transparent 48.5%),
+    radial-gradient(circle, var(--chip) 0 58%, transparent 58.5%),
+    repeating-conic-gradient(
+      from 0deg,
+      var(--inlay) 0 calc(var(--spicchio) * 0.9),
+      transparent calc(var(--spicchio) * 1.1) calc(var(--spicchio) * 3)
+    ),
+    var(--chip);
   box-shadow:
-    inset 0 0 0 2px rgba(0, 0, 0, 0.16),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.32),
-    0 4px 8px rgba(0, 0, 0, 0.4);
+    inset 0 0 0 1px rgba(0, 0, 0, 0.32),
+    inset 0 2px 2px rgba(255, 255, 255, 0.28),
+    inset 0 -4px 7px rgba(0, 0, 0, 0.3),
+    0 3px 7px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .ficha.oro {
-  --colore: #c98f2a;
+  --chip: #c9942b;
 }
 
 .ficha.verde {
-  --colore: #2f7d4f;
+  --chip: #2f7d4f;
 }
 
 .ficha.blu {
-  --colore: #2c5f8a;
+  --chip: #2c5f8a;
 }
 
 .ficha.piccola {
-  width: 22px;
-  height: 22px;
-  font-size: 0.6rem;
-  border-width: 2px;
+  width: 24px;
+  height: 24px;
+  font-size: 0.62rem;
+  --spicchio: 9deg;
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
-    0 2px 5px rgba(0, 0, 0, 0.35);
+    inset 0 0 0 1px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.24),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.28),
+    0 2px 4px rgba(0, 0, 0, 0.42);
 }
 
 /* ---------- movimento ridotto ---------- */
