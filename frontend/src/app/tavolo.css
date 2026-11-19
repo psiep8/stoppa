@@ -428,6 +428,34 @@ input[type='range'] {
 /* ---------- mobile ---------- */
 
 @media (max-width: 620px) {
+  .avversari {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0.3rem;
+  }
+
+  .posto {
+    flex: 0 0 auto;
+    min-width: 104px;
+    padding: 0.45rem 0.55rem;
+    scroll-snap-align: start;
+  }
+
+  .posto-nome {
+    font-size: 0.78rem;
+  }
+
+  .dorso {
+    width: 18px;
+    margin-left: -8px;
+  }
+
+  .sentiero {
+    min-height: 0;
+  }
+
   .rail {
     border-radius: 28px;
     padding: 7px;
