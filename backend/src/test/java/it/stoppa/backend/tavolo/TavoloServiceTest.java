@@ -10,6 +10,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import it.stoppa.backend.game.Carta;
+import it.stoppa.backend.game.Punteggio;
+import it.stoppa.backend.game.Seme;
+import it.stoppa.backend.game.Valore;
 import it.stoppa.backend.lobby.SessioniService;
 
 class TavoloServiceTest {
@@ -178,6 +182,14 @@ class TavoloServiceTest {
 				continue;
 			}
 			if (stato.mano().inDichiarazione()) {
+				if (stato.puoiRispondere()) {
+					// lo stato dice di poter contestare solo se il punto in mano basta
+					int punti = Punteggio.calcola(stato.giocatori().get(stato.tuoIndice()).carte().stream()
+							.map(carta -> new Carta(Seme.valueOf(carta.seme()), Valore.valueOf(carta.valore())))
+							.toList());
+					assertEquals(punti >= stato.mano().dichiarazione(), stato.puoiContestare(),
+							"punti " + punti + " contro i " + stato.mano().dichiarazione() + " dichiarati");
+				}
 				if (stato.puoiDichiarare()) {
 					stato = tavolo.dichiara(CODICE, creatore, 1);
 				} else if (stato.puoiRispondere()) {

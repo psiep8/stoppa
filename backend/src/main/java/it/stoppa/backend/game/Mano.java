@@ -272,6 +272,9 @@ public final class Mano {
 		if (!attivi.contains(giocatore)) {
 			throw new IllegalStateException("non sei piu' in questa mano");
 		}
+		if (accettato.contains(giocatore)) {
+			throw new IllegalStateException("hai gia' accettato: la risposta e' definitiva");
+		}
 		if (giocatore == dichiarante) {
 			throw new IllegalStateException("non puoi rispondere a te stesso");
 		}

@@ -161,6 +161,38 @@ class ManoTest {
 	}
 
 	@Test
+	void chiHaAccettatoNonPuoPiuContestare() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		mano.dichiara(mano.dichiarante(), 20);
+		// B ha venticinque punti: senza la regola potrebbe contestare
+		mano.accetta(1);
+		IllegalStateException errore = assertThrows(IllegalStateException.class, () -> mano.contesta(1));
+
+		assertTrue(errore.getMessage().contains("accettato"), errore.getMessage());
+		assertFalse(mano.chiusa());
+	}
+
+	@Test
+	void chiHaDichiaratoNonContestaSeStesso() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		mano.dichiara(mano.dichiarante(), 20);
+		int dichiarante = mano.dichiarante();
+
+		assertThrows(IllegalStateException.class, () -> mano.contesta(dichiarante));
+		assertFalse(mano.chiusa());
+	}
+
+	@Test
 	void nonSiPuoContestareConMenoDelPuntoDichiarato() {
 		Mano mano = mano();
 		mano.punta(3);
