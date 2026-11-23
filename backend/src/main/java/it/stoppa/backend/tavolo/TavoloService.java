@@ -94,13 +94,11 @@ public class TavoloService {
 				* { box-sizing: border-box; }
 				body { font-family: Georgia, 'Times New Roman', serif; margin: 2.5rem auto; max-width: 46rem; padding: 0 1.2rem; color: #1c2a22; background: #fbf8f0; }
 				h1 { margin: 0 0 .2rem; letter-spacing: .16em; text-transform: uppercase; font-size: 1.5rem; }
-				h2 { margin-top: 2rem; font-size: 1.05rem; letter-spacing: .08em; text-transform: uppercase; }
 				.nota { color: #5b6a60; font-size: .88rem; margin: .25rem 0; }
 				table { border-collapse: collapse; width: 100%; margin: 1.4rem 0; }
 				th, td { border-bottom: 1px solid #cfc8b8; padding: .5rem .55rem; text-align: right; font-variant-numeric: tabular-nums; }
 				th:first-child, td:first-child { text-align: left; }
 				th { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: #5b6a60; font-weight: 600; }
-				ol { line-height: 1.8; padding-left: 1.4rem; }
 				footer { margin-top: 2rem; }
 				</style>
 				</head>
