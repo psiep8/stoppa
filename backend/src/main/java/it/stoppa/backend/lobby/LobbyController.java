@@ -23,7 +23,7 @@ public class LobbyController {
 
 	@PostMapping
 	public IngressoLobby crea(@RequestBody(required = false) CreaRichiesta richiesta) {
-		return lobby.crea(richiesta == null ? null : richiesta.nome());
+		return lobby.crea(richiesta == null ? null : richiesta.nome(), richiesta == null ? null : richiesta.pin());
 	}
 
 	@GetMapping("/{codice}")
@@ -34,7 +34,14 @@ public class LobbyController {
 
 	@PostMapping("/{codice}/entra")
 	public IngressoLobby entra(@PathVariable String codice, @RequestBody(required = false) EntraRichiesta richiesta) {
-		return lobby.entra(codice, richiesta == null ? null : richiesta.nome());
+		return lobby.entra(codice, richiesta == null ? null : richiesta.nome(),
+				richiesta == null ? null : richiesta.pin());
+	}
+
+	@PostMapping("/{codice}/chiusa")
+	public StanzaLobby chiusa(@PathVariable String codice, @RequestBody ChiusaRichiesta richiesta,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return lobby.impostaChiusa(codice, richiesta.chiusa(), sessione);
 	}
 
 	@PostMapping("/{codice}/bot")
@@ -55,10 +62,13 @@ public class LobbyController {
 		return lobby.avvia(codice, sessione);
 	}
 
-	public record CreaRichiesta(String nome) {
+	public record CreaRichiesta(String nome, String pin) {
 	}
 
-	public record EntraRichiesta(String nome) {
+	public record EntraRichiesta(String nome, String pin) {
+	}
+
+	public record ChiusaRichiesta(boolean chiusa) {
 	}
 
 }

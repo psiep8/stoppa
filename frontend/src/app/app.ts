@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CanaleStanza } from './canale-stanza';
 import { Home } from './home';
 import { Lobby } from './lobby';
+import { RichiestaAccesso } from './gioco';
 import { PartitaSalvata, cancellaPartita, leggiPartita, salvaPartita } from './partita-salvata';
 import { Suoni } from './suoni';
 import { Tavolo } from './tavolo';
@@ -23,6 +24,10 @@ export class App {
   protected readonly nome = signal(nomeSalvato());
   protected readonly stanza = signal('');
   protected readonly sessione = signal('');
+
+  /** Il PIN scelto o digitato in home: serve solo al primo ingresso, non si salva. */
+  protected readonly pinIngresso = signal('');
+
   protected readonly audio = signal(true);
 
   constructor() {
@@ -38,16 +43,22 @@ export class App {
       this.stanza.set(salvata.codice);
       this.sessione.set(salvata.sessione);
       this.schermata.set(salvata.schermata);
+    } else {
+      // chi arriva da un link d'invito trova il codice gia' scritto in home
+      this.stanza.set(codiceInvitato());
     }
   }
 
-  protected vaiAllaLobby(nome: string): void {
-    this.nome.set(nome);
+  protected vaiAllaLobby(richiesta: RichiestaAccesso): void {
+    this.nome.set(richiesta.nome);
     try {
-      localStorage.setItem('stoppa.nome', nome);
+      localStorage.setItem('stoppa.nome', richiesta.nome);
     } catch {
       // localStorage puo' essere vietato: si gioca lo stesso
     }
+    this.stanza.set(richiesta.codice);
+    this.sessione.set('');
+    this.pinIngresso.set(richiesta.pin);
     this.schermata.set('lobby');
   }
 
@@ -66,6 +77,7 @@ export class App {
     cancellaPartita();
     this.stanza.set('');
     this.sessione.set('');
+    this.pinIngresso.set('');
     this.schermata.set('home');
   }
 
@@ -86,6 +98,15 @@ export class App {
     if (partita.codice && partita.sessione) {
       salvaPartita({ codice: partita.codice, sessione: partita.sessione, schermata });
     }
+  }
+}
+
+function codiceInvitato(): string {
+  try {
+    const codice = new URLSearchParams(location.search).get('stanza') ?? '';
+    return codice.trim().toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+  } catch {
+    return '';
   }
 }
 

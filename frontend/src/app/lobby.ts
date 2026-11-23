@@ -15,6 +15,25 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
             Stanza
           }
         </h2>
+
+        @if (stanza(); as s) {
+          <div class="invito">
+            <label class="link">
+              <span>Link invito</span>
+              <input readonly [value]="linkInvito()" (focus)="selezionaLink($event)" aria-label="Link d'invito" />
+            </label>
+            <button type="button" class="ghost" (click)="copiaInvito()">
+              {{ linkCopiato() ? 'Link copiato' : 'Copia' }}
+            </button>
+            @if (s.conPin) {
+              <span class="badge">PIN attivo</span>
+            }
+            @if (s.chiusa) {
+              <span class="badge chiusa">chiusa agli esterni</span>
+            }
+          </div>
+        }
+
         <p class="testo">
           @if (avviata()) {
             Partita iniziata: si torna al tavolo.
@@ -30,6 +49,15 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
             maxlength="4"
             placeholder="Codice stanza"
             aria-label="Codice stanza"
+            autocomplete="off"
+          />
+          <input
+            [value]="pinIngresso()"
+            (input)="aggiornaPin($event)"
+            maxlength="4"
+            inputmode="numeric"
+            placeholder="PIN"
+            aria-label="PIN della stanza"
             autocomplete="off"
           />
           <button type="submit" class="ghost" [disabled]="attesa() || codiceIngresso().trim().length !== 4">
@@ -64,6 +92,11 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
 
       <footer class="azioni">
         <button type="button" class="ghost" (click)="indietro.emit()">Indietro</button>
+        @if (creatore() && !avviata()) {
+          <button type="button" class="ghost" (click)="alternaChiusa()" [disabled]="attesa()">
+            {{ chiusa() ? 'Riapri la lobby' : 'Chiudi la lobby' }}
+          </button>
+        }
         <span class="conteggio">
           <span class="ficha oro piccola"></span>
           {{ occupati() }} / {{ totali() }} al tavolo
@@ -128,7 +161,53 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
         flex-wrap: wrap;
         gap: 0.5rem;
         margin-top: 0.4rem;
-        max-width: 22rem;
+        max-width: 30rem;
+      }
+
+      .invito {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0.5rem;
+        margin-top: 0.3rem;
+      }
+
+      .link {
+        display: grid;
+        gap: 0.3rem;
+        flex: 1 1 16rem;
+      }
+
+      .link span {
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(246, 239, 223, 0.45);
+      }
+
+      .link input {
+        width: 100%;
+        padding: 0.5rem 0.7rem;
+        border-radius: 10px;
+        border: 1px dashed rgba(216, 169, 74, 0.35);
+        background: rgba(3, 20, 14, 0.5);
+        color: rgba(246, 239, 223, 0.75);
+        font-size: 0.78rem;
+      }
+
+      .badge {
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 169, 74, 0.5);
+        color: var(--oro-chiaro);
+        font-size: 0.64rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .badge.chiusa {
+        border-color: rgba(248, 113, 113, 0.55);
+        color: #fecaca;
       }
 
       .unisciti input {
@@ -269,11 +348,17 @@ export class Lobby implements OnInit, OnDestroy {
 
   readonly sessioneIniziale = input<string>('');
 
+  readonly pinIniziale = input<string>('');
+
   protected readonly stanza = this.canale.stanza;
 
   protected readonly sessione = signal('');
 
   protected readonly codiceIngresso = signal('');
+
+  protected readonly pinIngresso = signal('');
+
+  protected readonly linkCopiato = signal(false);
 
   protected readonly errore = signal<string | null>(null);
 
@@ -296,6 +381,15 @@ export class Lobby implements OnInit, OnDestroy {
 
   protected readonly avviata = computed(() => this.stanza()?.avviata ?? false);
 
+  protected readonly creatore = computed(() => this.stanza()?.creatore ?? false);
+
+  protected readonly chiusa = computed(() => this.stanza()?.chiusa ?? false);
+
+  protected readonly linkInvito = computed(() => {
+    const codice = this.stanza()?.codice;
+    return codice ? `${location.origin}${location.pathname}?stanza=${codice}` : '';
+  });
+
   ngOnInit(): void {
     // la sessione persa la gestisce App: qui si mostra solo il resto
     this.stacca = this.canale.ascolta((avviso) => {
@@ -303,12 +397,15 @@ export class Lobby implements OnInit, OnDestroy {
         this.errore.set(avviso.messaggio);
       }
     });
+    this.pinIngresso.set(this.pinIniziale());
     const codice = this.codiceIniziale();
     const sessione = this.sessioneIniziale();
     if (codice && sessione) {
       this.sessione.set(sessione);
       this.canale.apri(codice, sessione);
       void this.carica(codice);
+    } else if (codice) {
+      void this.entra(codice);
     } else {
       void this.crea();
     }
@@ -327,6 +424,32 @@ export class Lobby implements OnInit, OnDestroy {
 
   protected aggiornaCodice(evento: Event): void {
     this.codiceIngresso.set((evento.target as HTMLInputElement).value.toUpperCase().slice(0, 4));
+  }
+
+  protected aggiornaPin(evento: Event): void {
+    this.pinIngresso.set((evento.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 4));
+  }
+
+  protected selezionaLink(evento: Event): void {
+    (evento.target as HTMLInputElement).select();
+  }
+
+  protected copiaInvito(): void {
+    const copia = navigator.clipboard?.writeText(this.linkInvito());
+    if (!copia) {
+      return;
+    }
+    void copia.then(() => this.linkCopiato.set(true)).catch(() => this.linkCopiato.set(false));
+  }
+
+  protected alternaChiusa(): void {
+    const codice = this.stanza()?.codice;
+    if (!codice) {
+      return;
+    }
+    void this.eseguiStanza(() =>
+      inviaApi<StanzaLobby>(`/api/lobby/${codice}/chiusa`, 'POST', { chiusa: !this.chiusa() }, this.sessione()),
+    );
   }
 
   protected unisciti(evento: Event): void {
@@ -378,12 +501,17 @@ export class Lobby implements OnInit, OnDestroy {
   }
 
   private async crea(): Promise<void> {
-    await this.eseguiIngresso(() => inviaApi<IngressoLobby>('/api/lobby', 'POST', { nome: this.nome() }));
+    await this.eseguiIngresso(() =>
+      inviaApi<IngressoLobby>('/api/lobby', 'POST', { nome: this.nome(), pin: this.pinIngresso() }),
+    );
   }
 
   private async entra(codice: string): Promise<void> {
     await this.eseguiIngresso(() =>
-      inviaApi<IngressoLobby>(`/api/lobby/${codice}/entra`, 'POST', { nome: this.nome() }),
+      inviaApi<IngressoLobby>(`/api/lobby/${codice}/entra`, 'POST', {
+        nome: this.nome(),
+        pin: this.pinIngresso(),
+      }),
     );
   }
 

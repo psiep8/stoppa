@@ -17,6 +17,12 @@ public final class Giocatore {
 
 	private int fiches;
 
+	private int giocati;
+
+	private int incassati;
+
+	private int cambi;
+
 	private final List<Carta> raccolte = new ArrayList<>();
 
 	public Giocatore(String nome) {
@@ -42,6 +48,7 @@ public final class Giocatore {
 			throw new IllegalArgumentException("gettoni negativi: " + gettoni);
 		}
 		fiches += gettoni;
+		incassati += gettoni;
 	}
 
 	public void scalaFiches(int gettoni) {
@@ -49,6 +56,7 @@ public final class Giocatore {
 			throw new IllegalArgumentException("gettoni negativi: " + gettoni);
 		}
 		fiches -= gettoni;
+		giocati += gettoni;
 	}
 
 	/** Il cambio automatico: dieci gettoni nuovi quando si e' rimasti senza. */
@@ -57,7 +65,23 @@ public final class Giocatore {
 			return false;
 		}
 		fiches += FICHES_INIZIALI;
+		cambi++;
 		return true;
+	}
+
+	/** Gettoni messi sul tavolo dall'inizio, piatto compreso. */
+	public int giocati() {
+		return giocati;
+	}
+
+	/** Gettoni arrivati dal piatto, dalle puntate avversarie e dai cambi. */
+	public int incassati() {
+		return incassati;
+	}
+
+	/** Cambi automatici da dieci gettoni. */
+	public int cambi() {
+		return cambi;
 	}
 
 	public void raccogli(List<Carta> carte) {

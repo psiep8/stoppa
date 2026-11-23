@@ -135,7 +135,8 @@ public final class Partita {
 		for (int i = 0; i < giocatori.size(); i++) {
 			Giocatore giocatore = giocatori.get(i);
 			righe.add(new RiepilogoPartita.RigaGiocatore(i, giocatore.nome(), giocatore.fiches(), giocatore.debito(),
-					giocatore.punteggio(), mano.attivi().contains(i), mano.puntate().getOrDefault(i, 0)));
+					giocatore.punteggio(), mano.attivi().contains(i), mano.puntate().getOrDefault(i, 0),
+					giocatore.giocati(), giocatore.incassati(), giocatore.cambi()));
 		}
 		return new RiepilogoPartita(piatto, piattoIniziale, numeroMano, maniTotali(), giocatori.get(cartaro).nome(),
 				finita(), finita() ? classifica() : List.of(), righe);

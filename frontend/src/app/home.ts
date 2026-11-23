@@ -1,4 +1,5 @@
-import { Component, input, linkedSignal, output } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
+import { RichiestaAccesso } from './gioco';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,46 @@ import { Component, input, linkedSignal, output } from '@angular/core';
               autocomplete="off"
             />
           </label>
-          <button class="cta" type="submit" [disabled]="nome().trim().length < 2">Entra nella lobby</button>
+
+          <div class="codici">
+            <label class="campo stretto">
+              <span>Stanza</span>
+              <input
+                [value]="codice()"
+                (input)="aggiornaCodice($event)"
+                maxlength="4"
+                placeholder="ABCD"
+                aria-label="Codice stanza"
+                autocomplete="off"
+              />
+            </label>
+            <label class="campo stretto">
+              <span>PIN</span>
+              <input
+                [value]="pin()"
+                (input)="aggiornaPin($event)"
+                maxlength="4"
+                inputmode="numeric"
+                placeholder="se serve"
+                aria-label="PIN della stanza"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+
+          <div class="scelte">
+            <button class="cta" type="submit" [disabled]="nome().trim().length < 2 || codice().length !== 4">
+              Entra con il codice
+            </button>
+            <button
+              class="ghost"
+              type="button"
+              (click)="crea()"
+              [disabled]="nome().trim().length < 2 || (pin().length > 0 && pin().length !== 4)"
+            >
+              Crea una stanza
+            </button>
+          </div>
         </form>
 
         <p class="nota">Fiches virtuali. Nessun denaro reale.</p>
@@ -85,11 +125,24 @@ import { Component, input, linkedSignal, output } from '@angular/core';
       }
 
       .accesso {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-end;
+        display: grid;
         gap: 0.75rem;
         margin-top: 0.4rem;
+      }
+
+      .codici {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .stretto {
+        flex: 0 1 8rem;
+      }
+
+      .scelte {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
       }
 
       .campo {
@@ -209,21 +262,43 @@ import { Component, input, linkedSignal, output } from '@angular/core';
   ],
 })
 export class Home {
-  readonly entra = output<string>();
+  readonly entra = output<RichiestaAccesso>();
 
   readonly nomeIniziale = input<string>('');
 
+  readonly codiceIniziale = input<string>('');
+
   protected readonly nome = linkedSignal(() => this.nomeIniziale());
+
+  protected readonly codice = linkedSignal(() => this.codiceIniziale().toUpperCase());
+
+  protected readonly pin = signal('');
 
   protected aggiorna(evento: Event): void {
     this.nome.set((evento.target as HTMLInputElement).value);
   }
 
+  protected aggiornaCodice(evento: Event): void {
+    const valore = (evento.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z]/g, '');
+    this.codice.set(valore.slice(0, 4));
+  }
+
+  protected aggiornaPin(evento: Event): void {
+    this.pin.set((evento.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 4));
+  }
+
   protected invia(evento: Event): void {
     evento.preventDefault();
     const nome = this.nome().trim();
+    if (nome.length >= 2 && this.codice().length === 4) {
+      this.entra.emit({ nome, codice: this.codice(), pin: this.pin() });
+    }
+  }
+
+  protected crea(): void {
+    const nome = this.nome().trim();
     if (nome.length >= 2) {
-      this.entra.emit(nome);
+      this.entra.emit({ nome, codice: '', pin: this.pin() });
     }
   }
 }

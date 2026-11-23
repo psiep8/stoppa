@@ -180,6 +180,29 @@ export class Tavolo implements OnInit, OnDestroy {
     }
   }
 
+  /** Il verbale di fine partita: HTML da scaricare, con le fiches di ognuno. */
+  protected scaricaVerbale(): void {
+    const codice = this.codice();
+    this.attesa.set(true);
+    fetch(`/api/tavolo/${codice}/verbale`, { headers: { 'X-Sessione': this.sessione() } })
+      .then((risposta) => {
+        if (!risposta.ok) {
+          throw new Error('verbale non disponibile');
+        }
+        return risposta.blob();
+      })
+      .then((documento) => {
+        const url = URL.createObjectURL(documento);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `stoppa-${codice}.html`;
+        link.click();
+        URL.revokeObjectURL(url);
+      })
+      .catch(() => this.errore.set('Non riesco a preparare il verbale'))
+      .finally(() => this.attesa.set(false));
+  }
+
   private applica(nuovo: StatoTavolo): void {
     this.riproduciSuoni(this.precedente, nuovo);
     this.precedente = nuovo;

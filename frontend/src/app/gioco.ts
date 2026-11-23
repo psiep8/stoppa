@@ -58,10 +58,16 @@ export type StanzaLobby = {
   postiTotali: number;
   minimoGiocatori: number;
   avviata: boolean;
+  chiusa: boolean;
+  conPin: boolean;
+  creatore: boolean;
   tuoIndice: number;
 };
 
 export type IngressoLobby = { sessione: string; stanza: StanzaLobby };
+
+/** Quello che sceglie la home: nome, codice stanza (vuoto = crea) e PIN. */
+export type RichiestaAccesso = { nome: string; codice: string; pin: string };
 
 export type ErroreApi = { errore?: string };
 

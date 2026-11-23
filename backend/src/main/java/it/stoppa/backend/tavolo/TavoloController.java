@@ -1,5 +1,10 @@
 package it.stoppa.backend.tavolo;
 
+import java.util.Locale;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +36,16 @@ public class TavoloController {
 	public RiepilogoPartita riepilogo(@PathVariable String codice,
 			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
 		return tavolo.riepilogo(codice, sessione);
+	}
+
+	@GetMapping(value = "/verbale", produces = MediaType.TEXT_HTML_VALUE)
+	public ResponseEntity<String> verbale(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION,
+					"attachment; filename=\"stoppa-" + codice.toUpperCase(Locale.ROOT) + ".html\"")
+			.contentType(MediaType.parseMediaType("text/html; charset=UTF-8"))
+			.body(tavolo.verbale(codice, sessione));
 	}
 
 	@PostMapping("/nuova")

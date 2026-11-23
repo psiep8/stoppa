@@ -1,5 +1,6 @@
 package it.stoppa.backend.tavolo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -69,6 +70,73 @@ public class TavoloService {
 			throw new IllegalStateException("il riepilogo e' solo di chi crea la lobby");
 		}
 		return accesso.tavolo.partita.riepilogo();
+	}
+
+	/**
+	 * Il verbale della partita: un documento HTML autonomo, da scaricare o
+	 * stampare, con le fiches giocate e rimaste a ogni giocatore.
+	 */
+	public synchronized String verbale(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		RiepilogoPartita riepilogo = accesso.tavolo.partita.riepilogo();
+		StringBuilder html = new StringBuilder(2048);
+		html.append("""
+				<!doctype html>
+				<html lang="it">
+				<head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<title>Stoppa - stanza """);
+		html.append(escape(accesso.tavolo.codice)).append("""
+				</title>
+				<style>
+				* { box-sizing: border-box; }
+				body { font-family: Georgia, 'Times New Roman', serif; margin: 2.5rem auto; max-width: 46rem; padding: 0 1.2rem; color: #1c2a22; background: #fbf8f0; }
+				h1 { margin: 0 0 .2rem; letter-spacing: .16em; text-transform: uppercase; font-size: 1.5rem; }
+				h2 { margin-top: 2rem; font-size: 1.05rem; letter-spacing: .08em; text-transform: uppercase; }
+				.nota { color: #5b6a60; font-size: .88rem; margin: .25rem 0; }
+				table { border-collapse: collapse; width: 100%; margin: 1.4rem 0; }
+				th, td { border-bottom: 1px solid #cfc8b8; padding: .5rem .55rem; text-align: right; font-variant-numeric: tabular-nums; }
+				th:first-child, td:first-child { text-align: left; }
+				th { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: #5b6a60; font-weight: 600; }
+				ol { line-height: 1.8; padding-left: 1.4rem; }
+				footer { margin-top: 2rem; }
+				</style>
+				</head>
+				<body>
+				<h1>Stoppa</h1>
+				""");
+		html.append("<p class=\"nota\">Stanza <strong>").append(escape(accesso.tavolo.codice))
+				.append("</strong> - ").append(riepilogo.maniTotali()).append(" mani - ")
+				.append(riepilogo.finita() ? "partita conclusa" : "partita in corso").append("</p>");
+		html.append("<p class=\"nota\">Ognuno parte con ").append(Giocatore.FICHES_INIZIALI)
+				.append(" gettoni; il gettone del piatto e' compreso tra le fiches giocate e ogni cambio automatico ne aggiunge altri ")
+				.append(Giocatore.FICHES_INIZIALI).append(".</p>");
+		html.append("""
+				<table>
+				<thead><tr><th>Giocatore</th><th>Giocate</th><th>Vinte</th><th>Cambi</th><th>Rimaste</th><th>Debito</th><th>Punto</th></tr></thead>
+				<tbody>
+				""");
+		for (RiepilogoPartita.RigaGiocatore riga : riepilogo.giocatori()) {
+			html.append("<tr><td>").append(escape(riga.nome())).append("</td><td>").append(riga.giocati())
+					.append("</td><td>").append(riga.incassati()).append("</td><td>").append(riga.cambi())
+					.append("</td><td>").append(riga.fiches()).append("</td><td>").append(riga.debito())
+					.append("</td><td>").append(riga.punteggio()).append("</td></tr>");
+		}
+		html.append("</tbody></table>");
+		if (riepilogo.finita() && !riepilogo.classifica().isEmpty()) {
+			html.append("<h2>Classifica</h2><ol>");
+			for (int indice : riepilogo.classifica()) {
+				RiepilogoPartita.RigaGiocatore riga = riepilogo.giocatori().get(indice);
+				html.append("<li><strong>").append(escape(riga.nome())).append("</strong> - ")
+						.append(riga.punteggio()).append(" punti - ").append(riga.fiches()).append(" fiches</li>");
+			}
+			html.append("</ol>");
+		}
+		html.append("<footer><p class=\"nota\">Piatto rimasto: ").append(riepilogo.piatto())
+				.append(" - fiches virtuali, nessun denaro reale - ").append(LocalDate.now()).append("</p></footer>");
+		html.append("</body></html>");
+		return html.toString();
 	}
 
 	public synchronized StatoTavolo passa(String codice, String sessioneId) {
@@ -281,6 +349,20 @@ public class TavoloService {
 		while (tavolo.eventi.size() > PartitaTavolo.MAX_EVENTI) {
 			tavolo.eventi.removeLast();
 		}
+	}
+
+	private static String escape(String testo) {
+		StringBuilder pulito = new StringBuilder(testo.length());
+		for (char carattere : testo.toCharArray()) {
+			switch (carattere) {
+				case '<' -> pulito.append("&lt;");
+				case '>' -> pulito.append("&gt;");
+				case '&' -> pulito.append("&amp;");
+				case '"' -> pulito.append("&quot;");
+				default -> pulito.append(carattere);
+			}
+		}
+		return pulito.toString();
 	}
 
 	private record Accesso(PartitaTavolo tavolo, Sessione sessione, int indice) {

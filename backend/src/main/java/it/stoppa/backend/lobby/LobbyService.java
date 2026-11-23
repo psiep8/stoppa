@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,6 +37,9 @@ public class LobbyService {
 
 	private final Map<String, Stanza> stanze = new ConcurrentHashMap<>();
 
+	/** I codici gia' assegnati: una stanza nuova non riusa un codice del passato. */
+	private final Set<String> codiciUsati = ConcurrentHashMap.newKeySet();
+
 	private final SessioniService sessioni;
 
 	private final TavoloService tavolo;
@@ -49,8 +53,13 @@ public class LobbyService {
 	}
 
 	public synchronized IngressoLobby crea(String nome) {
+		return crea(nome, null);
+	}
+
+	public synchronized IngressoLobby crea(String nome, String pin) {
 		String pulito = pulisciNome(nome);
 		Stanza stanza = new Stanza(codiceLibero());
+		stanza.pin = pulisciPin(pin);
 		Sessione sessione = sessioni.crea(pulito, stanza.codice, true);
 		stanza.posti.add(new Posto(sessione.id(), pulito));
 		for (int i = 1; i <= BOT_INIZIALI; i++) {
@@ -62,8 +71,14 @@ public class LobbyService {
 	}
 
 	public synchronized IngressoLobby entra(String codice, String nome) {
+		return entra(codice, nome, null);
+	}
+
+	public synchronized IngressoLobby entra(String codice, String nome, String pin) {
 		Stanza stanza = cerca(codice);
 		verificaAvviata(stanza);
+		verificaAperta(stanza);
+		verificaPin(stanza, pin);
 		if (stanza.posti.size() >= POSTI_TOTALI) {
 			throw new IllegalStateException("il tavolo e' pieno: " + POSTI_TOTALI + " posti");
 		}
@@ -125,6 +140,16 @@ public class LobbyService {
 		return tavolo.stato(stanza.codice, sessione.id());
 	}
 
+	/** Chiude o riapre la stanza agli esterni; solo chi l'ha creata puo' farlo. */
+	public synchronized StanzaLobby impostaChiusa(String codice, boolean chiusa, String sessioneId) {
+		Stanza stanza = cerca(codice);
+		Sessione sessione = creatore(stanza, sessioneId);
+		verificaAvviata(stanza);
+		stanza.chiusa = chiusa;
+		annuncia(stanza);
+		return vista(stanza, sessione);
+	}
+
 	/** Il socket della stanza manda la vista aggiornata a chi e' collegato. */
 	private void annuncia(Stanza stanza) {
 		eventi.publishEvent(new StanzaCambiata(stanza.codice));
@@ -154,6 +179,22 @@ public class LobbyService {
 		}
 	}
 
+	private void verificaAperta(Stanza stanza) {
+		if (stanza.chiusa) {
+			throw new IllegalStateException("la lobby di " + stanza.codice + " e' chiusa agli esterni");
+		}
+	}
+
+	private void verificaPin(Stanza stanza, String pin) {
+		if (stanza.pin == null) {
+			return;
+		}
+		String tentativo = pin == null ? "" : pin.trim();
+		if (!stanza.pin.equals(tentativo)) {
+			throw new IllegalStateException("PIN sbagliato: questa stanza ha una seconda chiave");
+		}
+	}
+
 	private IngressoLobby ingresso(Sessione sessione, Stanza stanza) {
 		return new IngressoLobby(sessione.id(), vista(stanza, sessione));
 	}
@@ -168,7 +209,8 @@ public class LobbyService {
 				tuo = i;
 			}
 		}
-		return new StanzaLobby(stanza.codice, List.copyOf(posti), POSTI_TOTALI, MINIMO_GIOCATORI, stanza.avviata, tuo);
+		return new StanzaLobby(stanza.codice, List.copyOf(posti), POSTI_TOTALI, MINIMO_GIOCATORI, stanza.avviata,
+				stanza.chiusa, stanza.pin != null, sessione != null && sessione.creatore(), tuo);
 	}
 
 	private Posto posto(Stanza stanza, int indice) {
@@ -195,11 +237,22 @@ public class LobbyService {
 			for (int i = 0; i < 4; i++) {
 				codice.append(LETTERE.charAt(ThreadLocalRandom.current().nextInt(LETTERE.length())));
 			}
-			if (!stanze.containsKey(codice.toString())) {
+			if (codiciUsati.add(codice.toString())) {
 				return codice.toString();
 			}
 		}
 		throw new IllegalStateException("nessun codice stanza libero");
+	}
+
+	private static String pulisciPin(String pin) {
+		if (pin == null || pin.isBlank()) {
+			return null;
+		}
+		String pulito = pin.trim();
+		if (!pulito.matches("\\d{4}")) {
+			throw new IllegalStateException("il PIN e' di quattro cifre");
+		}
+		return pulito;
 	}
 
 	private static String pulisciNome(String nome) {
@@ -214,6 +267,10 @@ public class LobbyService {
 		private final List<Posto> posti = new ArrayList<>();
 
 		private boolean avviata;
+
+		private boolean chiusa;
+
+		private String pin;
 
 		private Stanza(String codice) {
 			this.codice = codice;

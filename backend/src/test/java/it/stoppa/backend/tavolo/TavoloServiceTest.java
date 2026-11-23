@@ -57,6 +57,26 @@ class TavoloServiceTest {
 	}
 
 	@Test
+	void ilVerbaleRiportaFichesGiocateERimaste() {
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+
+		String verbale = tavolo.verbale(CODICE, creatore);
+
+		assertTrue(verbale.startsWith("<!doctype html>"), verbale);
+		assertTrue(verbale.contains("<th>Giocate</th>"), verbale);
+		assertTrue(verbale.contains("<td>Tu</td>"), verbale);
+		assertTrue(verbale.contains("<td>Bot 1</td>"), verbale);
+		// il gettone del piatto e' gia' fra le fiches giocate di ognuno
+		assertTrue(verbale.contains("<td>Tu</td><td>1</td>"), verbale);
+	}
+
+	@Test
+	void ilVerbaleNonSiPrendeSenzaSessione() {
+		assertThrows(IllegalStateException.class, () -> tavolo.verbale(CODICE, null));
+	}
+
+	@Test
 	void ogniSessioneVedeSoloLeProprieCarte() {
 		String peppa = sessione("Peppa", true);
 		String anna = sessione("Anna", false);

@@ -61,6 +61,9 @@ const STANZA: StanzaLobby = {
   postiTotali: 8,
   minimoGiocatori: 4,
   avviata: false,
+  chiusa: false,
+  conPin: false,
+  creatore: true,
   tuoIndice: 0,
 };
 

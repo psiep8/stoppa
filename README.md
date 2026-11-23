@@ -37,9 +37,10 @@ npm install
 npm start
 ```
 
-Poi apri http://localhost:4200, scegli il nome ed entra nella lobby: da lì aggiungi i bot
-al tavolo e avvia la partita. Per giocare in due, apri una seconda finestra e inserisci il
-codice della stanza nel campo "Codice stanza".
+Poi apri http://localhost:4200, scegli il nome e crea una stanza (oppure entra con il
+codice di una stanza già aperta): da lì aggiungi i bot, avvia la partita e condividi il
+link d'invito. Per giocare in due, apri una seconda finestra e incolla il codice o il
+link della stanza.
 
 ## WebSocket
 
@@ -58,6 +59,27 @@ non esistono più (per esempio dopo un riavvio del backend) l'errore porta in pi
 `"motivo":"ricomincia"`, e il client cancella la partita salvata e torna alla home
 invece di restare fermo su un errore che non si può risolvere. Gli altri errori non
 hanno `motivo`.
+
+## Invito e sicurezza della stanza
+
+Ogni stanza ha un codice di quattro lettere, generato dal server e **mai riusato**
+(neanche dopo che la stanza è stata chiusa). In lobby c'è il link d'invito
+`http://localhost:4200/?stanza=CODICE`: chi lo apre trova il codice già scritto in home.
+
+Chi crea la stanza può aggiungere una **seconda chiave**: un PIN di quattro cifre,
+opzionale. Il PIN viaggia solo nella richiesta d'ingresso, non compare nel link e non
+esce mai dal server nella vista della stanza, che dice soltanto se serve (`conPin`).
+
+Sempre chi crea la stanza può **chiuderla agli esterni**: chi è già dentro resta, chi
+prova a entrare riceve "lobby chiusa" finché non la riapre. I bot, la rimozione dei
+posti e l'avvio restano riservati al creatore.
+
+## Verbale della partita
+
+A partita finita il tavolo offre **Scarica il verbale**: il server prepara un documento
+HTML autonomo con le fiches giocate, vinte, i cambi e quelle rimaste a ogni giocatore,
+più la classifica finale. Serve la propria sessione: `GET /api/tavolo/{codice}/verbale`
+con `X-Sessione`.
 
 ## Partita salvata
 
@@ -86,12 +108,13 @@ stessa stanza, ognuna con la propria sessione.
   rilancio fino a 10 gettoni, piatto pagato un gettone a testa all'inizio della partita,
   gettone al vincitore di ogni mano (o al cartaro se nessuno punta), puntate a debito e
   cambio automatico da 10 gettoni, classifica finale per punto.
-- **Lobby** (`/api/lobby`): stanza con codice di quattro lettere, fino a 8 posti (parte
-  con te e cinque bot), ingresso con codice, bot da aggiungere e togliere, avvio.
-  Chi crea la stanza riceve un id di sessione opaco e lo rimanda in `X-Sessione`.
+- **Lobby** (`/api/lobby`): stanza con codice di quattro lettere mai riusato, fino a 8
+  posti (parte con te e cinque bot), link d'invito, PIN opzionale, chiusura agli esterni,
+  ingresso con codice, bot da aggiungere e togliere, avvio. Chi crea la stanza riceve un
+  id di sessione opaco e lo rimanda in `X-Sessione`.
 - **Tavolo** (`/api/tavolo/{codice}`): una partita per stanza. Stato, passo, vedo,
-  punta, prossima mano, nuova partita e riepilogo. Ogni giocatore riceve solo le
-  proprie carte: degli altri vede solo quante ne hanno.
+  punta, prossima mano, nuova partita, riepilogo per il creatore e verbale scaricabile.
+  Ogni giocatore riceve solo le proprie carte: degli altri vede solo quante ne hanno.
 - **Interfaccia** (`frontend/src/app/`): home con il nome, lobby con i posti, tavolo con
   le carte napoletane e il registro delle mani, responsive su desktop e mobile.
 

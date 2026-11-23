@@ -155,6 +155,61 @@ class LobbyServiceTest {
 	}
 
 	@Test
+	void unaStanzaConPinVuoleLaSecondaChiave() {
+		IngressoLobby ingresso = lobby.crea("Peppa", "4821");
+
+		assertTrue(ingresso.stanza().conPin());
+		assertThrows(IllegalStateException.class, () -> lobby.entra(ingresso.stanza().codice(), "Anna"));
+		assertThrows(IllegalStateException.class, () -> lobby.entra(ingresso.stanza().codice(), "Anna", "0000"));
+
+		IngressoLobby anna = lobby.entra(ingresso.stanza().codice(), "Anna", "4821");
+
+		assertEquals(6, anna.stanza().tuoIndice());
+		assertTrue(anna.stanza().conPin());
+	}
+
+	@Test
+	void ilPinDeveAvereQuattroCifre() {
+		assertThrows(IllegalStateException.class, () -> lobby.crea("Peppa", "12"));
+	}
+
+	@Test
+	void unaLobbyChiusaNonAccoglieChiArrivaDaFuori() {
+		IngressoLobby creatore = lobby.crea("Peppa");
+		String codice = creatore.stanza().codice();
+		IngressoLobby anna = lobby.entra(codice, "Anna");
+
+		StanzaLobby chiusa = lobby.impostaChiusa(codice, true, creatore.sessione());
+
+		assertTrue(chiusa.chiusa());
+		assertThrows(IllegalStateException.class, () -> lobby.entra(codice, "Luca"));
+		assertEquals(7, lobby.stanza(codice, anna.sessione()).posti().size());
+
+		StanzaLobby riaperta = lobby.impostaChiusa(codice, false, creatore.sessione());
+
+		assertFalse(riaperta.chiusa());
+		assertEquals(8, lobby.entra(codice, "Luca").stanza().posti().size());
+	}
+
+	@Test
+	void soloIlCreatoreChiudeLaLobby() {
+		IngressoLobby creatore = lobby.crea("Peppa");
+		IngressoLobby anna = lobby.entra(creatore.stanza().codice(), "Anna");
+
+		assertThrows(IllegalStateException.class,
+				() -> lobby.impostaChiusa(creatore.stanza().codice(), true, anna.sessione()));
+	}
+
+	@Test
+	void laStanzaDiceAChiGuardaSeHaApertoLui() {
+		IngressoLobby creatore = lobby.crea("Peppa");
+		IngressoLobby anna = lobby.entra(creatore.stanza().codice(), "Anna");
+
+		assertTrue(lobby.stanza(creatore.stanza().codice(), creatore.sessione()).creatore());
+		assertFalse(lobby.stanza(creatore.stanza().codice(), anna.sessione()).creatore());
+	}
+
+	@Test
 	void ilCodiceNonCambiaTraLeChiamate() {
 		IngressoLobby ingresso = lobby.crea("Peppa");
 		List<PostoLobby> posti = lobby.stanza(ingresso.stanza().codice(), ingresso.sessione()).posti();

@@ -33,13 +33,14 @@
 
   @switch (schermata()) {
     @case ('home') {
-      <app-home [nomeIniziale]="nome()" (entra)="vaiAllaLobby($event)" />
+      <app-home [nomeIniziale]="nome()" [codiceIniziale]="stanza()" (entra)="vaiAllaLobby($event)" />
     }
     @case ('lobby') {
       <app-lobby
         [nome]="nome()"
         [codiceIniziale]="stanza()"
         [sessioneIniziale]="sessione()"
+        [pinIniziale]="pinIngresso()"
         (indietro)="tornaHome()"
         (ingresso)="inLobby($event)"
         (inizia)="avviaPartita($event)"
