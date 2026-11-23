@@ -6,11 +6,14 @@ import { RichiestaAccesso } from './gioco';
   template: `
     <section class="home">
       <div class="intro">
-        <ul class="dati-partita">
-          <li><strong>4–8</strong><span>giocatori</span></li>
-          <li><strong>3</strong><span>carte a testa</span></li>
-          <li><strong>1–10</strong><span>gettoni a puntata</span></li>
-        </ul>
+        <h2 class="titolo">
+          Quaranta carte, un tavolo, da quattro a otto persone.
+        </h2>
+
+        <p class="sommario">
+          Fiches virtuali, nessun denaro. Si entra con un codice o con il link di chi ha
+          aperto la stanza.
+        </p>
 
         <form class="accesso" (submit)="invia($event)">
           <label class="campo">
@@ -19,7 +22,7 @@ import { RichiestaAccesso } from './gioco';
               [value]="nome()"
               (input)="aggiorna($event)"
               maxlength="14"
-              placeholder="Nome del giocatore"
+              placeholder="Come ti chiami"
               autocomplete="off"
             />
           </label>
@@ -65,19 +68,26 @@ import { RichiestaAccesso } from './gioco';
           </div>
         </form>
 
-        <p class="nota">Fiches virtuali. Nessun denaro reale.</p>
+        <dl class="dati-partita">
+          <div><dt>Giocatori</dt><dd>4–8</dd></div>
+          <div><dt>Carte a testa</dt><dd>3</dd></div>
+          <div><dt>Puntata</dt><dd>1–10 gettoni</dd></div>
+        </dl>
       </div>
 
-      <div class="vetrina" aria-hidden="true">
-        <img class="carta vetrina-carta c1" src="/assets/carte/denari-07.svg" alt="" />
-        <img class="carta vetrina-carta c2" src="/assets/carte/coppe-asso.svg" alt="" />
-        <img class="carta vetrina-carta c3" src="/assets/carte/spade-re.svg" alt="" />
-        <div class="mucchio">
-          <span class="ficha oro"></span>
-          <span class="ficha verde"></span>
-          <span class="ficha blu"></span>
+      <figure class="vetrina">
+        <div class="tavola" aria-hidden="true">
+          <img class="carta vetrina-carta c1" src="/assets/carte/denari-07.svg" alt="" />
+          <img class="carta vetrina-carta c2" src="/assets/carte/coppe-asso.svg" alt="" />
+          <img class="carta vetrina-carta c3" src="/assets/carte/spade-re.svg" alt="" />
+          <div class="mucchio">
+            <span class="ficha oro"></span>
+            <span class="ficha verde"></span>
+            <span class="ficha blu"></span>
+          </div>
         </div>
-      </div>
+        <figcaption>Carte napoletane · quaranta · CC0</figcaption>
+      </figure>
     </section>
   `,
   styles: [
@@ -85,157 +95,203 @@ import { RichiestaAccesso } from './gioco';
       .home {
         display: grid;
         grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-        gap: clamp(1.5rem, 5vw, 4rem);
-        align-items: center;
-        padding: clamp(1rem, 4vw, 3rem) 0;
+        gap: clamp(2rem, 6vw, 4.5rem);
+        align-items: start;
+        padding: clamp(0.5rem, 2vw, 1.5rem) 0;
       }
 
       .intro {
         display: grid;
-        gap: 1.1rem;
-        max-width: 34rem;
+        gap: 1.25rem;
+        max-width: 36rem;
       }
 
-      .dati-partita {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.6rem;
+      .titolo {
         margin: 0;
-        padding: 0;
-        list-style: none;
+        font-family: var(--serif);
+        font-size: clamp(2rem, 4.2vw, 3.05rem);
+        font-weight: 600;
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+        color: var(--inchiostro);
       }
 
-      .dati-partita li {
-        display: grid;
-        gap: 0.15rem;
-      }
-
-      .dati-partita strong {
-        font-size: 1.45rem;
-        font-weight: 700;
-        color: var(--oro-chiaro);
-        font-variant-numeric: tabular-nums;
-      }
-
-      .dati-partita span {
-        font-size: 0.66rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: rgba(246, 239, 223, 0.5);
+      .sommario {
+        margin: 0;
+        max-width: 48ch;
+        font-size: 1.02rem;
+        line-height: 1.6;
+        color: var(--inchiostro-tenue);
       }
 
       .accesso {
         display: grid;
-        gap: 0.75rem;
-        margin-top: 0.4rem;
+        gap: 1.1rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--bordo);
+        max-width: 30rem;
       }
 
       .codici {
         display: flex;
-        gap: 0.75rem;
+        gap: 1.4rem;
+      }
+
+      .campo {
+        display: grid;
+        gap: 0.3rem;
+      }
+
+      .campo span {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--testo-tenue);
+      }
+
+      /* Campi come righe di un modulo cartaceo: solo la linea di base. */
+      .campo input {
+        width: 100%;
+        padding: 0.4rem 0;
+        border: 0;
+        border-bottom: 1px solid var(--bordo);
+        border-radius: 0;
+        background: transparent;
+        color: var(--inchiostro);
+        font-family: var(--serif);
+        font-size: 1.18rem;
+      }
+
+      .campo input:focus {
+        outline: none;
+        border-bottom-color: var(--oro);
+        box-shadow: 0 2px 0 -1px var(--oro);
+      }
+
+      .campo input::placeholder {
+        color: rgba(242, 232, 213, 0.34);
+        font-style: italic;
       }
 
       .stretto {
-        flex: 0 1 8rem;
+        flex: 0 1 8.5rem;
+      }
+
+      .stretto input {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
       }
 
       .scelte {
         display: flex;
         flex-wrap: wrap;
         gap: 0.6rem;
+        padding-top: 0.3rem;
       }
 
-      .campo {
-        display: grid;
-        gap: 0.4rem;
-        flex: 1 1 14rem;
+      .dati-partita {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 1.6rem;
+        margin: 0.4rem 0 0;
+        padding-top: 0.7rem;
+        border-top: 1px solid var(--bordo-tenue);
       }
 
-      .campo span {
+      .dati-partita div {
+        display: flex;
+        align-items: baseline;
+        gap: 0.45rem;
+      }
+
+      .dati-partita dt {
         font-size: 0.68rem;
-        letter-spacing: 0.24em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: rgba(246, 239, 223, 0.5);
+        color: var(--testo-tenue);
       }
 
-      .campo input {
-        width: 100%;
-        padding: 0.85rem 1rem;
-        border-radius: 13px;
-        border: 1px solid var(--bordo);
-        background: rgba(3, 20, 14, 0.65);
-        color: var(--crema);
-        font-size: 0.95rem;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      .dati-partita dd {
+        margin: 0;
+        font-family: var(--serif);
+        font-size: 0.98rem;
+        font-variant-numeric: tabular-nums;
       }
 
-      .campo input:focus {
-        outline: none;
-        border-color: rgba(216, 169, 74, 0.7);
-        box-shadow: 0 0 0 3px rgba(216, 169, 74, 0.16);
-      }
-
-      .campo input::placeholder {
-        color: rgba(246, 239, 223, 0.32);
-      }
-
+      /* La vetrina è una tavola: feltro pieno, nessun riflesso. */
       .vetrina {
+        margin: 0;
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .tavola {
         position: relative;
         display: grid;
         place-items: center;
-        min-height: 300px;
+        min-height: clamp(240px, 30vw, 340px);
+        border-radius: 3px;
+        background: var(--feltro);
+        border: 1px solid var(--feltro-nero);
+        overflow: hidden;
       }
 
       .vetrina-carta {
         position: absolute;
-        width: clamp(110px, 15vw, 156px);
-        border-radius: 10px;
-        box-shadow: 0 26px 50px rgba(0, 0, 0, 0.55);
+        width: clamp(104px, 14vw, 148px);
         animation-delay: 60ms;
       }
 
+      /* rotate/translate separati: così l'animazione di ingresso non
+         cancella la ventagliata quando finisce. */
       .c1 {
-        transform: rotate(-14deg) translate(-64px, 12px);
+        rotate: -11deg;
+        translate: -58px 14px;
       }
 
       .c2 {
-        transform: rotate(-2deg) translateY(-8px);
+        rotate: -1deg;
+        translate: 0 -6px;
         z-index: 2;
       }
 
       .c3 {
-        transform: rotate(12deg) translate(62px, 16px);
+        rotate: 10deg;
+        translate: 56px 18px;
       }
 
       .mucchio {
         position: absolute;
-        bottom: 4%;
+        bottom: 6%;
         display: flex;
       }
 
       .mucchio .ficha {
-        width: 44px;
-        height: 44px;
-        margin-left: -12px;
-        animation: cade 0.6s var(--molla) both;
+        width: 38px;
+        height: 38px;
+        margin-left: -10px;
+        animation: cade 0.55s var(--molla) both;
       }
 
       .mucchio .ficha:nth-child(1) {
-        animation-delay: 260ms;
+        animation-delay: 220ms;
       }
 
       .mucchio .ficha:nth-child(2) {
-        animation-delay: 340ms;
+        animation-delay: 300ms;
       }
 
       .mucchio .ficha:nth-child(3) {
-        animation-delay: 420ms;
+        animation-delay: 380ms;
       }
 
       @keyframes cade {
         from {
           opacity: 0;
-          transform: translateY(-30px) scale(0.85);
+          transform: translateY(-24px);
         }
         to {
           opacity: 1;
@@ -243,19 +299,29 @@ import { RichiestaAccesso } from './gioco';
         }
       }
 
+      figcaption {
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--testo-tenue);
+      }
+
       @media (max-width: 860px) {
         .home {
           grid-template-columns: 1fr;
-          gap: 1.5rem;
+          gap: 1.8rem;
         }
 
         .vetrina {
           order: -1;
-          min-height: 210px;
+        }
+
+        .tavola {
+          min-height: 200px;
         }
 
         .vetrina-carta {
-          width: 96px;
+          width: 92px;
         }
       }
     `,

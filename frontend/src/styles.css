@@ -1,21 +1,60 @@
-/* ---------- tokens ---------- */
+/* ---------------------------------------------------------------
+   Sistema visivo: sala da gioco. Tutto verde baize, testo crema,
+   oro per i comandi; la carta stampata resta alle carte da gioco.
+   Niente gradienti decorativi, niente vetro, niente pillole:
+   gli angoli sono quasi vivi.
+   --------------------------------------------------------------- */
+
+/* Due voci, entrambe self-hosted: un serif da registro per i titoli,
+   un grotesque stretto per l'interfaccia. */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/assets/fonti/fraunces.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/assets/fonti/archivo.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  --feltro: #0d4632;
-  --feltro-scuro: #072b1f;
-  --feltro-nero: #041710;
-  --legno: #4a2c1c;
-  --legno-scuro: #26150c;
-  --oro: #d8a94a;
-  --oro-chiaro: #f4d99a;
-  --crema: #f6efdf;
-  --inchiostro: #07120c;
-  --rosso: #b23b2e;
-  --verde-ok: #4f9d6b;
-  --vetro: rgba(6, 30, 20, 0.55);
-  --bordo: rgba(246, 239, 223, 0.12);
-  --ombra-pannello: 0 24px 60px rgba(0, 0, 0, 0.45);
-  --molla: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* due verdi: il baize del piano e il panno del tavolo */
+  --baize: #081f17;
+  --feltro: #14503a;
+  --feltro-scuro: #0d3827;
+  --feltro-nero: #051a12;
+
+  --crema: #f2e8d5;
+  --carta: #0f3527;
+  --carta-scura: #0b2a1f;
+  --inchiostro: #f2e8d5;
+  --inchiostro-tenue: rgba(242, 232, 213, 0.74);
+
+  --oro: #cfa64f;
+  --oro-chiaro: #e5c27c;
+  --rosso: #c25a49;
+  --verde-ok: #6fae8a;
+
+  /* bordi: sempre crema diluita sul verde */
+  --bordo: rgba(242, 232, 213, 0.18);
+  --bordo-tenue: rgba(242, 232, 213, 0.09);
+  --bordo-feltro: rgba(242, 232, 213, 0.22);
+
+  /* testo secondario sempre tinto dalla superficie, mai grigio */
+  --testo-tenue: rgba(242, 232, 213, 0.6);
+  --testo-feltro-tenue: rgba(242, 232, 213, 0.72);
+
+  --serif: 'Fraunces', Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --sans: 'Archivo', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+  --ombra-carta: 0 16px 34px rgba(0, 0, 0, 0.38);
+  --molla: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -29,15 +68,30 @@ body {
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color: var(--crema);
-  background:
-    radial-gradient(120% 80% at 50% -20%, #17624a 0%, transparent 55%),
-    radial-gradient(100% 70% at 50% 120%, #032018 0%, transparent 60%),
-    linear-gradient(180deg, #082b20 0%, #041b13 100%);
-  background-attachment: fixed;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--inchiostro);
+  background: var(--baize);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  caret-color: var(--oro);
+}
+
+::selection {
+  background: var(--oro);
+  color: var(--feltro-nero);
+}
+
+:focus-visible {
+  outline: 2px solid var(--oro);
+  outline-offset: 3px;
+}
+
+/* barre di scorrimento e cursori fanno parte del sistema */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242, 232, 213, 0.3) transparent;
 }
 
 button,
@@ -55,134 +109,130 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ---------- tipografia ---------- */
+/* ---------------- tipografia ---------------- */
 
 .marchio {
   margin: 0;
-  font-size: clamp(1.1rem, 3.2vw, 1.45rem);
-  font-weight: 800;
-  letter-spacing: 0.42em;
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #fff9ec 10%, var(--oro) 85%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-indent: 0.42em;
+  color: var(--inchiostro);
 }
 
 .occhiello {
   margin: 0;
-  font-size: 0.66rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(246, 239, 223, 0.55);
+  color: var(--testo-tenue);
 }
 
 .testo {
   margin: 0;
-  color: rgba(246, 239, 223, 0.72);
+  max-width: 62ch;
+  color: var(--inchiostro-tenue);
   line-height: 1.6;
 }
 
 .nota {
   margin: 0;
-  font-size: 0.72rem;
-  color: rgba(246, 239, 223, 0.45);
+  font-size: 0.78rem;
+  color: var(--testo-tenue);
 }
 
-/* ---------- superfici ---------- */
+/* ---------------- superfici ---------------- */
 
+/* Un pannello è un piano di verde più scuro, mai vetro. */
 .pannello {
-  border-radius: 26px;
   border: 1px solid var(--bordo);
-  background: linear-gradient(180deg, rgba(9, 41, 29, 0.92), rgba(4, 22, 15, 0.94));
-  box-shadow: var(--ombra-pannello);
-  backdrop-filter: blur(10px);
+  border-radius: 3px;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  background: var(--carta);
+  color: var(--inchiostro);
+  box-shadow: var(--ombra-carta);
 }
 
-/* ---------- bottoni ---------- */
+.feltro .pannello,
+.scena .pannello {
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.38);
+}
 
+/* ---------------- bottoni ---------------- */
+
+/* Rettangolare, pieno d'oro, nessuna pillola, nessun riflesso. */
 .cta {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.8rem 1.4rem;
-  border: 0;
-  border-radius: 14px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #2b1a05;
-  background: linear-gradient(180deg, #f7e2ae, var(--oro) 58%, #b9862f);
-  box-shadow:
-    0 12px 26px rgba(216, 169, 74, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
-  overflow: hidden;
-  transition: transform 0.18s var(--molla), box-shadow 0.18s ease, filter 0.18s ease;
-}
-
-.cta::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.5) 50%, transparent 68%);
-  transform: translateX(-130%);
-  transition: transform 0.65s ease;
-}
-
-.cta:hover:not(:disabled)::after {
-  transform: translateX(130%);
+  padding: 0.72rem 1.15rem;
+  border: 1px solid var(--oro);
+  border-radius: 2px;
+  background: var(--oro);
+  color: var(--feltro-nero);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
 }
 
 .cta:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow:
-    0 16px 32px rgba(216, 169, 74, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: var(--oro-chiaro);
+  border-color: var(--oro-chiaro);
+  color: var(--feltro-nero);
 }
 
 .cta:active:not(:disabled) {
-  transform: translateY(1px) scale(0.995);
+  background: var(--oro);
+  filter: brightness(0.92);
 }
 
 .cta:disabled {
-  filter: grayscale(0.55) brightness(0.7);
-  box-shadow: none;
+  border-color: var(--bordo);
+  background: transparent;
+  color: var(--testo-tenue);
 }
 
 .ghost {
-  padding: 0.6rem 1rem;
-  border-radius: 11px;
-  border: 1px solid var(--bordo);
-  background: rgba(246, 239, 223, 0.04);
-  color: var(--crema);
+  padding: 0.62rem 0.95rem;
+  border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--sans);
+  font-size: 0.76rem;
   font-weight: 600;
-  font-size: 0.85rem;
-  transition: background 0.16s ease, border-color 0.16s ease;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
 }
 
 .ghost:hover:not(:disabled) {
-  background: rgba(246, 239, 223, 0.1);
-  border-color: rgba(246, 239, 223, 0.24);
+  border-color: currentColor;
+  background: color-mix(in srgb, currentColor 8%, transparent);
 }
 
 .ghost:disabled {
-  opacity: 0.42;
+  opacity: 0.38;
 }
 
-/* ---------- carte ---------- */
+/* ---------------- carte ---------------- */
 
 .carta {
   display: block;
   width: clamp(54px, 8vw, 78px);
   aspect-ratio: 250 / 388;
-  border-radius: 8px;
+  border-radius: 3px;
   background: #f6f3ec;
   box-shadow:
-    0 10px 18px rgba(0, 0, 0, 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.35) inset;
+    0 8px 16px rgba(0, 0, 0, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.5) inset;
   user-select: none;
   animation: distribuisci 0.5s var(--molla) both;
   animation-delay: calc(var(--i, 0) * 80ms);
@@ -191,7 +241,7 @@ button:disabled {
 @keyframes distribuisci {
   from {
     opacity: 0;
-    transform: translateY(-26px) rotate(-7deg) scale(0.9);
+    transform: translateY(-22px) rotate(-6deg);
   }
   to {
     opacity: 1;
@@ -210,8 +260,9 @@ button:disabled {
   }
 }
 
-/* ---------- fiches ---------- */
+/* ---------------- fiches ---------------- */
 
+/* Le fiches restano oggetti: ceramica con bordo incassato, niente glow. */
 .ficha {
   --chip: var(--rosso);
   --inlay: #f8f2e2;
@@ -219,16 +270,16 @@ button:disabled {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-size: 0.74rem;
-  font-weight: 800;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  color: color-mix(in srgb, var(--chip) 78%, #000);
+  color: color-mix(in srgb, var(--chip) 76%, #000);
   background:
-    radial-gradient(circle at 33% 22%, rgba(255, 255, 255, 0.5), transparent 46%),
     radial-gradient(circle, transparent 0 45%, rgba(0, 0, 0, 0.14) 45.6% 47.6%, transparent 48%),
     radial-gradient(circle, var(--inlay) 0 48%, transparent 48.5%),
     radial-gradient(circle, var(--chip) 0 58%, transparent 58.5%),
@@ -239,38 +290,31 @@ button:disabled {
     ),
     var(--chip);
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.32),
-    inset 0 2px 2px rgba(255, 255, 255, 0.28),
-    inset 0 -4px 7px rgba(0, 0, 0, 0.3),
-    0 3px 7px rgba(0, 0, 0, 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
+    0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 .ficha.oro {
-  --chip: #c9942b;
+  --chip: #b3862a;
 }
 
 .ficha.verde {
-  --chip: #2f7d4f;
+  --chip: #2f6d47;
 }
 
 .ficha.blu {
-  --chip: #2c5f8a;
+  --chip: #2c5677;
 }
 
 .ficha.piccola {
-  width: 24px;
-  height: 24px;
-  font-size: 0.62rem;
+  width: 22px;
+  height: 22px;
+  font-size: 0.6rem;
   --spicchio: 9deg;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.24),
-    inset 0 -3px 5px rgba(0, 0, 0, 0.28),
-    0 2px 4px rgba(0, 0, 0, 0.42);
 }
 
-/* ---------- movimento ridotto ---------- */
+/* ---------------- movimento ridotto ---------------- */
 
 @media (prefers-reduced-motion: reduce) {
   *,

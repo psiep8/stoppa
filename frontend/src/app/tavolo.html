@@ -144,9 +144,8 @@
 
     @if (s.finita) {
       <section class="pannello classifica">
-        <p class="occhiello">Punto finale</p>
         @if (s.classifica[0]; as primo) {
-          <p class="vincitore-nome">{{ primo.nome }} vince la partita</p>
+          <h2 class="vincitore-nome">{{ primo.nome }} vince la partita</h2>
         }
         <ol>
           @for (riga of s.classifica; track riga.nome) {

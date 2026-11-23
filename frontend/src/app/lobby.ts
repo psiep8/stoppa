@@ -7,7 +7,6 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
   template: `
     <section class="lobby">
       <header class="testata">
-        <p class="occhiello">Lobby</p>
         <h2>
           @if (stanza(); as s) {
             Stanza <span class="codice">{{ s.codice }}</span>
@@ -35,13 +34,18 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
         }
 
         <p class="testo">
-          @if (avviata()) {
+          @if (!stanza()) {
+            La stanza non e' aperta: inserisci codice e PIN per entrare.
+          } @else if (avviata()) {
             Partita iniziata: si torna al tavolo.
-          } @else {
+          } @else if (creatore()) {
             Tocca un posto libero per aggiungere un bot, tocca un bot per toglierlo.
+          } @else {
+            Sei seduto: l'avvio lo decide chi ha creato la stanza.
           }
         </p>
 
+        @if (!stanza()) {
         <form class="unisciti" (submit)="unisciti($event)">
           <input
             [value]="codiceIngresso()"
@@ -64,8 +68,10 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
             Entra
           </button>
         </form>
+        }
       </header>
 
+      @if (stanza()) {
       <div class="posti">
         @for (posto of posti(); track $index; let i = $index) {
           @if (posto) {
@@ -74,14 +80,19 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
               class="posto occupato"
               [class.mio]="i === mio()"
               (click)="togli(i)"
-              [disabled]="avviata() || i === mio()"
+              [disabled]="avviata() || i === mio() || !creatore()"
             >
               <span class="posto-numero">{{ i + 1 }}</span>
               <span class="posto-nome">{{ posto.nome }}</span>
               <span class="posto-azione">{{ ruolo(posto, i) }}</span>
             </button>
           } @else {
-            <button type="button" class="posto libero" (click)="aggiungiBot()" [disabled]="attesa() || avviata()">
+            <button
+              type="button"
+              class="posto libero"
+              (click)="aggiungiBot()"
+              [disabled]="attesa() || avviata() || !creatore()"
+            >
               <span class="posto-numero">{{ i + 1 }}</span>
               <span class="posto-nome">Libero</span>
               <span class="posto-azione">+</span>
@@ -89,6 +100,7 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
           }
         }
       </div>
+      }
 
       <footer class="azioni">
         <button type="button" class="ghost" (click)="indietro.emit()">Indietro</button>
@@ -97,21 +109,27 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
             {{ chiusa() ? 'Riapri la lobby' : 'Chiudi la lobby' }}
           </button>
         }
-        <span class="conteggio">
-          <span class="ficha oro piccola"></span>
-          {{ occupati() }} / {{ totali() }} al tavolo
-        </span>
+        @if (stanza()) {
+          <span class="conteggio">
+            <span class="ficha oro piccola"></span>
+            {{ occupati() }} / {{ totali() }} al tavolo
+          </span>
+        }
         @if (avviata()) {
           <button type="button" class="cta" (click)="tornaAlTavolo()">Torna al tavolo</button>
-        } @else {
-          <button
-            type="button"
-            class="cta"
-            (click)="avvia()"
-            [disabled]="attesa() || !stanza() || occupati() < minimo()"
-          >
-            Avvia partita
-          </button>
+        } @else if (stanza()) {
+          @if (creatore()) {
+            <button
+              type="button"
+              class="cta"
+              (click)="avvia()"
+              [disabled]="attesa() || occupati() < minimo()"
+            >
+              Avvia partita
+            </button>
+          } @else {
+            <span class="attesa-creatore">Aspetti l'avvio.</span>
+          }
         }
       </footer>
 
@@ -313,6 +331,13 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
         color: rgba(246, 239, 223, 0.65);
       }
 
+      .attesa-creatore {
+        font-size: 0.76rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(246, 239, 223, 0.5);
+      }
+
       .errore {
         margin: 0;
         padding: 0.7rem 0.9rem;
@@ -327,6 +352,201 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
         .azioni .cta {
           width: 100%;
         }
+      }
+    `,
+    `
+      /* ---- registro: la lobby è un foglio di iscrizione ---- */
+      .lobby {
+        display: grid;
+        gap: 1.6rem;
+        max-width: 46rem;
+        padding: clamp(0.5rem, 2vw, 1.2rem) 0;
+        color: var(--inchiostro);
+      }
+
+      .testata {
+        display: grid;
+        gap: 0.7rem;
+        max-width: none;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--bordo);
+      }
+
+      .testata h2 {
+        font-family: var(--serif);
+        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .codice {
+        margin-left: 0.5rem;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        color: var(--inchiostro);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.06em;
+      }
+
+      .testo {
+        font-size: 0.95rem;
+        color: var(--testo-tenue);
+      }
+
+      .invito {
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 0.2rem;
+      }
+
+      .link {
+        flex: 1 1 18rem;
+        gap: 0.15rem;
+      }
+
+      .link span {
+        color: var(--testo-tenue);
+      }
+
+      .link input {
+        padding: 0.35rem 0;
+        border: 0;
+        border-bottom: 1px solid var(--bordo);
+        border-radius: 0;
+        background: transparent;
+        color: var(--inchiostro-tenue);
+        font-size: 0.82rem;
+        text-overflow: ellipsis;
+      }
+
+      .badge {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        color: var(--testo-tenue);
+        font-size: 0.66rem;
+        letter-spacing: 0.16em;
+      }
+
+      .badge.chiusa {
+        color: #e8a79a;
+      }
+
+      .unisciti {
+        gap: 1.2rem;
+        max-width: 34rem;
+        padding-top: 0.4rem;
+      }
+
+      .unisciti input {
+        flex: 1 1 7rem;
+        padding: 0.35rem 0;
+        border: 0;
+        border-bottom: 1px solid var(--bordo);
+        border-radius: 0;
+        background: transparent;
+        color: var(--inchiostro);
+        font-family: var(--serif);
+        font-size: 1.05rem;
+        letter-spacing: 0.14em;
+      }
+
+      .unisciti input:focus {
+        border-bottom-color: var(--oro);
+        box-shadow: 0 2px 0 -1px var(--oro);
+      }
+
+      .unisciti input::placeholder {
+        color: rgba(242, 232, 213, 0.34);
+        font-style: italic;
+        letter-spacing: 0.02em;
+        text-transform: none;
+      }
+
+      /* I posti sono righe di un registro, non card. */
+      .posti {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        border-top: 1px solid var(--bordo);
+      }
+
+      .posto {
+        grid-template-columns: 2.2rem 1fr auto;
+        gap: 0.9rem;
+        padding: 0.68rem 0.2rem;
+        min-height: 0;
+        border: 0;
+        border-bottom: 1px solid var(--bordo-tenue);
+        border-radius: 0;
+        background: transparent;
+        color: var(--inchiostro-tenue);
+      }
+
+      .posto:hover:not(:disabled) {
+        border-color: var(--bordo-tenue);
+        transform: none;
+        background: rgba(242, 232, 213, 0.04);
+      }
+
+      .posto.occupato {
+        border-style: solid;
+        border-color: var(--bordo-tenue);
+        background: transparent;
+        color: var(--inchiostro);
+      }
+
+      .posto.mio {
+        border-color: var(--bordo-tenue);
+        box-shadow: none;
+      }
+
+      .posto.mio .posto-nome {
+        font-weight: 600;
+      }
+
+      .posto-numero {
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        background: none;
+        place-items: start;
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        color: var(--testo-tenue);
+      }
+
+      .posto-nome {
+        font-family: var(--serif);
+        font-size: 1.02rem;
+        font-weight: 400;
+      }
+
+      .posto-azione {
+        font-size: 0.64rem;
+        letter-spacing: 0.16em;
+        color: var(--testo-tenue);
+      }
+
+      .azioni {
+        padding-top: 1.2rem;
+        border-top: 1px solid var(--bordo);
+      }
+
+      .conteggio,
+      .attesa-creatore,
+      .nota {
+        color: var(--testo-tenue);
+      }
+
+      .errore {
+        padding: 0.7rem 0.9rem;
+        border: 1px solid rgba(143, 50, 38, 0.35);
+        border-radius: 2px;
+        background: rgba(143, 50, 38, 0.07);
+        color: var(--rosso);
+        font-size: 0.85rem;
       }
     `,
   ],
