@@ -68,11 +68,13 @@ class TavoloServiceTest {
 		String verbale = tavolo.verbale(CODICE, creatore);
 
 		assertTrue(verbale.startsWith("<!doctype html>"), verbale);
-		assertTrue(verbale.contains("<th>Giocate</th>"), verbale);
-		assertTrue(verbale.contains("<td>Tu</td>"), verbale);
+		assertTrue(verbale.contains("<th>Iniziali</th>"), verbale);
+		assertTrue(verbale.contains("<th>Finali</th>"), verbale);
+		assertTrue(verbale.contains("<th>Cambi</th>"), verbale);
 		assertTrue(verbale.contains("<td>Bot 1</td>"), verbale);
-		// il gettone del piatto e' gia' fra le fiches giocate di ognuno
-		assertTrue(verbale.contains("<td>Tu</td><td>1</td>"), verbale);
+		// ognuno parte da dieci gettoni
+		assertTrue(verbale.contains("<td>Tu</td><td>10</td>"), verbale);
+		assertFalse(verbale.contains("Classifica"), verbale);
 	}
 
 	@Test
@@ -205,8 +207,10 @@ class TavoloServiceTest {
 		}
 
 		assertTrue(stato.finita(), "la partita non si e' conclusa");
-		assertEquals(4, stato.classifica().size());
-		assertEquals(1, stato.classifica().getFirst().posizione());
+		String verbale = tavolo.verbale(CODICE, creatore);
+		assertTrue(verbale.contains("partita conclusa"), verbale);
+		assertTrue(verbale.contains("<th>Cambi</th>"), verbale);
+		assertFalse(verbale.contains("Classifica"), verbale);
 	}
 
 	@Test

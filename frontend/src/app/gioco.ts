@@ -43,13 +43,6 @@ export type ManoTavolo = {
   bluffRimasti: number;
 };
 
-export type ClassificaTavolo = {
-  posizione: number;
-  nome: string;
-  punteggio: number;
-  fiches: number;
-};
-
 export type StatoTavolo = {
   tuoIndice: number;
   nomeTuo: string;
@@ -58,7 +51,6 @@ export type StatoTavolo = {
   toccaATe: boolean;
   finita: boolean;
   eventi: string[];
-  classifica: ClassificaTavolo[];
   puntataMinima: number;
   puntataMassima: number;
   puoiDichiarare: boolean;

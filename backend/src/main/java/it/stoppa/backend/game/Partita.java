@@ -154,7 +154,7 @@ public final class Partita {
 					giocatore.giocati(), giocatore.incassati(), giocatore.cambi()));
 		}
 		return new RiepilogoPartita(piatto, piattoIniziale, numeroMano, maniTotali(), giocatori.get(cartaro).nome(),
-				finita(), finita() ? classifica() : List.of(), righe);
+				finita(), righe);
 	}
 
 	private void dopoAzione() {

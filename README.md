@@ -76,10 +76,10 @@ posti e l'avvio restano riservati al creatore.
 
 ## Verbale della partita
 
-A partita finita il tavolo offre **Scarica il verbale**: il server prepara un documento
-HTML autonomo con le fiches giocate, vinte, i cambi e quelle rimaste a ogni giocatore,
-più la classifica finale. Serve la propria sessione: `GET /api/tavolo/{codice}/verbale`
-con `X-Sessione`.
+A partita finita il tavolo offre **Esporta documento**: il server prepara un documento
+HTML autonomo con i gettoni iniziali e finali di ogni giocatore e quante volte ha dovuto
+fare un cambio da 10 gettoni. Non esiste una classifica a schermo. Serve la propria
+sessione: `GET /api/tavolo/{codice}/verbale` con `X-Sessione`.
 
 ## Partita salvata
 
@@ -107,7 +107,7 @@ stessa stanza, ognuna con la propria sessione.
   6: 3+3, 7 e 8: 3+2), punto della primiera fino a 55, giro di puntate con passo, vedo e
   rilancio fino a 10 gettoni, piatto pagato un gettone a testa all'inizio della partita,
   gettone al vincitore di ogni mano (o al cartaro se nessuno punta), puntate a debito e
-  cambio automatico da 10 gettoni, classifica finale per punto.
+  cambio automatico da 10 gettoni, documento finale con gettoni e cambi.
 - **Lobby** (`/api/lobby`): stanza con codice di quattro lettere mai riusato, fino a 8
   posti (parte con te e cinque bot), link d'invito, PIN opzionale, chiusura agli esterni,
   ingresso con codice, bot da aggiungere e togliere, avvio. Chi crea la stanza riceve un

@@ -102,11 +102,6 @@ export class Tavolo implements OnInit, OnDestroy {
     this.stacca?.();
   }
 
-  /** Dalla POV alla classifica finale: si passa al tavolo normale. */
-  protected vediTavolo(): void {
-    this.vista.alterna();
-  }
-
   protected descrizione(carta: Carta): string {
     return `${etichettaValore(carta.valore)} di ${etichettaSeme(carta.seme)}`;
   }
@@ -292,7 +287,7 @@ export class Tavolo implements OnInit, OnDestroy {
     }
   }
 
-  /** Il verbale di fine partita: HTML da scaricare, con le fiches di ognuno. */
+  /** Il documento di fine partita: HTML da esportare, con i gettoni di ognuno. */
   protected scaricaVerbale(): void {
     const codice = this.codice();
     this.attesa.set(true);

@@ -8,7 +8,7 @@ import java.util.List;
  * {@code cambi} servono al verbale di fine partita.
  */
 public record RiepilogoPartita(int piatto, int piattoIniziale, int numeroMano, int maniTotali, String cartaro,
-		boolean finita, List<Integer> classifica, List<RigaGiocatore> giocatori) {
+		boolean finita, List<RigaGiocatore> giocatori) {
 
 	public record RigaGiocatore(int indice, String nome, int fiches, int debito, int punteggio, boolean inGioco,
 			int puntata, int giocati, int incassati, int cambi) {

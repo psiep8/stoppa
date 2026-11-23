@@ -587,24 +587,8 @@ button:disabled {
   animation: respiro 2.4s ease-in-out infinite;
 }
 
-.scena .classifica {
+.scena .esporta {
   animation: avanza 0.5s 0.1s var(--molla) backwards;
-}
-
-.scena .classifica .vincitore-nome::after {
-  content: '';
-  display: block;
-  width: 4.5rem;
-  height: 2px;
-  margin-top: 0.55rem;
-  background: var(--oro);
-  transform-origin: left;
-  animation: sotto 0.55s 0.35s var(--molla) backwards;
-}
-
-.scena .classifica li {
-  animation: entra 0.35s var(--molla) backwards;
-  animation-delay: calc(var(--i, 0) * 40ms + 0.2s);
 }
 
 /* --- vista POV: il tavolo di fronte, le carte in mano --- */

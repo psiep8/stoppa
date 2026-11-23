@@ -77,7 +77,9 @@
             @if (!s.finita) {
               <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
             } @else {
-              <button type="button" class="cta" (click)="vediTavolo()">Classifica</button>
+              <button type="button" class="cta" (click)="scaricaVerbale()" [disabled]="attesa()">
+                Esporta Riepilogo Stoppata
+              </button>
             }
           } @else if (s.mano.inDichiarazione) {
             <section class="dichiarazione compatta">
@@ -459,22 +461,13 @@
     </footer>
 
     @if (s.finita) {
-      <section class="pannello classifica">
-        @if (s.classifica[0]; as primo) {
-          <h2 class="vincitore-nome">{{ primo.nome }} vince la partita</h2>
-        }
-        <ol>
-          @for (riga of s.classifica; track riga.nome; let i = $index) {
-            <li [class.vincitore]="riga.posizione === 1" [style.--i]="i">
-              <span class="pos">{{ riga.posizione }}</span>
-              <span class="nome">{{ riga.nome }}</span>
-              <span class="punti">{{ riga.punteggio }} punti</span>
-              <app-pila [quantita]="riga.fiches" [colore]="colore(riga.posizione - 1)" [piccola]="true" />
-            </li>
-          }
-        </ol>
-        <button type="button" class="ghost" (click)="scaricaVerbale()" [disabled]="attesa()">
-          Scarica il verbale
+      <section class="pannello esporta">
+        <p class="esporta-nota">
+          Il documento di fine partita riporta i gettoni iniziali e finali di ognuno e quante volte ha
+          dovuto cambiare e prendere altri 10 gettoni.
+        </p>
+        <button type="button" class="cta" (click)="scaricaVerbale()" [disabled]="attesa()">
+          Esporta Riepilogo Stoppata
         </button>
       </section>
     }

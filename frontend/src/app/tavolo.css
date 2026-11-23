@@ -283,33 +283,20 @@
   flex: 0 0 auto;
 }
 
-/* ---------- classifica ---------- */
+/* ---------- documento finale ---------- */
 
-.classifica {
+.esporta {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.7rem;
   padding: 1rem;
   justify-items: start;
 }
 
-.classifica ol {
-  display: grid;
+.esporta-nota {
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.classifica li {
-  display: grid;
-  grid-template-columns: 1.4rem 1fr auto auto;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 0.55rem;
-  font-size: 0.88rem;
-}
-
-.classifica .punti {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--testo-tenue);
 }
 
 /* ---------- stati ---------- */
@@ -667,31 +654,7 @@
   color: #e8b4a9;
 }
 
-/* Il verbale di fine partita: un pannello, non una card. */
-.scena .classifica .vincitore-nome {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--inchiostro);
-}
-
-.scena .classifica ol {
-  border-top: 1px solid var(--bordo);
-}
-
-.scena .classifica li {
-  padding: 0.55rem 0.1rem;
-  border-bottom: 1px solid var(--bordo-tenue);
-  gap: 0.7rem;
-}
-
-.scena .classifica li.vincitore {
-  background: rgba(185, 139, 46, 0.12);
-  font-weight: 600;
-}
-
-.scena .classifica > .ghost {
-  margin-top: 0.9rem;
+/* Il documento finale: un pannello, non una card. */
+.scena .esporta .cta {
+  justify-self: start;
 }

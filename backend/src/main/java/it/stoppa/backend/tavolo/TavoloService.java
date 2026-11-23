@@ -105,7 +105,7 @@ public class TavoloService {
 				</style>
 				</head>
 				<body>
-				<h1>Stoppa</h1>
+				<h1>Riepilogo Stoppata</h1>
 				""");
 		html.append("<p class=\"nota\">Stanza <strong>").append(escape(accesso.tavolo.codice))
 				.append("</strong> - ").append(riepilogo.maniTotali()).append(" mani - ")
@@ -115,25 +115,20 @@ public class TavoloService {
 				.append(Giocatore.FICHES_INIZIALI).append(".</p>");
 		html.append("""
 				<table>
-				<thead><tr><th>Giocatore</th><th>Giocate</th><th>Vinte</th><th>Cambi</th><th>Rimaste</th><th>Debito</th><th>Punto</th></tr></thead>
+				<thead><tr><th>Giocatore</th><th>Iniziali</th><th>Finali</th><th>Cambi</th><th>Dai cambi</th><th>Giocate</th><th>Vinte</th><th>Debito</th><th>Punto</th></tr></thead>
 				<tbody>
 				""");
 		for (RiepilogoPartita.RigaGiocatore riga : riepilogo.giocatori()) {
-			html.append("<tr><td>").append(escape(riga.nome())).append("</td><td>").append(riga.giocati())
-					.append("</td><td>").append(riga.incassati()).append("</td><td>").append(riga.cambi())
-					.append("</td><td>").append(riga.fiches()).append("</td><td>").append(riga.debito())
-					.append("</td><td>").append(riga.punteggio()).append("</td></tr>");
+			html.append("<tr><td>").append(escape(riga.nome())).append("</td><td>").append(Giocatore.FICHES_INIZIALI)
+					.append("</td><td>").append(riga.fiches()).append("</td><td>").append(riga.cambi())
+					.append("</td><td>").append(riga.cambi() * Giocatore.FICHES_INIZIALI)
+					.append("</td><td>").append(riga.giocati()).append("</td><td>").append(riga.incassati())
+					.append("</td><td>").append(riga.debito()).append("</td><td>").append(riga.punteggio())
+					.append("</td></tr>");
 		}
 		html.append("</tbody></table>");
-		if (riepilogo.finita() && !riepilogo.classifica().isEmpty()) {
-			html.append("<h2>Classifica</h2><ol>");
-			for (int indice : riepilogo.classifica()) {
-				RiepilogoPartita.RigaGiocatore riga = riepilogo.giocatori().get(indice);
-				html.append("<li><strong>").append(escape(riga.nome())).append("</strong> - ")
-						.append(riga.punteggio()).append(" punti - ").append(riga.fiches()).append(" fiches</li>");
-			}
-			html.append("</ol>");
-		}
+		html.append("<p class=\"nota\">Cambi: quante volte il giocatore e' rimasto senza gettoni e ha ricevuto ")
+				.append("un nuovo pacco da ").append(Giocatore.FICHES_INIZIALI).append(".</p>");
 		html.append("<footer><p class=\"nota\">Piatto rimasto: ").append(riepilogo.piatto())
 				.append(" - fiches virtuali, nessun denaro reale - ").append(LocalDate.now()).append("</p></footer>");
 		html.append("</body></html>");
@@ -446,19 +441,8 @@ public class TavoloService {
 				&& Punteggio.calcola(mano.carteDi(indice)) >= mano.dichiarazione();
 
 		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
-				partita.finita(), List.copyOf(tavolo.eventi), partita.finita() ? classifica(tavolo) : List.of(),
-				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere, puoiContestare,
-				Punteggio.calcola(mano.carteDi(indice)));
-	}
-
-	private List<ClassificaTavolo> classifica(PartitaTavolo tavolo) {
-		List<ClassificaTavolo> righe = new ArrayList<>();
-		int posizione = 1;
-		for (int indice : tavolo.partita.classifica()) {
-			Giocatore giocatore = tavolo.partita.giocatori().get(indice);
-			righe.add(new ClassificaTavolo(posizione++, giocatore.nome(), giocatore.punteggio(), giocatore.fiches()));
-		}
-		return righe;
+				partita.finita(), List.copyOf(tavolo.eventi), mano.puntataMassima() + 1, Mano.TETTO_PUNTATA,
+				puoiDichiarare, puoiRispondere, puoiContestare, Punteggio.calcola(mano.carteDi(indice)));
 	}
 
 	private static List<CartaTavolo> carte(List<it.stoppa.backend.game.Carta> carte) {
