@@ -1,0 +1,3235 @@
+{
+  "meta": {
+    "base": "http://localhost:8081",
+    "codice": "NFWY",
+    "seed": 11,
+    "profilo": "bluff",
+    "nomi": [
+      "Peppa",
+      "Bot 1",
+      "Bot 2",
+      "Bot 3",
+      "Marta"
+    ],
+    "mani_giocate": 5,
+    "partite": 2,
+    "snapshot_duo": {
+      "partita": 1,
+      "mano": 1,
+      "Peppa": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 14,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": true,
+            "diTurno": true,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "RE",
+            "file": "bastoni-re",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "RE",
+            "file": "denari-re",
+            "punti": 10
+          },
+          {
+            "seme": "SPADE",
+            "valore": "QUATTRO",
+            "file": "spade-04",
+            "punti": 14
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 5,
+          "puntataMassima": 3,
+          "chiusa": false,
+          "senzaPuntate": false,
+          "vincitori": [],
+          "carteVincenti": [],
+          "dichiarante": "",
+          "puntiVincenti": 0,
+          "inDichiarazione": false,
+          "dichiarazione": 0,
+          "esitoDichiarazione": "",
+          "bluffRimasti": 3
+        },
+        "eventi": [
+          "Bot 3 vede",
+          "Bot 2 vede",
+          "Bot 1 vede",
+          "Punti 3",
+          "Carte distribuite · 3 mani"
+        ]
+      },
+      "Marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": true,
+        "finita": false,
+        "tuoiPunti": 15,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": true,
+            "diTurno": true,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "CINQUE",
+            "file": "bastoni-05",
+            "punti": 15
+          },
+          {
+            "seme": "SPADE",
+            "valore": "TRE",
+            "file": "spade-03",
+            "punti": 13
+          },
+          {
+            "seme": "DENARI",
+            "valore": "FANTE",
+            "file": "denari-fante",
+            "punti": 10
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 5,
+          "puntataMassima": 3,
+          "chiusa": false,
+          "senzaPuntate": false,
+          "vincitori": [],
+          "carteVincenti": [],
+          "dichiarante": "",
+          "puntiVincenti": 0,
+          "inDichiarazione": false,
+          "dichiarazione": 0,
+          "esitoDichiarazione": "",
+          "bluffRimasti": 3
+        },
+        "eventi": [
+          "Bot 3 vede",
+          "Bot 2 vede",
+          "Bot 1 vede",
+          "Punti 3",
+          "Carte distribuite · 3 mani"
+        ]
+      }
+    }
+  },
+  "esiti": [
+    {
+      "nome": "lobby da 5 giocatori",
+      "ok": true,
+      "dettaglio": "['Peppa', 'Bot 1', 'Bot 2', 'Bot 3', 'Marta']"
+    },
+    {
+      "nome": "prova: codice stanza inesistente",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': 'stanza ZZZZ non trovata'}"
+    },
+    {
+      "nome": "prova: prossima mano con la mano aperta",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': \"la mano 1 e' ancora aperta\"}"
+    },
+    {
+      "nome": "prova: nuova partita da chi non crea la lobby",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': \"solo chi crea la lobby puo' ricominciare\"}"
+    },
+    {
+      "nome": "prova: puntata fuori dal tetto",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': 'si punta da 1 a 10 gettoni, non 11'}"
+    },
+    {
+      "nome": "prova: dichiarazione fuori dal tetto",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': \"non c'e' una dichiarazione aperta\"}"
+    },
+    {
+      "nome": "prova: risposta senza dichiarazione aperta",
+      "ok": true,
+      "dettaglio": "status 409: {'errore': \"non c'e' una dichiarazione aperta\"}"
+    },
+    {
+      "nome": "carte in mano a Peppa coerenti (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Peppa coerente con le sue carte (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "API 14 vs calcolo 14"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "carte in mano a Marta coerenti (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Marta coerente con le sue carte (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "API 15 vs calcolo 15"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 1)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "conti conservati dopo la mano 1 (partita 1)",
+      "ok": true,
+      "dettaglio": "fiches 46 + piatto 4 = 50 + 10*0"
+    },
+    {
+      "nome": "fiches coerenti per Peppa dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Peppa dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "fiches coerenti per Bot 1 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 22 vs 10-4+16+10*0 = 22"
+    },
+    {
+      "nome": "debito coerente per Bot 1 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 22"
+    },
+    {
+      "nome": "fiches coerenti per Bot 2 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Bot 2 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "fiches coerenti per Bot 3 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Bot 3 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "fiches coerenti per Marta dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Marta dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "carte in mano a Peppa coerenti (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Peppa coerente con le sue carte (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "API 18 vs calcolo 18"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "carte in mano a Marta coerenti (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Marta coerente con le sue carte (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "API 15 vs calcolo 15"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 2)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "conti conservati dopo la mano 2 (partita 1)",
+      "ok": true,
+      "dettaglio": "fiches 47 + piatto 3 = 50 + 10*0"
+    },
+    {
+      "nome": "fiches coerenti per Peppa dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 19 vs 10-8+17+10*0 = 19"
+    },
+    {
+      "nome": "debito coerente per Peppa dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 19"
+    },
+    {
+      "nome": "fiches coerenti per Bot 1 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 18 vs 10-8+16+10*0 = 18"
+    },
+    {
+      "nome": "debito coerente per Bot 1 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 18"
+    },
+    {
+      "nome": "fiches coerenti per Bot 2 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 2 vs 10-8+0+10*0 = 2"
+    },
+    {
+      "nome": "debito coerente per Bot 2 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 2"
+    },
+    {
+      "nome": "fiches coerenti per Bot 3 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Bot 3 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "fiches coerenti per Marta dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 2 vs 10-8+0+10*0 = 2"
+    },
+    {
+      "nome": "debito coerente per Marta dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 2"
+    },
+    {
+      "nome": "carte in mano a Peppa coerenti (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "2 carte, numeroCarte 2"
+    },
+    {
+      "nome": "punto di Peppa coerente con le sue carte (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "API 18 vs calcolo 18"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "10 carte sul tavolo"
+    },
+    {
+      "nome": "carte in mano a Marta coerenti (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "2 carte, numeroCarte 2"
+    },
+    {
+      "nome": "punto di Marta coerente con le sue carte (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "API 18 vs calcolo 18"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 1, mano 3)",
+      "ok": true,
+      "dettaglio": "10 carte sul tavolo"
+    },
+    {
+      "nome": "conti conservati dopo la mano 3 (partita 1)",
+      "ok": true,
+      "dettaglio": "fiches 48 + piatto 2 = 50 + 10*0"
+    },
+    {
+      "nome": "fiches coerenti per Peppa dopo la mano 3",
+      "ok": true,
+      "dettaglio": "fiches 16 vs 10-11+17+10*0 = 16"
+    },
+    {
+      "nome": "debito coerente per Peppa dopo la mano 3",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 16"
+    },
+    {
+      "nome": "fiches coerenti per Bot 1 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "fiches 18 vs 10-8+16+10*0 = 18"
+    },
+    {
+      "nome": "debito coerente per Bot 1 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 18"
+    },
+    {
+      "nome": "fiches coerenti per Bot 2 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "fiches 2 vs 10-8+0+10*0 = 2"
+    },
+    {
+      "nome": "debito coerente per Bot 2 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 2"
+    },
+    {
+      "nome": "fiches coerenti per Bot 3 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "fiches 3 vs 10-7+0+10*0 = 3"
+    },
+    {
+      "nome": "debito coerente per Bot 3 dopo la mano 3",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 3"
+    },
+    {
+      "nome": "fiches coerenti per Marta dopo la mano 3",
+      "ok": true,
+      "dettaglio": "fiches 9 vs 10-11+10+10*0 = 9"
+    },
+    {
+      "nome": "debito coerente per Marta dopo la mano 3",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 9"
+    },
+    {
+      "nome": "piatto distribuito a fine partita 1",
+      "ok": true,
+      "dettaglio": "piatto 0"
+    },
+    {
+      "nome": "conti conservati a fine partita 1",
+      "ok": true,
+      "dettaglio": "fiches 50 = 50 + 10*0"
+    },
+    {
+      "nome": "carte in mano a Peppa coerenti (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Peppa coerente con le sue carte (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "API 21 vs calcolo 21"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "carte in mano a Marta coerenti (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Marta coerente con le sue carte (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "API 21 vs calcolo 21"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 2, mano 1)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "conti conservati dopo la mano 1 (partita 2)",
+      "ok": true,
+      "dettaglio": "fiches 46 + piatto 4 = 50 + 10*0"
+    },
+    {
+      "nome": "fiches coerenti per Peppa dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 7 vs 10-3+0+10*0 = 7"
+    },
+    {
+      "nome": "debito coerente per Peppa dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 7"
+    },
+    {
+      "nome": "fiches coerenti per Bot 1 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 7 vs 10-3+0+10*0 = 7"
+    },
+    {
+      "nome": "debito coerente per Bot 1 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 7"
+    },
+    {
+      "nome": "fiches coerenti per Bot 2 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 16 vs 10-3+9+10*0 = 16"
+    },
+    {
+      "nome": "debito coerente per Bot 2 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 16"
+    },
+    {
+      "nome": "fiches coerenti per Bot 3 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 9 vs 10-1+0+10*0 = 9"
+    },
+    {
+      "nome": "debito coerente per Bot 3 dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 9"
+    },
+    {
+      "nome": "fiches coerenti per Marta dopo la mano 1",
+      "ok": true,
+      "dettaglio": "fiches 7 vs 10-3+0+10*0 = 7"
+    },
+    {
+      "nome": "debito coerente per Marta dopo la mano 1",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 7"
+    },
+    {
+      "nome": "carte in mano a Peppa coerenti (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Peppa coerente con le sue carte (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "API 33 vs calcolo 33"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "carte in mano a Marta coerenti (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "3 carte, numeroCarte 3"
+    },
+    {
+      "nome": "punto di Marta coerente con le sue carte (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "API 16 vs calcolo 16"
+    },
+    {
+      "nome": "carte della mano coerenti (partita 2, mano 2)",
+      "ok": true,
+      "dettaglio": "15 carte sul tavolo"
+    },
+    {
+      "nome": "conti conservati dopo la mano 2 (partita 2)",
+      "ok": true,
+      "dettaglio": "fiches 47 + piatto 3 = 50 + 10*0"
+    },
+    {
+      "nome": "fiches coerenti per Peppa dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 9 vs 10-4+3+10*0 = 9"
+    },
+    {
+      "nome": "debito coerente per Peppa dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 9"
+    },
+    {
+      "nome": "fiches coerenti per Bot 1 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 7 vs 10-3+0+10*0 = 7"
+    },
+    {
+      "nome": "debito coerente per Bot 1 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 7"
+    },
+    {
+      "nome": "fiches coerenti per Bot 2 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 16 vs 10-3+9+10*0 = 16"
+    },
+    {
+      "nome": "debito coerente per Bot 2 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 16"
+    },
+    {
+      "nome": "fiches coerenti per Bot 3 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 9 vs 10-1+0+10*0 = 9"
+    },
+    {
+      "nome": "debito coerente per Bot 3 dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 9"
+    },
+    {
+      "nome": "fiches coerenti per Marta dopo la mano 2",
+      "ok": true,
+      "dettaglio": "fiches 6 vs 10-4+0+10*0 = 6"
+    },
+    {
+      "nome": "debito coerente per Marta dopo la mano 2",
+      "ok": true,
+      "dettaglio": "debito 0 fiches 6"
+    },
+    {
+      "nome": "carte di Peppa senza duplicati nella partita 1",
+      "ok": true,
+      "dettaglio": "8 carte viste, 8 distinte"
+    },
+    {
+      "nome": "carte totali di Peppa nella partita 1",
+      "ok": true,
+      "dettaglio": "8 carte (attese 8 con 5 giocatori)"
+    },
+    {
+      "nome": "carte di Marta senza duplicati nella partita 1",
+      "ok": true,
+      "dettaglio": "8 carte viste, 8 distinte"
+    },
+    {
+      "nome": "carte totali di Marta nella partita 1",
+      "ok": true,
+      "dettaglio": "8 carte (attese 8 con 5 giocatori)"
+    },
+    {
+      "nome": "Peppa e Marta non hanno carte in comune nella partita 1",
+      "ok": true,
+      "dettaglio": "carte condivise: []"
+    },
+    {
+      "nome": "carte di Peppa senza duplicati nella partita 2",
+      "ok": true,
+      "dettaglio": "6 carte viste, 6 distinte"
+    },
+    {
+      "nome": "carte totali di Peppa nella partita 2",
+      "ok": true,
+      "dettaglio": "6 carte (attese 6 con 5 giocatori)"
+    },
+    {
+      "nome": "carte di Marta senza duplicati nella partita 2",
+      "ok": true,
+      "dettaglio": "6 carte viste, 6 distinte"
+    },
+    {
+      "nome": "carte totali di Marta nella partita 2",
+      "ok": true,
+      "dettaglio": "6 carte (attese 6 con 5 giocatori)"
+    },
+    {
+      "nome": "Peppa e Marta non hanno carte in comune nella partita 2",
+      "ok": true,
+      "dettaglio": "carte condivise: []"
+    },
+    {
+      "nome": "punti del vincitore coerenti (mano 1)",
+      "ok": true,
+      "dettaglio": "35 vs 35"
+    },
+    {
+      "nome": "punti del vincitore coerenti (mano 2)",
+      "ok": true,
+      "dettaglio": "18 vs 18"
+    },
+    {
+      "nome": "punti del vincitore coerenti (mano 3)",
+      "ok": true,
+      "dettaglio": "18 vs 18"
+    },
+    {
+      "nome": "punti del vincitore coerenti (mano 1)",
+      "ok": true,
+      "dettaglio": "34 vs 34"
+    },
+    {
+      "nome": "punti del vincitore coerenti (mano 2)",
+      "ok": true,
+      "dettaglio": "33 vs 33"
+    }
+  ],
+  "azioni": [
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "punta",
+      "gettoni": 3,
+      "massima": 0,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 3,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 14,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 15,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 14,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 15,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 14,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 15,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 14,
+      "verita": 14,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 4,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 4,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "contesta",
+      "dichiarazione": 14,
+      "mioPunto": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "punta",
+      "gettoni": 2,
+      "massima": 1,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Peppa",
+      "mossa": "punta",
+      "gettoni": 3,
+      "massima": 2,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 3,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 18,
+      "verita": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "chi": "Marta",
+      "mossa": "contesta",
+      "dichiarazione": 18,
+      "mioPunto": 18,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "punta",
+      "gettoni": 2,
+      "massima": 0,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 2,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Marta",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "chi": "Peppa",
+      "mossa": "dichiara",
+      "valore": 21,
+      "verita": 21,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "punta",
+      "gettoni": 1,
+      "massima": 0,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "vedo",
+      "gettoni": null,
+      "massima": 1,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 16,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 33,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 16,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 33,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "dichiara",
+      "valore": 55,
+      "verita": 16,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "accetta",
+      "dichiarazione": 55,
+      "mioPunto": 33,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Marta",
+      "mossa": "dichiara",
+      "valore": 16,
+      "verita": 16,
+      "status": 200,
+      "errore": null
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "chi": "Peppa",
+      "mossa": "contesta",
+      "dichiarazione": 16,
+      "mioPunto": 33,
+      "status": 200,
+      "errore": null
+    }
+  ],
+  "giri": [
+    {
+      "partita": 1,
+      "mano": 1,
+      "stato_mano": {
+        "numero": 1,
+        "maniTotali": 3,
+        "cartaro": "Peppa",
+        "piatto": 4,
+        "puntataMassima": 3,
+        "chiusa": true,
+        "senzaPuntate": false,
+        "vincitori": [
+          "Bot 1"
+        ],
+        "carteVincenti": [
+          {
+            "seme": "COPPE",
+            "valore": "QUATTRO",
+            "file": "coppe-04",
+            "punti": 14
+          },
+          {
+            "seme": "COPPE",
+            "valore": "SETTE",
+            "file": "coppe-07",
+            "punti": 21
+          },
+          {
+            "seme": "SPADE",
+            "valore": "SEI",
+            "file": "spade-06",
+            "punti": 18
+          }
+        ],
+        "dichiarante": "Peppa",
+        "puntiVincenti": 35,
+        "inDichiarazione": false,
+        "dichiarazione": 14,
+        "esitoDichiarazione": "non-sei-buono",
+        "bluffRimasti": 0
+      },
+      "stato_fine": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 14,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 22,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "RE",
+            "file": "bastoni-re",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "RE",
+            "file": "denari-re",
+            "punti": 10
+          },
+          {
+            "seme": "SPADE",
+            "valore": "QUATTRO",
+            "file": "spade-04",
+            "punti": 14
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 4,
+          "puntataMassima": 3,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Bot 1"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "COPPE",
+              "valore": "QUATTRO",
+              "file": "coppe-04",
+              "punti": 14
+            },
+            {
+              "seme": "COPPE",
+              "valore": "SETTE",
+              "file": "coppe-07",
+              "punti": 21
+            },
+            {
+              "seme": "SPADE",
+              "valore": "SEI",
+              "file": "spade-06",
+              "punti": 18
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 35,
+          "inDichiarazione": false,
+          "dichiarazione": 14,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 1: vince Bot 1",
+          "Bot 3 contesta",
+          "Dichiari 14",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 1 accetta",
+          "Bot 2 accetta",
+          "Bot 3 accetta"
+        ]
+      },
+      "stato_fine_marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 15,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 22,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "CINQUE",
+            "file": "bastoni-05",
+            "punti": 15
+          },
+          {
+            "seme": "SPADE",
+            "valore": "TRE",
+            "file": "spade-03",
+            "punti": 13
+          },
+          {
+            "seme": "DENARI",
+            "valore": "FANTE",
+            "file": "denari-fante",
+            "punti": 10
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 4,
+          "puntataMassima": 3,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Bot 1"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "COPPE",
+              "valore": "QUATTRO",
+              "file": "coppe-04",
+              "punti": 14
+            },
+            {
+              "seme": "COPPE",
+              "valore": "SETTE",
+              "file": "coppe-07",
+              "punti": 21
+            },
+            {
+              "seme": "SPADE",
+              "valore": "SEI",
+              "file": "spade-06",
+              "punti": 18
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 35,
+          "inDichiarazione": false,
+          "dichiarazione": 14,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 1: vince Bot 1",
+          "Bot 3 contesta",
+          "Dichiari 14",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 1 accetta",
+          "Bot 2 accetta",
+          "Bot 3 accetta"
+        ]
+      },
+      "riepilogo": {
+        "piatto": 4,
+        "piattoIniziale": 5,
+        "numeroMano": 1,
+        "maniTotali": 3,
+        "cartaro": "Peppa",
+        "finita": false,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 14,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 22,
+            "debito": 0,
+            "punteggio": 35,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 4,
+            "incassati": 16,
+            "cambi": 0
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 26,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 22,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 15,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          }
+        ]
+      },
+      "eventi": [
+        "Mano 1: vince Bot 1",
+        "Bot 3 contesta",
+        "Dichiari 14",
+        "Tocca di nuovo a Peppa",
+        "Accetti",
+        "Bot 1 accetta",
+        "Bot 2 accetta",
+        "Bot 3 accetta",
+        "Dichiari 55",
+        "Tocca di nuovo a Peppa"
+      ]
+    },
+    {
+      "partita": 1,
+      "mano": 2,
+      "stato_mano": {
+        "numero": 2,
+        "maniTotali": 3,
+        "cartaro": "Bot 1",
+        "piatto": 3,
+        "puntataMassima": 4,
+        "chiusa": true,
+        "senzaPuntate": false,
+        "vincitori": [
+          "Peppa"
+        ],
+        "carteVincenti": [
+          {
+            "seme": "BASTONI",
+            "valore": "FANTE",
+            "file": "bastoni-fante",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "SEI",
+            "file": "denari-06",
+            "punti": 18
+          },
+          {
+            "seme": "SPADE",
+            "valore": "CINQUE",
+            "file": "spade-05",
+            "punti": 15
+          }
+        ],
+        "dichiarante": "Bot 2",
+        "puntiVincenti": 18,
+        "inDichiarazione": false,
+        "dichiarazione": 14,
+        "esitoDichiarazione": "non-sei-buono",
+        "bluffRimasti": 3
+      },
+      "stato_fine": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 18,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 19,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "FANTE",
+            "file": "bastoni-fante",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "SEI",
+            "file": "denari-06",
+            "punti": 18
+          },
+          {
+            "seme": "SPADE",
+            "valore": "CINQUE",
+            "file": "spade-05",
+            "punti": 15
+          }
+        ],
+        "mano": {
+          "numero": 2,
+          "maniTotali": 3,
+          "cartaro": "Bot 1",
+          "piatto": 3,
+          "puntataMassima": 4,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Peppa"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "BASTONI",
+              "valore": "FANTE",
+              "file": "bastoni-fante",
+              "punti": 10
+            },
+            {
+              "seme": "DENARI",
+              "valore": "SEI",
+              "file": "denari-06",
+              "punti": 18
+            },
+            {
+              "seme": "SPADE",
+              "valore": "CINQUE",
+              "file": "spade-05",
+              "punti": 15
+            }
+          ],
+          "dichiarante": "Bot 2",
+          "puntiVincenti": 18,
+          "inDichiarazione": false,
+          "dichiarazione": 14,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 3
+        },
+        "eventi": [
+          "Mano 2: vince Peppa",
+          "Contesti",
+          "Bot 1 accetta",
+          "Bot 2 dichiara 14",
+          "Bot 1 vede",
+          "Vedi",
+          "Vedi",
+          "Bot 3 passa"
+        ]
+      },
+      "stato_fine_marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 15,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 2,
+            "debito": 0,
+            "puntata": 4,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "SPADE",
+            "valore": "FANTE",
+            "file": "spade-fante",
+            "punti": 10
+          },
+          {
+            "seme": "COPPE",
+            "valore": "FANTE",
+            "file": "coppe-fante",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "CINQUE",
+            "file": "denari-05",
+            "punti": 15
+          }
+        ],
+        "mano": {
+          "numero": 2,
+          "maniTotali": 3,
+          "cartaro": "Bot 1",
+          "piatto": 3,
+          "puntataMassima": 4,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Peppa"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "BASTONI",
+              "valore": "FANTE",
+              "file": "bastoni-fante",
+              "punti": 10
+            },
+            {
+              "seme": "DENARI",
+              "valore": "SEI",
+              "file": "denari-06",
+              "punti": 18
+            },
+            {
+              "seme": "SPADE",
+              "valore": "CINQUE",
+              "file": "spade-05",
+              "punti": 15
+            }
+          ],
+          "dichiarante": "Bot 2",
+          "puntiVincenti": 18,
+          "inDichiarazione": false,
+          "dichiarazione": 14,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 3
+        },
+        "eventi": [
+          "Mano 2: vince Peppa",
+          "Contesti",
+          "Bot 1 accetta",
+          "Bot 2 dichiara 14",
+          "Bot 1 vede",
+          "Vedi",
+          "Vedi",
+          "Bot 3 passa"
+        ]
+      },
+      "riepilogo": {
+        "piatto": 3,
+        "piattoIniziale": 5,
+        "numeroMano": 2,
+        "maniTotali": 3,
+        "cartaro": "Bot 1",
+        "finita": false,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 19,
+            "debito": 0,
+            "punteggio": 29,
+            "inGioco": true,
+            "puntata": 4,
+            "giocati": 8,
+            "incassati": 17,
+            "cambi": 0
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "punteggio": 45,
+            "inGioco": true,
+            "puntata": 4,
+            "giocati": 8,
+            "incassati": 16,
+            "cambi": 0
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "punteggio": 39,
+            "inGioco": true,
+            "puntata": 4,
+            "giocati": 8,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 26,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 2,
+            "debito": 0,
+            "punteggio": 25,
+            "inGioco": true,
+            "puntata": 4,
+            "giocati": 8,
+            "incassati": 0,
+            "cambi": 0
+          }
+        ]
+      },
+      "eventi": [
+        "Mano 2: vince Peppa",
+        "Contesti",
+        "Bot 1 accetta",
+        "Bot 2 dichiara 14",
+        "Bot 1 vede",
+        "Vedi",
+        "Vedi",
+        "Bot 3 passa",
+        "Bot 2 rilancia a 4",
+        "Bot 1 punta 3"
+      ]
+    },
+    {
+      "partita": 1,
+      "mano": 3,
+      "stato_mano": {
+        "numero": 3,
+        "maniTotali": 3,
+        "cartaro": "Bot 2",
+        "piatto": 2,
+        "puntataMassima": 3,
+        "chiusa": true,
+        "senzaPuntate": false,
+        "vincitori": [
+          "Marta"
+        ],
+        "carteVincenti": [
+          {
+            "seme": "BASTONI",
+            "valore": "SEI",
+            "file": "bastoni-06",
+            "punti": 18
+          },
+          {
+            "seme": "COPPE",
+            "valore": "DUE",
+            "file": "coppe-02",
+            "punti": 12
+          }
+        ],
+        "dichiarante": "Peppa",
+        "puntiVincenti": 18,
+        "inDichiarazione": false,
+        "dichiarazione": 18,
+        "esitoDichiarazione": "buono-di-mano",
+        "bluffRimasti": 0
+      },
+      "stato_fine": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 18,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 16,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 2,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 3,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 2,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "COPPE",
+            "valore": "SEI",
+            "file": "coppe-06",
+            "punti": 18
+          },
+          {
+            "seme": "SPADE",
+            "valore": "CAVALLO",
+            "file": "spade-cavallo",
+            "punti": 10
+          }
+        ],
+        "mano": {
+          "numero": 3,
+          "maniTotali": 3,
+          "cartaro": "Bot 2",
+          "piatto": 2,
+          "puntataMassima": 3,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Marta"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "BASTONI",
+              "valore": "SEI",
+              "file": "bastoni-06",
+              "punti": 18
+            },
+            {
+              "seme": "COPPE",
+              "valore": "DUE",
+              "file": "coppe-02",
+              "punti": 12
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 18,
+          "inDichiarazione": false,
+          "dichiarazione": 18,
+          "esitoDichiarazione": "buono-di-mano",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 3: vince Marta",
+          "Contesti",
+          "Bot 3 accetta",
+          "Dichiari 18",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 3 accetta",
+          "Dichiari 55"
+        ]
+      },
+      "stato_fine_marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 18,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 2,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 3,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 2,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 3,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 2,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "BASTONI",
+            "valore": "SEI",
+            "file": "bastoni-06",
+            "punti": 18
+          },
+          {
+            "seme": "COPPE",
+            "valore": "DUE",
+            "file": "coppe-02",
+            "punti": 12
+          }
+        ],
+        "mano": {
+          "numero": 3,
+          "maniTotali": 3,
+          "cartaro": "Bot 2",
+          "piatto": 2,
+          "puntataMassima": 3,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Marta"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "BASTONI",
+              "valore": "SEI",
+              "file": "bastoni-06",
+              "punti": 18
+            },
+            {
+              "seme": "COPPE",
+              "valore": "DUE",
+              "file": "coppe-02",
+              "punti": 12
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 18,
+          "inDichiarazione": false,
+          "dichiarazione": 18,
+          "esitoDichiarazione": "buono-di-mano",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 3: vince Marta",
+          "Contesti",
+          "Bot 3 accetta",
+          "Dichiari 18",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 3 accetta",
+          "Dichiari 55"
+        ]
+      },
+      "riepilogo": {
+        "piatto": 2,
+        "piattoIniziale": 5,
+        "numeroMano": 3,
+        "maniTotali": 3,
+        "cartaro": "Bot 2",
+        "finita": false,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 16,
+            "debito": 0,
+            "punteggio": 39,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 11,
+            "incassati": 17,
+            "cambi": 0
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 18,
+            "debito": 0,
+            "punteggio": 51,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 8,
+            "incassati": 16,
+            "cambi": 0
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 2,
+            "debito": 0,
+            "punteggio": 39,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 8,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 3,
+            "debito": 0,
+            "punteggio": 38,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 7,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 9,
+            "debito": 0,
+            "punteggio": 33,
+            "inGioco": true,
+            "puntata": 3,
+            "giocati": 11,
+            "incassati": 10,
+            "cambi": 0
+          }
+        ]
+      },
+      "eventi": [
+        "Mano 3: vince Marta",
+        "Contesti",
+        "Bot 3 accetta",
+        "Dichiari 18",
+        "Tocca di nuovo a Peppa",
+        "Accetti",
+        "Bot 3 accetta",
+        "Dichiari 55",
+        "Tocca di nuovo a Peppa",
+        "Accetti"
+      ]
+    },
+    {
+      "partita": 2,
+      "mano": 1,
+      "stato_mano": {
+        "numero": 1,
+        "maniTotali": 3,
+        "cartaro": "Peppa",
+        "piatto": 4,
+        "puntataMassima": 2,
+        "chiusa": true,
+        "senzaPuntate": false,
+        "vincitori": [
+          "Bot 2"
+        ],
+        "carteVincenti": [
+          {
+            "seme": "SPADE",
+            "valore": "ASSO",
+            "file": "spade-asso",
+            "punti": 16
+          },
+          {
+            "seme": "SPADE",
+            "valore": "SEI",
+            "file": "spade-06",
+            "punti": 18
+          },
+          {
+            "seme": "BASTONI",
+            "valore": "QUATTRO",
+            "file": "bastoni-04",
+            "punti": 14
+          }
+        ],
+        "dichiarante": "Peppa",
+        "puntiVincenti": 34,
+        "inDichiarazione": false,
+        "dichiarazione": 21,
+        "esitoDichiarazione": "non-sei-buono",
+        "bluffRimasti": 0
+      },
+      "stato_fine": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 21,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "DENARI",
+            "valore": "SEI",
+            "file": "denari-06",
+            "punti": 18
+          },
+          {
+            "seme": "COPPE",
+            "valore": "SETTE",
+            "file": "coppe-07",
+            "punti": 21
+          },
+          {
+            "seme": "SPADE",
+            "valore": "CAVALLO",
+            "file": "spade-cavallo",
+            "punti": 10
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 4,
+          "puntataMassima": 2,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Bot 2"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "SPADE",
+              "valore": "ASSO",
+              "file": "spade-asso",
+              "punti": 16
+            },
+            {
+              "seme": "SPADE",
+              "valore": "SEI",
+              "file": "spade-06",
+              "punti": 18
+            },
+            {
+              "seme": "BASTONI",
+              "valore": "QUATTRO",
+              "file": "bastoni-04",
+              "punti": 14
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 34,
+          "inDichiarazione": false,
+          "dichiarazione": 21,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 1: vince Bot 2",
+          "Bot 2 contesta",
+          "Dichiari 21",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 1 accetta",
+          "Bot 2 accetta",
+          "Dichiari 55"
+        ]
+      },
+      "stato_fine_marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 21,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 2,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "DENARI",
+            "valore": "SETTE",
+            "file": "denari-07",
+            "punti": 21
+          },
+          {
+            "seme": "BASTONI",
+            "valore": "RE",
+            "file": "bastoni-re",
+            "punti": 10
+          },
+          {
+            "seme": "SPADE",
+            "valore": "DUE",
+            "file": "spade-02",
+            "punti": 12
+          }
+        ],
+        "mano": {
+          "numero": 1,
+          "maniTotali": 3,
+          "cartaro": "Peppa",
+          "piatto": 4,
+          "puntataMassima": 2,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Bot 2"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "SPADE",
+              "valore": "ASSO",
+              "file": "spade-asso",
+              "punti": 16
+            },
+            {
+              "seme": "SPADE",
+              "valore": "SEI",
+              "file": "spade-06",
+              "punti": 18
+            },
+            {
+              "seme": "BASTONI",
+              "valore": "QUATTRO",
+              "file": "bastoni-04",
+              "punti": 14
+            }
+          ],
+          "dichiarante": "Peppa",
+          "puntiVincenti": 34,
+          "inDichiarazione": false,
+          "dichiarazione": 21,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 1: vince Bot 2",
+          "Bot 2 contesta",
+          "Dichiari 21",
+          "Tocca di nuovo a Peppa",
+          "Accetti",
+          "Bot 1 accetta",
+          "Bot 2 accetta",
+          "Dichiari 55"
+        ]
+      },
+      "riepilogo": {
+        "piatto": 4,
+        "piattoIniziale": 5,
+        "numeroMano": 1,
+        "maniTotali": 3,
+        "cartaro": "Peppa",
+        "finita": false,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 7,
+            "debito": 0,
+            "punteggio": 21,
+            "inGioco": true,
+            "puntata": 2,
+            "giocati": 3,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "punteggio": 21,
+            "inGioco": true,
+            "puntata": 2,
+            "giocati": 3,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "punteggio": 34,
+            "inGioco": true,
+            "puntata": 2,
+            "giocati": 3,
+            "incassati": 9,
+            "cambi": 0
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "punteggio": 28,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 1,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 7,
+            "debito": 0,
+            "punteggio": 21,
+            "inGioco": true,
+            "puntata": 2,
+            "giocati": 3,
+            "incassati": 0,
+            "cambi": 0
+          }
+        ]
+      },
+      "eventi": [
+        "Mano 1: vince Bot 2",
+        "Bot 2 contesta",
+        "Dichiari 21",
+        "Tocca di nuovo a Peppa",
+        "Accetti",
+        "Bot 1 accetta",
+        "Bot 2 accetta",
+        "Dichiari 55",
+        "Tocca di nuovo a Peppa",
+        "Accetti"
+      ]
+    },
+    {
+      "partita": 2,
+      "mano": 2,
+      "stato_mano": {
+        "numero": 2,
+        "maniTotali": 3,
+        "cartaro": "Bot 1",
+        "piatto": 3,
+        "puntataMassima": 1,
+        "chiusa": true,
+        "senzaPuntate": false,
+        "vincitori": [
+          "Peppa"
+        ],
+        "carteVincenti": [
+          {
+            "seme": "DENARI",
+            "valore": "RE",
+            "file": "denari-re",
+            "punti": 10
+          },
+          {
+            "seme": "COPPE",
+            "valore": "SEI",
+            "file": "coppe-06",
+            "punti": 18
+          },
+          {
+            "seme": "COPPE",
+            "valore": "CINQUE",
+            "file": "coppe-05",
+            "punti": 15
+          }
+        ],
+        "dichiarante": "Marta",
+        "puntiVincenti": 33,
+        "inDichiarazione": false,
+        "dichiarazione": 16,
+        "esitoDichiarazione": "non-sei-buono",
+        "bluffRimasti": 0
+      },
+      "stato_fine": {
+        "giocatore": "Peppa",
+        "tuoIndice": 0,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 33,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 1,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 1,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "DENARI",
+            "valore": "RE",
+            "file": "denari-re",
+            "punti": 10
+          },
+          {
+            "seme": "COPPE",
+            "valore": "SEI",
+            "file": "coppe-06",
+            "punti": 18
+          },
+          {
+            "seme": "COPPE",
+            "valore": "CINQUE",
+            "file": "coppe-05",
+            "punti": 15
+          }
+        ],
+        "mano": {
+          "numero": 2,
+          "maniTotali": 3,
+          "cartaro": "Bot 1",
+          "piatto": 3,
+          "puntataMassima": 1,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Peppa"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "DENARI",
+              "valore": "RE",
+              "file": "denari-re",
+              "punti": 10
+            },
+            {
+              "seme": "COPPE",
+              "valore": "SEI",
+              "file": "coppe-06",
+              "punti": 18
+            },
+            {
+              "seme": "COPPE",
+              "valore": "CINQUE",
+              "file": "coppe-05",
+              "punti": 15
+            }
+          ],
+          "dichiarante": "Marta",
+          "puntiVincenti": 33,
+          "inDichiarazione": false,
+          "dichiarazione": 16,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 2: vince Peppa",
+          "Contesti",
+          "Dichiari 16",
+          "Tocca di nuovo a Marta",
+          "Accetti",
+          "Dichiari 55",
+          "Tocca di nuovo a Marta",
+          "Accetti"
+        ]
+      },
+      "stato_fine_marta": {
+        "giocatore": "Marta",
+        "tuoIndice": 4,
+        "toccaATe": false,
+        "finita": false,
+        "tuoiPunti": 16,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": -1,
+            "debito": 0,
+            "puntata": 1,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "puntata": 0,
+            "inGioco": false,
+            "diTurno": false,
+            "bot": true,
+            "numeroCarte": 3,
+            "fichesInVista": true
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 6,
+            "debito": 0,
+            "puntata": 1,
+            "inGioco": true,
+            "diTurno": false,
+            "bot": false,
+            "numeroCarte": 3,
+            "fichesInVista": false
+          }
+        ],
+        "carte": [
+          {
+            "seme": "COPPE",
+            "valore": "QUATTRO",
+            "file": "coppe-04",
+            "punti": 14
+          },
+          {
+            "seme": "SPADE",
+            "valore": "FANTE",
+            "file": "spade-fante",
+            "punti": 10
+          },
+          {
+            "seme": "DENARI",
+            "valore": "ASSO",
+            "file": "denari-asso",
+            "punti": 16
+          }
+        ],
+        "mano": {
+          "numero": 2,
+          "maniTotali": 3,
+          "cartaro": "Bot 1",
+          "piatto": 3,
+          "puntataMassima": 1,
+          "chiusa": true,
+          "senzaPuntate": false,
+          "vincitori": [
+            "Peppa"
+          ],
+          "carteVincenti": [
+            {
+              "seme": "DENARI",
+              "valore": "RE",
+              "file": "denari-re",
+              "punti": 10
+            },
+            {
+              "seme": "COPPE",
+              "valore": "SEI",
+              "file": "coppe-06",
+              "punti": 18
+            },
+            {
+              "seme": "COPPE",
+              "valore": "CINQUE",
+              "file": "coppe-05",
+              "punti": 15
+            }
+          ],
+          "dichiarante": "Marta",
+          "puntiVincenti": 33,
+          "inDichiarazione": false,
+          "dichiarazione": 16,
+          "esitoDichiarazione": "non-sei-buono",
+          "bluffRimasti": 0
+        },
+        "eventi": [
+          "Mano 2: vince Peppa",
+          "Contesti",
+          "Dichiari 16",
+          "Tocca di nuovo a Marta",
+          "Accetti",
+          "Dichiari 55",
+          "Tocca di nuovo a Marta",
+          "Accetti"
+        ]
+      },
+      "riepilogo": {
+        "piatto": 3,
+        "piattoIniziale": 5,
+        "numeroMano": 2,
+        "maniTotali": 3,
+        "cartaro": "Bot 1",
+        "finita": false,
+        "giocatori": [
+          {
+            "indice": 0,
+            "nome": "Peppa",
+            "fiches": 9,
+            "debito": 0,
+            "punteggio": 54,
+            "inGioco": true,
+            "puntata": 1,
+            "giocati": 4,
+            "incassati": 3,
+            "cambi": 0
+          },
+          {
+            "indice": 1,
+            "nome": "Bot 1",
+            "fiches": 7,
+            "debito": 0,
+            "punteggio": 37,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 3,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 2,
+            "nome": "Bot 2",
+            "fiches": 16,
+            "debito": 0,
+            "punteggio": 34,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 3,
+            "incassati": 9,
+            "cambi": 0
+          },
+          {
+            "indice": 3,
+            "nome": "Bot 3",
+            "fiches": 9,
+            "debito": 0,
+            "punteggio": 46,
+            "inGioco": false,
+            "puntata": 0,
+            "giocati": 1,
+            "incassati": 0,
+            "cambi": 0
+          },
+          {
+            "indice": 4,
+            "nome": "Marta",
+            "fiches": 6,
+            "debito": 0,
+            "punteggio": 37,
+            "inGioco": true,
+            "puntata": 1,
+            "giocati": 4,
+            "incassati": 0,
+            "cambi": 0
+          }
+        ]
+      },
+      "eventi": [
+        "Mano 2: vince Peppa",
+        "Contesti",
+        "Dichiari 16",
+        "Tocca di nuovo a Marta",
+        "Accetti",
+        "Dichiari 55",
+        "Tocca di nuovo a Marta",
+        "Accetti",
+        "Dichiari 55",
+        "Tocca di nuovo a Marta"
+      ]
+    }
+  ],
+  "prove": [
+    {
+      "nome": "codice stanza inesistente",
+      "metodo": "GET",
+      "percorso": "/api/lobby/ZZZZ",
+      "status": 409,
+      "risposta": {
+        "errore": "stanza ZZZZ non trovata"
+      }
+    },
+    {
+      "nome": "prossima mano con la mano aperta",
+      "metodo": "POST",
+      "percorso": "/api/tavolo/NFWY/prossima-mano",
+      "status": 409,
+      "risposta": {
+        "errore": "la mano 1 e' ancora aperta"
+      }
+    },
+    {
+      "nome": "nuova partita da chi non crea la lobby",
+      "metodo": "POST",
+      "percorso": "/api/tavolo/NFWY/nuova",
+      "status": 409,
+      "risposta": {
+        "errore": "solo chi crea la lobby puo' ricominciare"
+      }
+    },
+    {
+      "nome": "puntata fuori dal tetto",
+      "metodo": "POST",
+      "percorso": "/api/tavolo/NFWY/punta",
+      "status": 409,
+      "risposta": {
+        "errore": "si punta da 1 a 10 gettoni, non 11"
+      }
+    },
+    {
+      "nome": "dichiarazione fuori dal tetto",
+      "metodo": "POST",
+      "percorso": "/api/tavolo/NFWY/dichiara",
+      "status": 409,
+      "risposta": {
+        "errore": "non c'e' una dichiarazione aperta"
+      }
+    },
+    {
+      "nome": "risposta senza dichiarazione aperta",
+      "metodo": "POST",
+      "percorso": "/api/tavolo/NFWY/accetta",
+      "status": 409,
+      "risposta": {
+        "errore": "non c'e' una dichiarazione aperta"
+      }
+    }
+  ],
+  "problemi": []
+}
