@@ -88,7 +88,7 @@ public class TavoloService {
 				<meta charset="utf-8">
 				<meta name="viewport" content="width=device-width, initial-scale=1">
 				<title>Stoppa - stanza """);
-		html.append(escape(accesso.tavolo.codice)).append("""
+		html.append(" ").append(escape(accesso.tavolo.codice)).append("""
 				</title>
 				<style>
 				* { box-sizing: border-box; }
