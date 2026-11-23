@@ -121,23 +121,74 @@ class ManoTest {
 	}
 
 	@Test
-	void unaDichiarazioneAccettataDaTuttiVinceAncheSenzaCarteAlte() {
+	void chiDiceLaVeritaEAccettatoDaTuttiVince() {
 		Mano mano = mano();
 		mano.punta(3);
 		mano.vedo();
 		mano.vedo();
 		mano.vedo();
 
-		mano.dichiara(mano.dichiarante(), 50);
+		int dichiarante = mano.dichiarante();
+		mano.dichiara(dichiarante, Punteggio.calcola(mano.carteDi(dichiarante)));
+		accettanoTutti(mano);
+
+		assertTrue(mano.chiusa());
+		assertEquals(List.of(dichiarante), mano.vincitori());
+		assertEquals("buono", mano.esitoDichiarazione());
+	}
+
+	@Test
+	void seTuttiAccettanoUnBluffSiParlaDiNuovo() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		int dichiarante = mano.dichiarante();
+		mano.dichiara(dichiarante, 20);
+		accettanoTutti(mano);
+
+		assertFalse(mano.chiusa(), "un bluff accettato non chiude la mano");
+		assertTrue(mano.inDichiarazione());
+		assertEquals(0, mano.dichiarazione());
+		assertTrue(mano.accettato().isEmpty(), "le risposte si azzerano: si risponde di nuovo");
+		assertEquals(dichiarante, mano.dichiarante(), "parla sempre chi ha aperto");
+		assertEquals(2, mano.bluffRimasti());
+	}
+
+	@Test
+	void dopoTreBluffAccettatiBisognaDireLaVerita() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		int dichiarante = mano.dichiarante();
+		for (int giro = 1; giro <= Mano.TETTO_BLUFF; giro++) {
+			mano.dichiara(dichiarante, 20);
+			accettanoTutti(mano);
+			assertEquals(Mano.TETTO_BLUFF - giro, mano.bluffRimasti());
+		}
+
+		assertTrue(mano.inDichiarazione(), "dopo tre bluff la mano e' ancora aperta");
+		assertThrows(IllegalStateException.class, () -> mano.dichiara(dichiarante, 20));
+
+		mano.dichiara(dichiarante, Punteggio.calcola(mano.carteDi(dichiarante)));
+		accettanoTutti(mano);
+
+		assertTrue(mano.chiusa());
+		assertEquals(List.of(dichiarante), mano.vincitori());
+		assertEquals("buono", mano.esitoDichiarazione());
+	}
+
+	private static void accettanoTutti(Mano mano) {
 		for (int giocatore : mano.attivi()) {
 			if (giocatore != mano.dichiarante()) {
 				mano.accetta(giocatore);
 			}
 		}
-
-		assertTrue(mano.chiusa());
-		assertEquals(List.of(mano.dichiarante()), mano.vincitori());
-		assertEquals("accettata", mano.esitoDichiarazione());
 	}
 
 	@Test

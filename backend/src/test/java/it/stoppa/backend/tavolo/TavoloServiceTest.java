@@ -182,16 +182,17 @@ class TavoloServiceTest {
 				continue;
 			}
 			if (stato.mano().inDichiarazione()) {
+				int punti = Punteggio.calcola(stato.giocatori().get(stato.tuoIndice()).carte().stream()
+						.map(carta -> new Carta(Seme.valueOf(carta.seme()), Valore.valueOf(carta.valore())))
+						.toList());
 				if (stato.puoiRispondere()) {
 					// lo stato dice di poter contestare solo se il punto in mano basta
-					int punti = Punteggio.calcola(stato.giocatori().get(stato.tuoIndice()).carte().stream()
-							.map(carta -> new Carta(Seme.valueOf(carta.seme()), Valore.valueOf(carta.valore())))
-							.toList());
 					assertEquals(punti >= stato.mano().dichiarazione(), stato.puoiContestare(),
 							"punti " + punti + " contro i " + stato.mano().dichiarazione() + " dichiarati");
 				}
 				if (stato.puoiDichiarare()) {
-					stato = tavolo.dichiara(CODICE, creatore, 1);
+					// dire il vero: dopo tre bluff il server accetta solo la verita'
+					stato = tavolo.dichiara(CODICE, creatore, punti);
 				} else if (stato.puoiRispondere()) {
 					stato = stato.puoiContestare() ? tavolo.contesta(CODICE, creatore)
 							: tavolo.accetta(CODICE, creatore);

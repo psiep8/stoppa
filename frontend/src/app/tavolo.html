@@ -101,6 +101,12 @@
                   <p class="pov-turno">In attesa delle risposte…</p>
                 }
               } @else if (s.puoiDichiarare) {
+                @if (s.mano.bluffRimasti === 0) {
+                  <p class="dichiarazione-nota">Hanno accettato: ora devi dire la verità.</p>
+                } @else if (s.mano.bluffRimasti < 3) {
+                  <p class="dichiarazione-nota">Hanno accettato: puoi bluffare ancora {{ s.mano.bluffRimasti }} volte.</p>
+                }
+                <p class="dichiarazione-nota">Il tuo punto: {{ s.tuoiPunti }}.</p>
                 <div class="dichiarazione-azioni">
                   <button type="button" class="ghost passo" (click)="menoDichiarazione()" [disabled]="attesa()" aria-label="Un punto in meno">−</button>
                   <input
@@ -294,6 +300,12 @@
                   <p class="testo">In attesa delle risposte…</p>
                 }
               } @else if (s.puoiDichiarare) {
+                @if (s.mano.bluffRimasti === 0) {
+                  <p class="dichiarazione-nota">Hanno accettato: ora devi dire la verità.</p>
+                } @else if (s.mano.bluffRimasti < 3) {
+                  <p class="dichiarazione-nota">Hanno accettato: puoi bluffare ancora {{ s.mano.bluffRimasti }} volte.</p>
+                }
+                <p class="dichiarazione-nota">Il tuo punto: {{ s.tuoiPunti }}.</p>
                 <div class="dichiarazione-azioni">
                   <button type="button" class="ghost passo" (click)="menoDichiarazione()" [disabled]="attesa()" aria-label="Un punto in meno">−</button>
                   <input

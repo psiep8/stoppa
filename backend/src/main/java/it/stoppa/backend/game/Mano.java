@@ -23,6 +23,9 @@ public final class Mano {
 	/** Il massimo che si puo' dichiarare a voce: il punto piu' alto possibile. */
 	public static final int TETTO_DICHIARAZIONE = Punteggio.MASSIMO;
 
+	/** Quante volte si puo' bluffare e farsi accettare: poi si dice la verita'. */
+	public static final int TETTO_BLUFF = 3;
+
 	public enum Fase {
 		PUNTATE, DICHIARAZIONE, CHIUSA
 	}
@@ -57,6 +60,9 @@ public final class Mano {
 
 	/** Chi ha accettato la dichiarazione senza contestarla. */
 	private final Set<Integer> accettato = new LinkedHashSet<>();
+
+	/** Bluff accettati da tutti in questa mano: oltre il tetto si dice il vero. */
+	private int bluff;
 
 	/** Come e' finita la dichiarazione: accettata, buono, buono-di-mano, non-sei-buono. */
 	private String esito = "";
@@ -162,6 +168,14 @@ public final class Mano {
 		return Set.copyOf(accettato);
 	}
 
+	public int bluffFatti() {
+		return bluff;
+	}
+
+	public int bluffRimasti() {
+		return TETTO_BLUFF - bluff;
+	}
+
 	/**
 	 * Le puntate sono chiuse: si passa alle dichiarazioni. Parla l'ultimo che ha
 	 * rialzato ed e' ancora in mano, altrimenti chi ha chiamato per primo.
@@ -170,6 +184,7 @@ public final class Mano {
 		fase = Fase.DICHIARAZIONE;
 		dichiarazione = 0;
 		accettato.clear();
+		bluff = 0;
 		esito = "";
 		dichiarante = -1;
 		for (int i = ordinePuntate.size() - 1; i >= 0; i--) {
@@ -199,6 +214,9 @@ public final class Mano {
 		}
 		if (punti < 1 || punti > TETTO_DICHIARAZIONE) {
 			throw new IllegalArgumentException("si dichiara da 1 a " + TETTO_DICHIARAZIONE + " punti");
+		}
+		if (bluff >= TETTO_BLUFF && punti != Punteggio.calcola(carte.get(giocatore))) {
+			throw new IllegalStateException("hai gia' bluffato " + TETTO_BLUFF + " volte: ora devi dire la verita'");
 		}
 		this.dichiarazione = punti;
 	}
@@ -247,8 +265,9 @@ public final class Mano {
 	}
 
 	/**
-	 * Un altro giocatore accetta senza contestare: se accettano tutti, la
-	 * dichiarazione vale e il piatto va a chi ha parlato.
+	 * Un altro giocatore accetta senza contestare. Se accettano tutti: se la
+	 * dichiarazione era vera vince chi ha parlato, se era un bluff si torna a
+	 * parlare con lui (fino al tetto dei bluff), poi serve la verita'.
 	 */
 	public void accetta(int giocatore) {
 		verificaRisposta(giocatore);
@@ -257,6 +276,17 @@ public final class Mano {
 			if (g != dichiarante && !accettato.contains(g)) {
 				return;
 			}
+		}
+		if (dichiarazione == Punteggio.calcola(carte.get(dichiarante))) {
+			esito = "buono";
+			vince(dichiarante);
+			return;
+		}
+		if (bluff < TETTO_BLUFF) {
+			bluff++;
+			dichiarazione = 0;
+			accettato.clear();
+			return;
 		}
 		esito = "accettata";
 		vince(dichiarante);

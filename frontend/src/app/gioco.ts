@@ -39,6 +39,8 @@ export type ManoTavolo = {
   dichiarazione: number;
   /** Esito deciso dal server: accettata, buono, buono-di-mano, non-sei-buono. */
   esitoDichiarazione: string;
+  /** Bluff ancora concessi a chi apre: a zero si puo' dire solo la verita'. */
+  bluffRimasti: number;
 };
 
 export type ClassificaTavolo = {
@@ -63,6 +65,8 @@ export type StatoTavolo = {
   puoiRispondere: boolean;
   /** Solo chi ha davvero il punto dichiarato puo' contestare. */
   puoiContestare: boolean;
+  /** Il punto delle tue carte: serve per dire la verita'. */
+  tuoiPunti: number;
 };
 
 export type PostoLobby = { indice: number; nome: string; bot: boolean };

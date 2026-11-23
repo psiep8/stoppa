@@ -197,6 +197,11 @@ public class TavoloService {
 		Accesso accesso = accessoInDichiarazione(codice, sessioneId);
 		accesso.tavolo.partita.accetta(accesso.indice());
 		aggiungiEvento(accesso.tavolo, "Accetti");
+		Mano mano = accesso.tavolo.partita.mano();
+		if (mano.inDichiarazione() && mano.dichiarazione() == 0) {
+			String chi = accesso.tavolo.partita.giocatori().get(mano.dichiarante()).nome();
+			aggiungiEvento(accesso.tavolo, "Tocca di nuovo a " + chi);
+		}
 		return dopoLaMossa(accesso);
 	}
 
@@ -331,9 +336,10 @@ public class TavoloService {
 				return false;
 			}
 			int reali = Punteggio.calcola(mano.carteDi(chi));
-			int finti = Math.min(reali + tavolo.random.nextInt(3), Mano.TETTO_DICHIARAZIONE);
-			tavolo.partita.dichiara(chi, Math.max(1, finti));
-			aggiungiEvento(tavolo, tavolo.partita.giocatori().get(chi).nome() + " dichiara " + finti);
+			int detti = mano.bluffRimasti() == 0 ? reali
+					: Math.max(1, Math.min(reali + tavolo.random.nextInt(3), Mano.TETTO_DICHIARAZIONE));
+			tavolo.partita.dichiara(chi, detti);
+			aggiungiEvento(tavolo, tavolo.partita.giocatori().get(chi).nome() + " dichiara " + detti);
 			return true;
 		}
 		for (int giocatore : mano.attivi()) {
@@ -428,7 +434,7 @@ public class TavoloService {
 				mano.senzaPuntate(),
 				mano.vincitori().stream().map(i -> partita.giocatori().get(i).nome()).toList(),
 				carte(mano.carteVincenti()), dichiarante, puntiVincenti, mano.inDichiarazione(), mano.dichiarazione(),
-				mano.esitoDichiarazione());
+				mano.esitoDichiarazione(), mano.bluffRimasti());
 
 		boolean toccaATe = !partita.finita() && !mano.chiusa() && !mano.inDichiarazione()
 				&& mano.giocatoreDiTurno() == indice;
@@ -441,7 +447,8 @@ public class TavoloService {
 
 		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
 				partita.finita(), List.copyOf(tavolo.eventi), partita.finita() ? classifica(tavolo) : List.of(),
-				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere, puoiContestare);
+				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere, puoiContestare,
+				Punteggio.calcola(mano.carteDi(indice)));
 	}
 
 	private List<ClassificaTavolo> classifica(PartitaTavolo tavolo) {
