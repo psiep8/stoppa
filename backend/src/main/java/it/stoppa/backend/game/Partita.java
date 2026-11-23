@@ -42,7 +42,8 @@ public final class Partita {
 		Mazziere.validaGiocatori(nomi.size());
 		this.giocatori = nomi.stream().map(Giocatore::new).toList();
 		this.distribuzione = new Mazziere(random).distribuisci(nomi.size());
-		this.piatto = nomi.size();
+		this.piatto = 0;
+		this.giocatori.forEach(this::pagaPiattoIniziale);
 		this.piattoIniziale = piatto;
 		this.mano = nuovaMano();
 	}
@@ -159,6 +160,12 @@ public final class Partita {
 			pagaDalPiatto(vincitore);
 		}
 		giocatori.forEach(Giocatore::cambio);
+	}
+
+	/** All'inizio della partita ogni giocatore mette un gettone nel piatto del tavolo. */
+	private void pagaPiattoIniziale(Giocatore giocatore) {
+		giocatore.scalaFiches(1);
+		piatto++;
 	}
 
 	private void pagaDalPiatto(int giocatore) {

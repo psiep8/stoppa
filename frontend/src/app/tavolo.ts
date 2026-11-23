@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { CanaleStanza } from './canale-stanza';
 import { Carta, StatoTavolo, chiamataApi, etichettaSeme, etichettaValore } from './gioco';
 import { Suoni } from './suoni';
 
@@ -7,12 +8,18 @@ import { Suoni } from './suoni';
   templateUrl: './tavolo.html',
   styleUrl: './tavolo.css',
 })
-export class Tavolo implements OnInit {
+export class Tavolo implements OnInit, OnDestroy {
   readonly esci = output<void>();
 
   readonly nome = input<string>('Tu');
 
+  readonly codice = input.required<string>();
+
+  readonly sessione = input.required<string>();
+
   private readonly suoni = inject(Suoni);
+
+  private readonly canale = inject(CanaleStanza);
 
   protected readonly stato = signal<StatoTavolo | null>(null);
 
@@ -25,6 +32,8 @@ export class Tavolo implements OnInit {
   private precedente: StatoTavolo | null = null;
 
   private trascinamento?: { elemento: HTMLElement; x: number; sinistra: number };
+
+  private stacca?: () => void;
 
   protected readonly io = computed(() => {
     const stato = this.stato();
@@ -47,7 +56,20 @@ export class Tavolo implements OnInit {
   );
 
   ngOnInit(): void {
+    this.stacca = this.canale.ascolta((avviso) => {
+      this.attesa.set(false);
+      if (avviso.tipo === 'stato') {
+        this.applica(avviso.stato);
+      } else {
+        this.errore.set(avviso.messaggio);
+      }
+    });
+    this.canale.apri(this.codice(), this.sessione());
     void this.carica();
+  }
+
+  ngOnDestroy(): void {
+    this.stacca?.();
   }
 
   protected descrizione(carta: Carta): string {
@@ -73,27 +95,37 @@ export class Tavolo implements OnInit {
   }
 
   protected async carica(): Promise<void> {
-    await this.azione('/api/tavolo');
+    await this.azione('');
   }
 
   protected async passa(): Promise<void> {
-    await this.azione('/api/tavolo/passa', {});
+    if (!this.inviaMossa({ tipo: 'passa' })) {
+      await this.azione('/passa', {});
+    }
   }
 
   protected async vedo(): Promise<void> {
-    await this.azione('/api/tavolo/vedo', {});
+    if (!this.inviaMossa({ tipo: 'vedo' })) {
+      await this.azione('/vedo', {});
+    }
   }
 
   protected async punta(): Promise<void> {
-    await this.azione('/api/tavolo/punta', { gettoni: this.puntata() });
+    if (!this.inviaMossa({ tipo: 'punta', gettoni: this.puntata() })) {
+      await this.azione('/punta', { gettoni: this.puntata() });
+    }
   }
 
   protected async prossimaMano(): Promise<void> {
-    await this.azione('/api/tavolo/prossima-mano', {});
+    if (!this.inviaMossa({ tipo: 'prossima-mano' })) {
+      await this.azione('/prossima-mano', {});
+    }
   }
 
   protected async nuovaPartita(): Promise<void> {
-    await this.azione('/api/tavolo/nuova', {});
+    if (!this.inviaMossa({ tipo: 'nuova-partita' })) {
+      await this.azione('/nuova', {});
+    }
   }
 
   protected iniziaTrascinamento(evento: PointerEvent): void {
@@ -121,11 +153,25 @@ export class Tavolo implements OnInit {
     }
   }
 
-  private async azione(url: string, corpo?: unknown): Promise<void> {
+  /** Manda la mossa sul canale; false se non e' aperto (si usa la REST). */
+  private inviaMossa(messaggio: object): boolean {
+    if (!this.canale.invia(messaggio)) {
+      return false;
+    }
+    this.errore.set(null);
+    this.attesa.set(true);
+    return true;
+  }
+
+  private async azione(percorso: string, corpo?: unknown): Promise<void> {
     this.attesa.set(true);
     this.errore.set(null);
     try {
-      const stato = await chiamataApi<StatoTavolo>(url, corpo);
+      const stato = await chiamataApi<StatoTavolo>(
+        `/api/tavolo/${this.codice()}${percorso}`,
+        corpo,
+        this.sessione(),
+      );
       this.applica(stato);
     } catch (eccezione) {
       this.errore.set(eccezione instanceof Error ? eccezione.message : 'Errore di rete');

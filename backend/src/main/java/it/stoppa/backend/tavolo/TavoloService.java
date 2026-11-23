@@ -1,89 +1,102 @@
 package it.stoppa.backend.tavolo;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import it.stoppa.backend.game.Giocatore;
 import it.stoppa.backend.game.Mano;
 import it.stoppa.backend.game.Partita;
+import it.stoppa.backend.game.RiepilogoPartita;
+import it.stoppa.backend.lobby.Sessione;
+import it.stoppa.backend.lobby.SessioniService;
 
 /**
- * Il primo tavolo giocabile: una partita sola in memoria, tu contro tre bot.
- * Ogni tua mossa fa giocare i bot fino al turno successivo, cosi' il client
- * riceve sempre uno stato pronto da mostrare.
+ * I tavoli delle stanze: una partita per codice stanza, in memoria.
+ *
+ * Il posto non arriva mai dal client: si cerca l'id della sessione tra i posti
+ * del tavolo, quindi le carte si mostrano solo a chi quel posto lo occupa
+ * davvero. Gli altri vedono solo quante carte ha ognuno.
+ *
+ * Dopo ogni mossa i bot giocano fino al turno di un giocatore umano, cosi' chi
+ * chiama riceve sempre uno stato pronto da mostrare.
  */
 @Service
 public class TavoloService {
 
-	public static final int INDICE_UMANO = 0;
+	private final Map<String, PartitaTavolo> tavoli = new ConcurrentHashMap<>();
 
-	public static final String NOME_UMANO = "Tu";
+	private final SessioniService sessioni;
 
-	private static final int MAX_EVENTI = 30;
+	private final ApplicationEventPublisher eventi;
 
-	private final Random random = new Random();
+	public TavoloService(SessioniService sessioni, ApplicationEventPublisher eventi) {
+		this.sessioni = sessioni;
+		this.eventi = eventi;
+	}
 
-	private final Deque<String> eventi = new ArrayDeque<>();
-
-	private Partita partita;
-
-	private List<String> nomiCorrenti = List.of(NOME_UMANO, "Bot 1", "Bot 2", "Bot 3");
-
-	public synchronized StatoTavolo stato() {
-		if (partita == null) {
-			return nuovaPartita();
+	public synchronized void crea(String codice, List<PostoTavolo> posti) {
+		String stanza = chiave(codice);
+		if (tavoli.containsKey(stanza)) {
+			throw new IllegalStateException("la stanza " + stanza + " ha gia' una partita");
 		}
-		return statoCorrente();
-	}
-
-	public synchronized StatoTavolo nuovaPartita() {
-		return nuovaPartita(nomiCorrenti);
-	}
-
-	public synchronized StatoTavolo nuovaPartita(List<String> nomi) {
-		this.nomiCorrenti = List.copyOf(nomi);
-		partita = new Partita(this.nomiCorrenti, random);
-		eventi.clear();
-		aggiungiEvento("Carte distribuite · " + partita.maniTotali() + " mani");
-		giocaBot();
-		if (partita.mano().chiusa()) {
-			aggiungiEvento(esitoMano());
+		PartitaTavolo tavolo = new PartitaTavolo(stanza, posti);
+		tavoli.put(stanza, tavolo);
+		aggiungiEvento(tavolo, "Carte distribuite · " + tavolo.partita.maniTotali() + " mani");
+		giocaBot(tavolo);
+		if (tavolo.partita.mano().chiusa()) {
+			aggiungiEvento(tavolo, esitoMano(tavolo));
 		}
-		return statoCorrente();
 	}
 
-	public synchronized StatoTavolo passa() {
-		verificaTurno();
-		partita.passa();
-		aggiungiEvento("Passi");
-		return dopoLaMossa();
+	public synchronized StatoTavolo stato(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		return statoPer(accesso);
 	}
 
-	public synchronized StatoTavolo vedo() {
-		verificaTurno();
-		partita.vedo();
-		aggiungiEvento("Vedi");
-		return dopoLaMossa();
-	}
-
-	public synchronized StatoTavolo punta(int gettoni) {
-		verificaTurno();
-		partita.punta(gettoni);
-		aggiungiEvento("Punti " + gettoni);
-		return dopoLaMossa();
-	}
-
-	public synchronized StatoTavolo prossimaMano() {
-		if (partita == null) {
-			throw new IllegalStateException("nessuna partita in corso");
+	/**
+	 * Fotografia per chi crea la lobby: gettoni, debiti, piatto e punto di ogni
+	 * giocatore.
+	 */
+	public synchronized RiepilogoPartita riepilogo(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		if (!accesso.sessione().creatore()) {
+			throw new IllegalStateException("il riepilogo e' solo di chi crea la lobby");
 		}
+		return accesso.tavolo.partita.riepilogo();
+	}
+
+	public synchronized StatoTavolo passa(String codice, String sessioneId) {
+		Accesso accesso = accessoDiTurno(codice, sessioneId);
+		accesso.tavolo.partita.passa();
+		aggiungiEvento(accesso.tavolo, "Passi");
+		return dopoLaMossa(accesso);
+	}
+
+	public synchronized StatoTavolo vedo(String codice, String sessioneId) {
+		Accesso accesso = accessoDiTurno(codice, sessioneId);
+		accesso.tavolo.partita.vedo();
+		aggiungiEvento(accesso.tavolo, "Vedi");
+		return dopoLaMossa(accesso);
+	}
+
+	public synchronized StatoTavolo punta(String codice, String sessioneId, int gettoni) {
+		Accesso accesso = accessoDiTurno(codice, sessioneId);
+		accesso.tavolo.partita.punta(gettoni);
+		aggiungiEvento(accesso.tavolo, "Punti " + gettoni);
+		return dopoLaMossa(accesso);
+	}
+
+	public synchronized StatoTavolo prossimaMano(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		Partita partita = accesso.tavolo.partita;
 		if (partita.finita()) {
-			return statoCorrente();
+			return statoPer(accesso);
 		}
 		if (!partita.mano().chiusa()) {
 			throw new IllegalStateException("la mano " + partita.numeroMano() + " e' ancora aperta");
@@ -91,102 +104,148 @@ public class TavoloService {
 		partita.prossimaMano();
 		if (partita.finita()) {
 			Giocatore primo = partita.giocatori().get(partita.classifica().getFirst());
-			aggiungiEvento("Partita finita · vince " + primo.nome() + " con " + primo.punteggio() + " punti");
-			return statoCorrente();
+			aggiungiEvento(accesso.tavolo,
+					"Partita finita · vince " + primo.nome() + " con " + primo.punteggio() + " punti");
+			return annuncia(accesso);
 		}
-		aggiungiEvento("Mano " + partita.numeroMano() + " · cartaro " + partita.giocatori().get(partita.cartaro()).nome());
-		giocaBot();
+		aggiungiEvento(accesso.tavolo,
+				"Mano " + partita.numeroMano() + " · cartaro " + partita.giocatori().get(partita.cartaro()).nome());
+		giocaBot(accesso.tavolo);
 		if (partita.mano().chiusa()) {
-			aggiungiEvento(esitoMano());
+			aggiungiEvento(accesso.tavolo, esitoMano(accesso.tavolo));
 		}
-		return statoCorrente();
+		return annuncia(accesso);
 	}
 
-	private StatoTavolo dopoLaMossa() {
-		if (!partita.mano().chiusa()) {
-			giocaBot();
+	public synchronized StatoTavolo nuovaPartita(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		if (!accesso.sessione().creatore()) {
+			throw new IllegalStateException("solo chi crea la lobby puo' ricominciare");
 		}
-		if (partita.mano().chiusa()) {
-			aggiungiEvento(esitoMano());
+		PartitaTavolo tavolo = accesso.tavolo;
+		tavolo.partita = tavolo.nuovaPartita();
+		tavolo.eventi.clear();
+		aggiungiEvento(tavolo, "Carte distribuite · " + tavolo.partita.maniTotali() + " mani");
+		giocaBot(tavolo);
+		if (tavolo.partita.mano().chiusa()) {
+			aggiungiEvento(tavolo, esitoMano(tavolo));
 		}
-		return statoCorrente();
+		return annuncia(accesso);
 	}
 
-	private void verificaTurno() {
-		if (partita == null) {
-			throw new IllegalStateException("nessuna partita in corso");
+	/**
+	 * Lo stato per chi ha mosso, annunciato alla stanza: REST e socket passano
+	 * entrambi di qui, quindi ogni mossa riuscita arriva a tutti i presenti.
+	 */
+	private StatoTavolo annuncia(Accesso accesso) {
+		eventi.publishEvent(new StatoTavoloCambiato(accesso.tavolo.codice));
+		return statoPer(accesso);
+	}
+
+	private StatoTavolo dopoLaMossa(Accesso accesso) {
+		if (!accesso.tavolo.partita.mano().chiusa()) {
+			giocaBot(accesso.tavolo);
 		}
-		if (partita.finita()) {
+		if (accesso.tavolo.partita.mano().chiusa()) {
+			aggiungiEvento(accesso.tavolo, esitoMano(accesso.tavolo));
+		}
+		return annuncia(accesso);
+	}
+
+	private Accesso accedi(String codice, String sessioneId) {
+		Sessione sessione = sessioni.richiesta(sessioneId);
+		String stanza = chiave(codice);
+		if (!sessione.codiceStanza().equals(stanza)) {
+			throw new IllegalStateException("non sei seduto nella stanza " + stanza);
+		}
+		PartitaTavolo tavolo = tavoli.get(stanza);
+		if (tavolo == null) {
+			throw new IllegalStateException("la stanza " + stanza + " non ha una partita avviata");
+		}
+		return new Accesso(tavolo, sessione, tavolo.indiceDi(sessione.id()));
+	}
+
+	private static String chiave(String codice) {
+		return codice == null ? "" : codice.toUpperCase(Locale.ROOT);
+	}
+
+	private Accesso accessoDiTurno(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		if (accesso.tavolo.partita.finita()) {
 			throw new IllegalStateException("la partita e' finita: comincia una nuova partita");
 		}
-		if (partita.mano().chiusa()) {
+		if (accesso.tavolo.partita.mano().chiusa()) {
 			throw new IllegalStateException("la mano e' chiusa: passa alla prossima");
 		}
-		if (partita.mano().giocatoreDiTurno() != INDICE_UMANO) {
+		if (accesso.tavolo.partita.mano().giocatoreDiTurno() != accesso.indice()) {
 			throw new IllegalStateException("non e' il tuo turno");
 		}
+		return accesso;
 	}
 
-	private void giocaBot() {
+	private void giocaBot(PartitaTavolo tavolo) {
 		int guardia = 0;
-		while (!partita.finita() && !partita.mano().chiusa()
-				&& partita.mano().giocatoreDiTurno() != INDICE_UMANO && guardia++ < 200) {
-			mossaBot(partita.mano().giocatoreDiTurno());
+		while (!tavolo.partita.finita() && !tavolo.partita.mano().chiusa()
+				&& tavolo.posti.get(tavolo.partita.mano().giocatoreDiTurno()).bot() && guardia++ < 200) {
+			mossaBot(tavolo, tavolo.partita.mano().giocatoreDiTurno());
 		}
 	}
 
-	private void mossaBot(int indice) {
-		Mano mano = partita.mano();
-		String nome = partita.giocatori().get(indice).nome();
+	private void mossaBot(PartitaTavolo tavolo, int indice) {
+		Mano mano = tavolo.partita.mano();
+		String nome = tavolo.partita.giocatori().get(indice).nome();
 		int massima = mano.puntataMassima();
 		int gia = mano.puntate().getOrDefault(indice, 0);
 
 		if (massima == 0) {
-			if (random.nextInt(100) < 20) {
-				partita.passa();
-				aggiungiEvento(nome + " passa");
+			if (tavolo.random.nextInt(100) < 20) {
+				tavolo.partita.passa();
+				aggiungiEvento(tavolo, nome + " passa");
 				return;
 			}
-			int gettoni = 1 + random.nextInt(3);
-			partita.punta(gettoni);
-			aggiungiEvento(nome + " punta " + gettoni);
+			int gettoni = 1 + tavolo.random.nextInt(3);
+			tavolo.partita.punta(gettoni);
+			aggiungiEvento(tavolo, nome + " punta " + gettoni);
 			return;
 		}
 
-		int scelta = random.nextInt(100);
+		int scelta = tavolo.random.nextInt(100);
 		if (scelta < 20) {
-			partita.passa();
-			aggiungiEvento(nome + " passa");
+			tavolo.partita.passa();
+			aggiungiEvento(tavolo, nome + " passa");
 			return;
 		}
 		if (scelta < 85 || massima >= Mano.TETTO_PUNTATA || gia >= massima) {
-			partita.vedo();
-			aggiungiEvento(nome + " vede");
+			tavolo.partita.vedo();
+			aggiungiEvento(tavolo, nome + " vede");
 			return;
 		}
-		int gettoni = Math.min(massima + 1 + random.nextInt(2), Mano.TETTO_PUNTATA);
-		partita.punta(gettoni);
-		aggiungiEvento(nome + " rilancia a " + gettoni);
+		int gettoni = Math.min(massima + 1 + tavolo.random.nextInt(2), Mano.TETTO_PUNTATA);
+		tavolo.partita.punta(gettoni);
+		aggiungiEvento(tavolo, nome + " rilancia a " + gettoni);
 	}
 
-	private String esitoMano() {
-		Mano mano = partita.mano();
+	private String esitoMano(PartitaTavolo tavolo) {
+		Mano mano = tavolo.partita.mano();
 		if (mano.senzaPuntate()) {
 			return "Mano " + mano.numero() + ": nessuno ha puntato, 1 gettone al cartaro";
 		}
-		String vincitore = partita.giocatori().get(mano.vincitori().getFirst()).nome();
+		String vincitore = tavolo.partita.giocatori().get(mano.vincitori().getFirst()).nome();
 		return "Mano " + mano.numero() + ": vince " + vincitore;
 	}
 
-	private StatoTavolo statoCorrente() {
+	private StatoTavolo statoPer(Accesso accesso) {
+		PartitaTavolo tavolo = accesso.tavolo;
+		int indice = accesso.indice();
+		Partita partita = tavolo.partita;
 		Mano mano = partita.mano();
 		List<GiocatoreTavolo> giocatori = new ArrayList<>();
 		for (int i = 0; i < partita.giocatori().size(); i++) {
 			Giocatore giocatore = partita.giocatori().get(i);
-			boolean sonoIo = i == INDICE_UMANO;
+			boolean sonoIo = i == indice;
 			giocatori.add(new GiocatoreTavolo(i, giocatore.nome(), giocatore.fiches(), giocatore.debito(),
 					mano.puntate().getOrDefault(i, 0), mano.attivi().contains(i),
-					!mano.chiusa() && mano.giocatoreDiTurno() == i, !sonoIo, mano.carteDi(i).size(),
+					!mano.chiusa() && mano.giocatoreDiTurno() == i, tavolo.posti.get(i).bot(), mano.carteDi(i).size(),
 					sonoIo ? carte(mano.carteDi(i)) : List.of()));
 		}
 
@@ -196,18 +255,18 @@ public class TavoloService {
 				mano.vincitori().stream().map(i -> partita.giocatori().get(i).nome()).toList(),
 				carte(mano.carteVincenti()));
 
-		boolean toccaATe = !partita.finita() && !mano.chiusa() && mano.giocatoreDiTurno() == INDICE_UMANO;
+		boolean toccaATe = !partita.finita() && !mano.chiusa() && mano.giocatoreDiTurno() == indice;
 
-		return new StatoTavolo(INDICE_UMANO, NOME_UMANO, giocatori, manoTavolo, toccaATe, partita.finita(),
-				List.copyOf(eventi), partita.finita() ? classifica() : List.of(), mano.puntataMassima() + 1,
-				Mano.TETTO_PUNTATA);
+		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
+				partita.finita(), List.copyOf(tavolo.eventi), partita.finita() ? classifica(tavolo) : List.of(),
+				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA);
 	}
 
-	private List<ClassificaTavolo> classifica() {
+	private List<ClassificaTavolo> classifica(PartitaTavolo tavolo) {
 		List<ClassificaTavolo> righe = new ArrayList<>();
 		int posizione = 1;
-		for (int indice : partita.classifica()) {
-			Giocatore giocatore = partita.giocatori().get(indice);
+		for (int indice : tavolo.partita.classifica()) {
+			Giocatore giocatore = tavolo.partita.giocatori().get(indice);
 			righe.add(new ClassificaTavolo(posizione++, giocatore.nome(), giocatore.punteggio(), giocatore.fiches()));
 		}
 		return righe;
@@ -217,11 +276,14 @@ public class TavoloService {
 		return carte.stream().map(CartaTavolo::da).toList();
 	}
 
-	private void aggiungiEvento(String testo) {
-		eventi.addFirst(testo);
-		while (eventi.size() > MAX_EVENTI) {
-			eventi.removeLast();
+	private void aggiungiEvento(PartitaTavolo tavolo, String testo) {
+		tavolo.eventi.addFirst(testo);
+		while (tavolo.eventi.size() > PartitaTavolo.MAX_EVENTI) {
+			tavolo.eventi.removeLast();
 		}
+	}
+
+	private record Accesso(PartitaTavolo tavolo, Sessione sessione, int indice) {
 	}
 
 }

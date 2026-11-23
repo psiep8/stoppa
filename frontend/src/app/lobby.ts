@@ -1,14 +1,6 @@
-import { Component, OnInit, computed, input, output, signal } from '@angular/core';
-import { inviaApi } from './gioco';
-
-type PostoLobby = { indice: number; nome: string; bot: boolean };
-
-type StanzaLobby = {
-  codice: string;
-  posti: PostoLobby[];
-  postiTotali: number;
-  minimoGiocatori: number;
-};
+import { Component, OnDestroy, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { CanaleStanza } from './canale-stanza';
+import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from './gioco';
 
 @Component({
   selector: 'app-lobby',
@@ -23,19 +15,45 @@ type StanzaLobby = {
             Stanza
           }
         </h2>
-        <p class="testo">Tocca un posto libero per aggiungere un bot, tocca un bot per toglierlo.</p>
+        <p class="testo">
+          @if (avviata()) {
+            Partita iniziata: si torna al tavolo.
+          } @else {
+            Tocca un posto libero per aggiungere un bot, tocca un bot per toglierlo.
+          }
+        </p>
+
+        <form class="unisciti" (submit)="unisciti($event)">
+          <input
+            [value]="codiceIngresso()"
+            (input)="aggiornaCodice($event)"
+            maxlength="4"
+            placeholder="Codice stanza"
+            aria-label="Codice stanza"
+            autocomplete="off"
+          />
+          <button type="submit" class="ghost" [disabled]="attesa() || codiceIngresso().trim().length !== 4">
+            Entra
+          </button>
+        </form>
       </header>
 
       <div class="posti">
         @for (posto of posti(); track $index; let i = $index) {
           @if (posto) {
-            <button type="button" class="posto occupato" [class.mio]="i === 0" (click)="togli(i)">
+            <button
+              type="button"
+              class="posto occupato"
+              [class.mio]="i === mio()"
+              (click)="togli(i)"
+              [disabled]="avviata() || i === mio()"
+            >
               <span class="posto-numero">{{ i + 1 }}</span>
               <span class="posto-nome">{{ posto.nome }}</span>
-              <span class="posto-azione">{{ posto.bot ? 'bot' : 'tu' }}</span>
+              <span class="posto-azione">{{ ruolo(posto, i) }}</span>
             </button>
           } @else {
-            <button type="button" class="posto libero" (click)="aggiungiBot()" [disabled]="attesa()">
+            <button type="button" class="posto libero" (click)="aggiungiBot()" [disabled]="attesa() || avviata()">
               <span class="posto-numero">{{ i + 1 }}</span>
               <span class="posto-nome">Libero</span>
               <span class="posto-azione">+</span>
@@ -50,17 +68,21 @@ type StanzaLobby = {
           <span class="ficha oro piccola"></span>
           {{ occupati() }} / {{ totali() }} al tavolo
         </span>
-        <button
-          type="button"
-          class="cta"
-          (click)="avvia()"
-          [disabled]="attesa() || !stanza() || occupati() < minimo()"
-        >
-          Avvia partita
-        </button>
+        @if (avviata()) {
+          <button type="button" class="cta" (click)="tornaAlTavolo()">Torna al tavolo</button>
+        } @else {
+          <button
+            type="button"
+            class="cta"
+            (click)="avvia()"
+            [disabled]="attesa() || !stanza() || occupati() < minimo()"
+          >
+            Avvia partita
+          </button>
+        }
       </footer>
 
-      @if (stanza() && occupati() < minimo()) {
+      @if (stanza() && !avviata() && occupati() < minimo()) {
         <p class="nota">Minimo {{ minimo() }} giocatori.</p>
       }
 
@@ -99,6 +121,37 @@ type StanzaLobby = {
         color: var(--oro-chiaro);
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.14em;
+      }
+
+      .unisciti {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+        max-width: 22rem;
+      }
+
+      .unisciti input {
+        flex: 1 1 8rem;
+        padding: 0.62rem 0.85rem;
+        border-radius: 12px;
+        border: 1px solid var(--bordo);
+        background: rgba(3, 20, 14, 0.65);
+        color: var(--crema);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .unisciti input:focus {
+        outline: none;
+        border-color: rgba(216, 169, 74, 0.7);
+        box-shadow: 0 0 0 3px rgba(216, 169, 74, 0.16);
+      }
+
+      .unisciti input::placeholder {
+        letter-spacing: 0.04em;
+        text-transform: none;
+        color: rgba(246, 239, 223, 0.32);
       }
 
       .posti {
@@ -199,14 +252,28 @@ type StanzaLobby = {
     `,
   ],
 })
-export class Lobby implements OnInit {
-  readonly inizia = output<string>();
+export class Lobby implements OnInit, OnDestroy {
+  private readonly canale = inject(CanaleStanza);
+
+  private stacca?: () => void;
+
+  readonly inizia = output<{ codice: string; sessione: string }>();
+
+  readonly ingresso = output<{ codice: string; sessione: string }>();
 
   readonly indietro = output<void>();
 
   readonly nome = input<string>('Tu');
 
-  protected readonly stanza = signal<StanzaLobby | null>(null);
+  readonly codiceIniziale = input<string>('');
+
+  readonly sessioneIniziale = input<string>('');
+
+  protected readonly stanza = this.canale.stanza;
+
+  protected readonly sessione = signal('');
+
+  protected readonly codiceIngresso = signal('');
 
   protected readonly errore = signal<string | null>(null);
 
@@ -225,8 +292,49 @@ export class Lobby implements OnInit {
 
   protected readonly minimo = computed(() => this.stanza()?.minimoGiocatori ?? 4);
 
+  protected readonly mio = computed(() => this.stanza()?.tuoIndice ?? -1);
+
+  protected readonly avviata = computed(() => this.stanza()?.avviata ?? false);
+
   ngOnInit(): void {
-    void this.esegui(() => inviaApi<StanzaLobby>('/api/lobby', 'POST', { nome: this.nome() }));
+    // la sessione persa la gestisce App: qui si mostra solo il resto
+    this.stacca = this.canale.ascolta((avviso) => {
+      if (avviso.tipo === 'errore' && avviso.motivo !== 'sessione') {
+        this.errore.set(avviso.messaggio);
+      }
+    });
+    const codice = this.codiceIniziale();
+    const sessione = this.sessioneIniziale();
+    if (codice && sessione) {
+      this.sessione.set(sessione);
+      this.canale.apri(codice, sessione);
+      void this.carica(codice);
+    } else {
+      void this.crea();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.stacca?.();
+  }
+
+  protected ruolo(posto: PostoLobby, indice: number): string {
+    if (posto.bot) {
+      return 'bot';
+    }
+    return indice === this.mio() ? 'tu' : 'giocatore';
+  }
+
+  protected aggiornaCodice(evento: Event): void {
+    this.codiceIngresso.set((evento.target as HTMLInputElement).value.toUpperCase().slice(0, 4));
+  }
+
+  protected unisciti(evento: Event): void {
+    evento.preventDefault();
+    const codice = this.codiceIngresso().trim();
+    if (codice.length === 4) {
+      void this.entra(codice);
+    }
   }
 
   protected aggiungiBot(): void {
@@ -234,15 +342,19 @@ export class Lobby implements OnInit {
     if (!codice) {
       return;
     }
-    void this.esegui(() => inviaApi<StanzaLobby>(`/api/lobby/${codice}/bot`, 'POST'));
+    void this.eseguiStanza(() =>
+      inviaApi<StanzaLobby>(`/api/lobby/${codice}/bot`, 'POST', undefined, this.sessione()),
+    );
   }
 
   protected togli(indice: number): void {
     const codice = this.stanza()?.codice;
-    if (!codice || indice === 0) {
+    if (!codice || indice === this.mio()) {
       return;
     }
-    void this.esegui(() => inviaApi<StanzaLobby>(`/api/lobby/${codice}/posti/${indice}`, 'DELETE'));
+    void this.eseguiStanza(() =>
+      inviaApi<StanzaLobby>(`/api/lobby/${codice}/posti/${indice}`, 'DELETE', undefined, this.sessione()),
+    );
   }
 
   protected avvia(): void {
@@ -252,21 +364,73 @@ export class Lobby implements OnInit {
     }
     this.attesa.set(true);
     this.errore.set(null);
-    inviaApi(`/api/lobby/${codice}/avvia`, 'POST')
-      .then(() => this.inizia.emit(codice))
-      .catch((eccezione) => this.errore.set(eccezione instanceof Error ? eccezione.message : 'Errore di rete'))
+    inviaApi<StatoTavolo>(`/api/lobby/${codice}/avvia`, 'POST', undefined, this.sessione())
+      .then(() => this.inizia.emit({ codice, sessione: this.sessione() }))
+      .catch((eccezione) => this.errore.set(messaggio(eccezione)))
       .finally(() => this.attesa.set(false));
   }
 
-  private async esegui(azione: () => Promise<StanzaLobby>): Promise<void> {
+  protected tornaAlTavolo(): void {
+    const codice = this.stanza()?.codice;
+    if (codice) {
+      this.inizia.emit({ codice, sessione: this.sessione() });
+    }
+  }
+
+  private async crea(): Promise<void> {
+    await this.eseguiIngresso(() => inviaApi<IngressoLobby>('/api/lobby', 'POST', { nome: this.nome() }));
+  }
+
+  private async entra(codice: string): Promise<void> {
+    await this.eseguiIngresso(() =>
+      inviaApi<IngressoLobby>(`/api/lobby/${codice}/entra`, 'POST', { nome: this.nome() }),
+    );
+  }
+
+  private async carica(codice: string): Promise<void> {
     this.attesa.set(true);
     this.errore.set(null);
     try {
-      this.stanza.set(await azione());
+      this.canale.assorbi(
+        await inviaApi<StanzaLobby>(`/api/lobby/${codice}`, 'GET', undefined, this.sessione()),
+      );
     } catch (eccezione) {
-      this.errore.set(eccezione instanceof Error ? eccezione.message : 'Errore di rete');
+      this.errore.set(messaggio(eccezione));
     } finally {
       this.attesa.set(false);
     }
   }
+
+  private async eseguiIngresso(azione: () => Promise<IngressoLobby>): Promise<void> {
+    this.attesa.set(true);
+    this.errore.set(null);
+    try {
+      const ingresso = await azione();
+      this.sessione.set(ingresso.sessione);
+      this.canale.assorbi(ingresso.stanza);
+      this.canale.apri(ingresso.stanza.codice, ingresso.sessione);
+      this.ingresso.emit({ codice: ingresso.stanza.codice, sessione: ingresso.sessione });
+      this.codiceIngresso.set('');
+    } catch (eccezione) {
+      this.errore.set(messaggio(eccezione));
+    } finally {
+      this.attesa.set(false);
+    }
+  }
+
+  private async eseguiStanza(azione: () => Promise<StanzaLobby>): Promise<void> {
+    this.attesa.set(true);
+    this.errore.set(null);
+    try {
+      this.canale.assorbi(await azione());
+    } catch (eccezione) {
+      this.errore.set(messaggio(eccezione));
+    } finally {
+      this.attesa.set(false);
+    }
+  }
+}
+
+function messaggio(eccezione: unknown): string {
+  return eccezione instanceof Error ? eccezione.message : 'Errore di rete';
 }

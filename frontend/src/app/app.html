@@ -36,10 +36,17 @@
       <app-home [nomeIniziale]="nome()" (entra)="vaiAllaLobby($event)" />
     }
     @case ('lobby') {
-      <app-lobby [nome]="nome()" (indietro)="tornaHome()" (inizia)="avviaPartita($event)" />
+      <app-lobby
+        [nome]="nome()"
+        [codiceIniziale]="stanza()"
+        [sessioneIniziale]="sessione()"
+        (indietro)="tornaHome()"
+        (ingresso)="inLobby($event)"
+        (inizia)="avviaPartita($event)"
+      />
     }
     @case ('tavolo') {
-      <app-tavolo [nome]="nome()" (esci)="tornaAllaLobby()" />
+      <app-tavolo [nome]="nome()" [codice]="stanza()" [sessione]="sessione()" (esci)="tornaAllaLobby()" />
     }
   }
 </div>

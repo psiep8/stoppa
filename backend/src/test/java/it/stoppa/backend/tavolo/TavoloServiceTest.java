@@ -5,57 +5,161 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+
+import it.stoppa.backend.lobby.SessioniService;
 
 class TavoloServiceTest {
 
+	private static final String CODICE = "TEST";
+
+	private final SessioniService sessioni = new SessioniService();
+
+	private final List<StatoTavoloCambiato> annunci = new ArrayList<>();
+
+	private final TavoloService tavolo = new TavoloService(sessioni, evento -> annunci.add((StatoTavoloCambiato) evento));
+
+	private String sessione(String nome, boolean creatore) {
+		return sessioni.crea(nome, CODICE, creatore).id();
+	}
+
+	/** I posti degli umani passati, completati con i bot fino a quattro giocatori. */
+	private List<PostoTavolo> conBot(String... umani) {
+		List<PostoTavolo> posti = new ArrayList<>();
+		for (int i = 0; i < umani.length; i++) {
+			posti.add(new PostoTavolo(umani[i], i == 0 ? "Tu" : "Giocatore " + i));
+		}
+		for (int i = 0; i < 4 - umani.length; i++) {
+			posti.add(new PostoTavolo(null, "Bot " + (i + 1)));
+		}
+		return posti;
+	}
+
 	@Test
 	void ilTavoloParteConQuattroGiocatoriEMostraSoloLeTueCarte() {
-		StatoTavolo stato = new TavoloService().stato();
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+
+		StatoTavolo stato = tavolo.stato(CODICE, creatore);
 
 		assertEquals(4, stato.giocatori().size());
-		assertEquals(TavoloService.NOME_UMANO, stato.giocatori().get(stato.tuoIndice()).nome());
+		assertEquals("Tu", stato.nomeTuo());
 		GiocatoreTavolo io = stato.giocatori().get(stato.tuoIndice());
 		assertFalse(io.carte().isEmpty());
 		assertTrue(io.carte().size() <= 3);
 		stato.giocatori().stream().filter(GiocatoreTavolo::bot).forEach(bot -> assertTrue(bot.carte().isEmpty(),
 				"le carte di " + bot.nome() + " non devono uscire dal server"));
+		assertEquals(4, stato.mano().piatto());
+		assertTrue(stato.giocatori().stream().allMatch(giocatore -> giocatore.fiches() == 9));
 	}
 
 	@Test
-	void leCarteArrivanoAlBrowserConIlFileGiusto() {
-		StatoTavolo stato = new TavoloService().stato();
+	void ogniSessioneVedeSoloLeProprieCarte() {
+		String peppa = sessione("Peppa", true);
+		String anna = sessione("Anna", false);
+		tavolo.crea(CODICE, conBot(peppa, anna));
 
-		stato.giocatori().get(stato.tuoIndice()).carte().forEach(carta -> {
-			assertTrue(carta.file().matches("(denari|coppe|spade|bastoni)-(asso|0[2-7]|fante|cavallo|re)"),
-					"file inatteso: " + carta.file());
-			assertTrue(carta.punti() >= 10);
-		});
+		StatoTavolo vistaPeppa = tavolo.stato(CODICE, peppa);
+		StatoTavolo vistaAnna = tavolo.stato(CODICE, anna);
+
+		assertEquals(0, vistaPeppa.tuoIndice());
+		assertEquals(1, vistaAnna.tuoIndice());
+		assertFalse(vistaPeppa.giocatori().get(0).carte().isEmpty());
+		assertTrue(vistaPeppa.giocatori().get(1).carte().isEmpty());
+		assertFalse(vistaAnna.giocatori().get(1).carte().isEmpty());
+		assertTrue(vistaAnna.giocatori().get(0).carte().isEmpty());
+	}
+
+	@Test
+	void ogniMossaAvvisaLaStanza() {
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+
+		int prima = annunci.size();
+		tavolo.passa(CODICE, creatore);
+
+		assertEquals(prima + 1, annunci.size(), "una mossa deve avvisare la stanza una volta sola");
+		assertEquals(CODICE, annunci.getLast().codice());
+	}
+
+	@Test
+	void unaSessioneNonPuoOccupareDuePosti() {
+		String creatore = sessione("Tu", true);
+		List<PostoTavolo> doppioni = List.of(new PostoTavolo(creatore, "Tu"), new PostoTavolo(creatore, "Doppione"),
+				new PostoTavolo(null, "Bot 1"), new PostoTavolo(null, "Bot 2"));
+
+		assertThrows(IllegalArgumentException.class, () -> tavolo.crea(CODICE, doppioni));
+	}
+
+	@Test
+	void ilCodiceDellaStanzaNonCambiaConLeMaiuscole() {
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+
+		assertEquals(0, tavolo.stato("test", creatore).tuoIndice());
+	}
+
+	@Test
+	void unaSessioneSenzaPostoNonVedeLeCarte() {
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+		String senzaPosto = sessione("Senza posto", false);
+
+		IllegalStateException errore = assertThrows(IllegalStateException.class,
+				() -> tavolo.stato(CODICE, senzaPosto));
+
+		assertTrue(errore.getMessage().contains("posto"), errore.getMessage());
+	}
+
+	@Test
+	void unaSessioneDiUnAltraStanzaNonVedeIlTavolo() {
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+		String intruso = sessioni.crea("Intruso", "ALTRA", false).id();
+
+		assertThrows(IllegalStateException.class, () -> tavolo.stato(CODICE, intruso));
+		assertEquals(0, tavolo.stato(CODICE, creatore).tuoIndice());
 	}
 
 	@Test
 	void nonSiPuoVedereSeNessunoHaPuntato() {
-		TavoloService tavolo = new TavoloService();
-		StatoTavolo stato = tavolo.stato();
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
 
-		assertTrue(stato.toccaATe(), "il cartaro iniziale e' il giocatore umano");
+		StatoTavolo stato = tavolo.stato(CODICE, creatore);
+
+		assertTrue(stato.toccaATe(), "il cartaro iniziale e' il primo posto");
 		assertEquals(0, stato.mano().puntataMassima());
-		assertThrows(IllegalStateException.class, tavolo::vedo);
+		assertThrows(IllegalStateException.class, () -> tavolo.vedo(CODICE, creatore));
+	}
+
+	@Test
+	void unaMossaFuoriTurnoNonPassa() {
+		String peppa = sessione("Peppa", true);
+		String anna = sessione("Anna", false);
+		tavolo.crea(CODICE, conBot(peppa, anna));
+
+		assertThrows(IllegalStateException.class, () -> tavolo.passa(CODICE, anna));
 	}
 
 	@Test
 	void unaPartitaSiGiocaDallInizioAllaFine() {
-		TavoloService tavolo = new TavoloService();
-		StatoTavolo stato = tavolo.stato();
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
 
+		StatoTavolo stato = tavolo.stato(CODICE, creatore);
 		int guardia = 0;
 		while (!stato.finita() && guardia++ < 400) {
 			if (stato.mano().chiusa()) {
-				stato = tavolo.prossimaMano();
+				stato = tavolo.prossimaMano(CODICE, creatore);
 				continue;
 			}
 			assertTrue(stato.toccaATe(), "dopo ogni mossa deve toccare al giocatore umano");
-			stato = stato.mano().puntataMassima() == 0 ? tavolo.passa() : tavolo.vedo();
+			stato = stato.mano().puntataMassima() == 0 ? tavolo.passa(CODICE, creatore)
+					: tavolo.vedo(CODICE, creatore);
 		}
 
 		assertTrue(stato.finita(), "la partita non si e' conclusa");
@@ -65,15 +169,27 @@ class TavoloServiceTest {
 
 	@Test
 	void unaNuovaPartitaAzzeraIlTavolo() {
-		TavoloService tavolo = new TavoloService();
-		tavolo.stato();
-		tavolo.passa();
+		String creatore = sessione("Tu", true);
+		tavolo.crea(CODICE, conBot(creatore));
+		tavolo.passa(CODICE, creatore);
 
-		StatoTavolo stato = tavolo.nuovaPartita();
+		StatoTavolo nuova = tavolo.nuovaPartita(CODICE, creatore);
 
-		assertEquals(1, stato.mano().numero());
-		assertTrue(stato.giocatori().stream().allMatch(giocatore -> giocatore.fiches() == 10));
-		assertFalse(stato.finita());
+		assertEquals(1, nuova.mano().numero());
+		assertEquals(4, nuova.mano().piatto());
+		assertTrue(nuova.giocatori().stream().allMatch(giocatore -> giocatore.fiches() == 9));
+		assertFalse(nuova.finita());
+	}
+
+	@Test
+	void ilRiepilogoESoloDiChiCreaLaLobby() {
+		String peppa = sessione("Peppa", true);
+		String anna = sessione("Anna", false);
+		tavolo.crea(CODICE, conBot(peppa, anna));
+
+		assertThrows(IllegalStateException.class, () -> tavolo.riepilogo(CODICE, anna));
+		assertEquals(4, tavolo.riepilogo(CODICE, peppa).piatto());
+		assertEquals(9, tavolo.riepilogo(CODICE, peppa).giocatori().getFirst().fiches());
 	}
 
 }

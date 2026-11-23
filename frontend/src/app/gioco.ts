@@ -50,16 +50,37 @@ export type StatoTavolo = {
   puntataMassima: number;
 };
 
+export type PostoLobby = { indice: number; nome: string; bot: boolean };
+
+export type StanzaLobby = {
+  codice: string;
+  posti: PostoLobby[];
+  postiTotali: number;
+  minimoGiocatori: number;
+  avviata: boolean;
+  tuoIndice: number;
+};
+
+export type IngressoLobby = { sessione: string; stanza: StanzaLobby };
+
 export type ErroreApi = { errore?: string };
 
 export async function inviaApi<T>(
   url: string,
   metodo: 'GET' | 'POST' | 'DELETE',
   corpo?: unknown,
+  sessione?: string,
 ): Promise<T> {
+  const intestazioni: Record<string, string> = {};
+  if (corpo !== undefined) {
+    intestazioni['Content-Type'] = 'application/json';
+  }
+  if (sessione) {
+    intestazioni['X-Sessione'] = sessione;
+  }
   const risposta = await fetch(url, {
     method: metodo,
-    headers: corpo === undefined ? undefined : { 'Content-Type': 'application/json' },
+    headers: Object.keys(intestazioni).length ? intestazioni : undefined,
     body: corpo === undefined ? undefined : JSON.stringify(corpo),
   });
   const dati = (await risposta.json()) as T & ErroreApi;
@@ -69,8 +90,8 @@ export async function inviaApi<T>(
   return dati;
 }
 
-export function chiamataApi<T>(url: string, corpo?: unknown): Promise<T> {
-  return inviaApi<T>(url, corpo === undefined ? 'GET' : 'POST', corpo);
+export function chiamataApi<T>(url: string, corpo?: unknown, sessione?: string): Promise<T> {
+  return inviaApi<T>(url, corpo === undefined ? 'GET' : 'POST', corpo, sessione);
 }
 
 export function etichettaSeme(seme: string): string {

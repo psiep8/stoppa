@@ -49,7 +49,8 @@ insieme e si rifa' il punto con lo stesso criterio: vince chi totalizza piu' pun
 
 - Ogni giocatore parte con **10 gettoni**.
 - All'inizio della partita ognuno mette **1 gettone nel piatto del tavolo** (una
-  sola volta, non a ogni mano).
+  sola volta, non a ogni mano): restano quindi **9 gettoni spendibili** a testa,
+  piu' quelli che arrivano dalle mani vinte.
 - Ogni mano ha il suo giro di puntate. Apre il **cartaro**, poi si gira in senso
   orario; il cartaro ruota a ogni mano.
 - Nel proprio turno si puo':
@@ -69,10 +70,13 @@ insieme e si rifa' il punto con lo stesso criterio: vince chi totalizza piu' pun
 
 - Le carte di chi non vince **non si mostrano mai**, neanche a fine partita: si
   vedono solo le carte vincenti di ogni mano.
-- I gettoni di tutti sono visibili, con un pulsante a occhio per decidere se
-  mostrare i propri.
+- I gettoni di tutti sono visibili. Il **pulsante a occhio** per decidere se
+  mostrare i propri **non e' ancora implementato**: oggi i gettoni sono sempre
+  visibili.
 - Chi crea la lobby ha un **riepilogo sempre aggiornato** di gettoni, debiti,
-  piatto e punto di ogni giocatore.
+  piatto e punto di ogni giocatore. L'API c'e' (`GET /api/tavolo/{codice}/riepilogo`,
+  riservata a chi crea la stanza), **l'interfaccia no**: il riepilogo non e' ancora
+  mostrato nel tavolo.
 
 ## Punto finale
 

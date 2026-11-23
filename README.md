@@ -14,13 +14,15 @@ Nessuna vincita in denaro, nessun acquisto di fiches con denaro reale, nessun ca
 ## Struttura
 
 ```
-backend/    API REST e WebSocket della lobby
+backend/    API REST di lobby e tavolo, motore di gioco
 frontend/   app Angular (desktop + mobile, layout responsive)
 ```
 
 ## Avvio in locale
 
 Backend (porta 8080):
+
+Serve un **JDK 25** (il progetto compila con `java.version=25`).
 
 ```bash
 cd backend
@@ -35,7 +37,39 @@ npm install
 npm start
 ```
 
-Poi apri http://localhost:4200: la pagina mostra lo stato di backend e WebSocket.
+Poi apri http://localhost:4200, scegli il nome ed entra nella lobby: da lì aggiungi i bot
+al tavolo e avvia la partita. Per giocare in due, apri una seconda finestra e inserisci il
+codice della stanza nel campo "Codice stanza".
+
+## WebSocket
+
+`/ws/lobby` è il socket della stanza, non del tavolo: lobby e partita usano lo stesso
+canale. Il client manda `{"tipo":"entra","codice":"ABCD","sessione":"..."}` e riceve
+subito `{"tipo":"stanza","stanza":{...}}`; quando la lobby cambia (ingressi, bot, posti,
+avvio) il server rimanda la stanza aggiornata, quindi nessuno deve interrogarlo. A
+partita avviata arriva anche `{"tipo":"stato","stato":{...}}`, filtrato per la sessione,
+e da quel momento ogni mossa (`passa`, `vedo`, `punta` con `gettoni`, `prossima-mano`,
+`nuova-partita`) arriva a tutti i presenti. `{"tipo":"stato"}` chiede una
+risincronizzazione; rimandare `entra` fa lo stesso. Gli errori tornano solo a chi ha
+sbagliato come `{"tipo":"errore","messaggio":"..."}`.
+
+Un errore speciale è quello dello stato salvato non valido: se la sessione o la stanza
+non esistono più (per esempio dopo un riavvio del backend) l'errore porta in più
+`"motivo":"ricomincia"`, e il client cancella la partita salvata e torna alla home
+invece di restare fermo su un errore che non si può risolvere. Gli altri errori non
+hanno `motivo`.
+
+## Partita salvata
+
+L'interfaccia tiene la partita in corso in `sessionStorage` sotto `stoppa.partita`, come
+`{"codice":"ABCD","sessione":"...","schermata":"lobby"|"tavolo"}`: ricaricando la
+pagina si riprende la stanza o il tavolo invece di tornare alla home. `sessionStorage` è
+per scheda, quindi due finestre restano due giocatori diversi; il nome resta in
+`localStorage` sotto `stoppa.nome`.
+
+La partita salvata si cancella quando si torna alla home, anche quando è il server a
+dire `motivo: "ricomincia"`. Se lo storage è vietato dal browser si gioca lo stesso, ma
+ricaricare riporta alla home.
 
 ## Regole
 
@@ -43,19 +77,32 @@ Le regole del tavolo sono in [RULES.md](RULES.md).
 
 ## Stato del progetto
 
-Motore di gioco pronto e coperto dai test (`backend/src/main/java/it/stoppa/backend/game/`):
+Si gioca una partita completa in locale, da soli contro i bot o in più persone nella
+stessa stanza, ognuna con la propria sessione.
 
-- distribuzione completa del mazzo con gli scarti delle figure che avanzano
-  (4 giocatori: 3+3+3+1, 5: 3+3+2, 6: 3+3, 7 e 8: 3+2);
-- punto della primiera, massimo 55 (7+6+asso dello stesso seme), ricalcolato sulle
-  carte di tutte le mani a fine partita;
-- giro di puntate con passo, vedo e rilancio fino a 10 gettoni, chiusura quando tutti
-  hanno pareggiato o ne resta uno;
-- piatto del tavolo versato una volta a testa, gettone al vincitore di ogni mano (o al
-  cartaro se nessuno punta), puntate a debito e cambio automatico da 10 gettoni;
-- riepilogo per chi crea la lobby.
+- **Motore** (`backend/src/main/java/it/stoppa/backend/game/`): distribuzione completa
+  del mazzo con gli scarti delle figure che avanzano (4 giocatori: 3+3+3+1, 5: 3+3+2,
+  6: 3+3, 7 e 8: 3+2), punto della primiera fino a 55, giro di puntate con passo, vedo e
+  rilancio fino a 10 gettoni, piatto pagato un gettone a testa all'inizio della partita,
+  gettone al vincitore di ogni mano (o al cartaro se nessuno punta), puntate a debito e
+  cambio automatico da 10 gettoni, classifica finale per punto.
+- **Lobby** (`/api/lobby`): stanza con codice di quattro lettere, fino a 8 posti (parte
+  con te e cinque bot), ingresso con codice, bot da aggiungere e togliere, avvio.
+  Chi crea la stanza riceve un id di sessione opaco e lo rimanda in `X-Sessione`.
+- **Tavolo** (`/api/tavolo/{codice}`): una partita per stanza. Stato, passo, vedo,
+  punta, prossima mano, nuova partita e riepilogo. Ogni giocatore riceve solo le
+  proprie carte: degli altri vede solo quante ne hanno.
+- **Interfaccia** (`frontend/src/app/`): home con il nome, lobby con i posti, tavolo con
+  le carte napoletane e il registro delle mani, responsive su desktop e mobile.
 
-Manca il collegamento alla lobby: protocollo WebSocket, stanze e interfaccia di gioco.
+Coperto da test: `cd backend && ./mvnw verify`, `cd frontend && npm run build` e
+`cd frontend && npm test -- --watch=false`.
+
+### Cosa manca
+
+- **Persistenza**: stanze, sessioni e tavoli vivono in memoria e si perdono al riavvio.
+- **Riepilogo a schermo** per chi crea la lobby (l'API c'è, l'interfaccia no) e pulsante a
+  occhio per mostrare i propri gettoni. Vedi `RULES.md`.
 
 ## Grafica
 

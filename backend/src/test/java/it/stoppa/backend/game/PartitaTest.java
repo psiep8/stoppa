@@ -12,6 +12,9 @@ class PartitaTest {
 
 	private static final List<String> QUATTRO = List.of("A", "B", "C", "D");
 
+	/** Quattro giocatori da dieci gettoni: quattro finiscono subito nel piatto. */
+	private static final int GETTONI_IN_TAVOLO = 40;
+
 	private static Partita partita() {
 		return new Partita(QUATTRO, new Random(11));
 	}
@@ -21,15 +24,15 @@ class PartitaTest {
 	}
 
 	@Test
-	void siParteConDieciGettoniATestaEUnGettoneNelPiattoPerOgnuno() {
+	void aInizioPartitaOgnunoPagaUnGettoneNelPiatto() {
 		Partita partita = partita();
 
 		assertEquals(4, partita.piatto());
 		assertEquals(4, partita.maniTotali());
 		assertEquals(1, partita.numeroMano());
 		assertEquals(0, partita.cartaro());
-		partita.giocatori().forEach(giocatore -> assertEquals(10, giocatore.fiches()));
-		assertEquals(44, gettoniInGioco(partita));
+		partita.giocatori().forEach(giocatore -> assertEquals(9, giocatore.fiches()));
+		assertEquals(GETTONI_IN_TAVOLO, gettoniInGioco(partita));
 	}
 
 	@Test
@@ -48,8 +51,8 @@ class PartitaTest {
 
 		assertTrue(partita.mano().chiusa());
 		assertEquals(3, partita.piatto());
-		assertEquals(11, partita.giocatori().get(partita.cartaro()).fiches());
-		assertEquals(44, gettoniInGioco(partita));
+		assertEquals(10, partita.giocatori().get(partita.cartaro()).fiches());
+		assertEquals(GETTONI_IN_TAVOLO, gettoniInGioco(partita));
 	}
 
 	@Test
@@ -62,9 +65,9 @@ class PartitaTest {
 
 		assertTrue(partita.mano().chiusa());
 		int vincitore = partita.mano().vincitori().getFirst();
-		assertEquals(17, partita.giocatori().get(vincitore).fiches());
+		assertEquals(16, partita.giocatori().get(vincitore).fiches());
 		assertEquals(3, partita.piatto());
-		assertEquals(44, gettoniInGioco(partita));
+		assertEquals(GETTONI_IN_TAVOLO, gettoniInGioco(partita));
 	}
 
 	@Test
@@ -92,7 +95,7 @@ class PartitaTest {
 
 		assertTrue(partita.finita());
 		assertEquals(0, partita.piatto());
-		assertEquals(44, gettoniInGioco(partita));
+		assertEquals(GETTONI_IN_TAVOLO, gettoniInGioco(partita));
 	}
 
 	@Test
@@ -105,6 +108,7 @@ class PartitaTest {
 		assertEquals(4, riepilogo.giocatori().size());
 		assertEquals(partita.giocatori().getFirst().nome(), riepilogo.giocatori().getFirst().nome());
 		assertEquals(3, riepilogo.giocatori().getFirst().puntata());
+		assertEquals(6, riepilogo.giocatori().getFirst().fiches());
 		assertEquals(partita.giocatori().get(partita.cartaro()).nome(), riepilogo.cartaro());
 	}
 

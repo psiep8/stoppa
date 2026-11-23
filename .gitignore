@@ -18,3 +18,6 @@ Thumbs.db
 .freebuff/
 
 screenshots/
+
+# Stato locale dell IDE
+.openidea/

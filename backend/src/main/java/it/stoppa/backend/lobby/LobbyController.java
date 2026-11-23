@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,31 +22,43 @@ public class LobbyController {
 	}
 
 	@PostMapping
-	public StanzaLobby crea(@RequestBody(required = false) CreaRichiesta richiesta) {
+	public IngressoLobby crea(@RequestBody(required = false) CreaRichiesta richiesta) {
 		return lobby.crea(richiesta == null ? null : richiesta.nome());
 	}
 
 	@GetMapping("/{codice}")
-	public StanzaLobby stanza(@PathVariable String codice) {
-		return lobby.stanza(codice);
+	public StanzaLobby stanza(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return lobby.stanza(codice, sessione);
+	}
+
+	@PostMapping("/{codice}/entra")
+	public IngressoLobby entra(@PathVariable String codice, @RequestBody(required = false) EntraRichiesta richiesta) {
+		return lobby.entra(codice, richiesta == null ? null : richiesta.nome());
 	}
 
 	@PostMapping("/{codice}/bot")
-	public StanzaLobby aggiungiBot(@PathVariable String codice) {
-		return lobby.aggiungiBot(codice);
+	public StanzaLobby aggiungiBot(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return lobby.aggiungiBot(codice, sessione);
 	}
 
 	@DeleteMapping("/{codice}/posti/{indice}")
-	public StanzaLobby togliPosto(@PathVariable String codice, @PathVariable int indice) {
-		return lobby.togliPosto(codice, indice);
+	public StanzaLobby togliPosto(@PathVariable String codice, @PathVariable int indice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return lobby.togliPosto(codice, indice, sessione);
 	}
 
 	@PostMapping("/{codice}/avvia")
-	public StatoTavolo avvia(@PathVariable String codice) {
-		return lobby.avvia(codice);
+	public StatoTavolo avvia(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return lobby.avvia(codice, sessione);
 	}
 
 	public record CreaRichiesta(String nome) {
+	}
+
+	public record EntraRichiesta(String nome) {
 	}
 
 }
