@@ -1,14 +1,56 @@
 <section class="scena">
   @if (stato(); as s) {
+    @if (s.finita && s.classifica.length) {
+      <section class="finale" role="dialog" aria-label="Partita finita">
+        <div class="finale-foglio">
+          <p class="occhiello">Partita finita · {{ s.mano.maniTotali }} mani</p>
+          <h2 class="finale-titolo">Vince {{ s.classifica[0].nome }}</h2>
+          <p class="finale-nota">{{ s.classifica[0].punteggio }} punti con le carte raccolte</p>
+
+          <table class="classifica">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Giocatore</th>
+                <th scope="col">Punto</th>
+                <th scope="col">Gettoni</th>
+                <th scope="col">Cambi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (riga of s.classifica; track riga.indice) {
+                <tr [class.mio]="riga.indice === s.tuoIndice">
+                  <td class="posizione">{{ riga.posizione }}</td>
+                  <td class="nome">{{ riga.nome }}</td>
+                  <td>{{ riga.punteggio }}</td>
+                  <td>
+                    {{ riga.fiches }}
+                    @if (riga.debito > 0) {
+                      <span class="debito">debito {{ riga.debito }}</span>
+                    }
+                  </td>
+                  <td>{{ riga.cambi }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <p class="finale-nota">
+            Punto: le carte raccolte mano dopo mano. Cambi: i pacchi da 10 gettoni presi a secco.
+          </p>
+
+          <div class="finale-azioni">
+            <button type="button" class="cta" (click)="scaricaVerbale()" [disabled]="attesa()">
+              Esporta Riepilogo Stoppata
+            </button>
+            <button type="button" class="ghost" (click)="esci.emit()">Torna alla lobby</button>
+          </div>
+        </div>
+      </section>
+    }
+
     @if (pov()) {
-    <div
-      class="pov"
-      [class.alzate]="alzate()"
-      [class.chiaro]="!alzate()"
-      (pointerdown)="iniziaGesto($event)"
-      (pointerup)="finisciGesto($event)"
-      (pointercancel)="finisciGesto($event)"
-    >
+    <div class="pov">
       <button
         type="button"
         class="ghost pov-cambia"
@@ -75,7 +117,9 @@
               </div>
             }
             @if (!s.finita) {
-              <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
+              <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">
+                {{ ultimaMano() ? 'Fine partita' : 'Prossima mano' }}
+              </button>
             } @else {
               <button type="button" class="cta" (click)="scaricaVerbale()" [disabled]="attesa()">
                 Esporta Riepilogo Stoppata
@@ -151,15 +195,30 @@
       </div>
 
       <div class="pov-mano">
+        <div class="pov-io">
+          <span class="pov-nome">{{ s.nomeTuo }}</span>
+          <app-pila
+            [quantita]="(io()?.fiches ?? 0) < 0 ? 0 : (io()?.fiches ?? 0)"
+            [colore]="colore(s.tuoIndice)"
+            [coperte]="!(io()?.fichesInVista ?? false)"
+            [piccola]="true"
+          />
+          <span class="pov-io-nota">{{ io()?.fiches }} gettoni</span>
+          @if ((io()?.debito ?? 0) > 0) {
+            <span class="pov-io-nota rosso">debito {{ io()?.debito }}</span>
+          }
+          @if ((io()?.puntata ?? 0) > 0) {
+            <span class="pov-io-nota">{{ io()?.puntata }} sul tavolo</span>
+          }
+        </div>
         <div class="pov-carte">
           @for (c of io()?.carte ?? []; track c.file; let i = $index) {
             <img class="carta pov-carta" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
           }
         </div>
-        <p class="pov-suggerimento">Scorri giù per vedere il tavolo</p>
       </div>
 
-      @if (!s.finita && !s.mano.inDichiarazione) {
+      @if (!s.finita && !s.mano.chiusa && !s.mano.inDichiarazione) {
       <div class="pov-comandi">
         <div class="pov-azioni">
         <button type="button" class="ghost" (click)="passa()" [disabled]="!s.toccaATe || attesa()">Passa</button>
@@ -195,7 +254,12 @@
         >
           +
         </button>
-        <button type="button" class="cta" (click)="punta()" [disabled]="!s.toccaATe || attesa()">
+        <button
+          type="button"
+          class="cta"
+          (click)="punta()"
+          [disabled]="!s.toccaATe || attesa() || puntata() <= s.mano.puntataMassima"
+        >
           Punta {{ puntata() }}
         </button>
         </div>
@@ -277,7 +341,9 @@
                 </div>
               }
               @if (!s.finita) {
-                <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
+                <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">
+                  {{ ultimaMano() ? 'Fine partita' : 'Prossima mano' }}
+                </button>
               }
             </div>
           } @else if (s.mano.inDichiarazione) {
@@ -430,7 +496,12 @@
           >
             +
           </button>
-          <button type="button" class="cta" (click)="punta()" [disabled]="!s.toccaATe || attesa()">
+          <button
+            type="button"
+            class="cta"
+            (click)="punta()"
+            [disabled]="!s.toccaATe || attesa() || puntata() <= s.mano.puntataMassima"
+          >
             Punta {{ puntata() }}
           </button>
         </div>
@@ -459,18 +530,6 @@
         <button type="button" class="ghost" (click)="nuovaPartita()" [disabled]="attesa()">Nuova partita</button>
       </div>
     </footer>
-
-    @if (s.finita) {
-      <section class="pannello esporta">
-        <p class="esporta-nota">
-          Il documento di fine partita riporta i gettoni iniziali e finali di ognuno e quante volte ha
-          dovuto cambiare e prendere altri 10 gettoni.
-        </p>
-        <button type="button" class="cta" (click)="scaricaVerbale()" [disabled]="attesa()">
-          Esporta Riepilogo Stoppata
-        </button>
-      </section>
-    }
     }
   } @else {
     <p class="caricamento">Caricamento…</p>

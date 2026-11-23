@@ -10,15 +10,11 @@ export class Vista {
   /** Si parte dalla POV anche da PC: il tavolo vero si apre dal pulsante. */
   readonly pov = signal(true);
 
-  /** Carte alzate in primo piano; abbassate quando si vuole vedere il tavolo. */
-  readonly alzate = signal(true);
-
   /** Vero solo mentre il tavolo e' a schermo: fuori non serve il pulsante. */
   readonly inGioco = signal(false);
 
   alterna(): void {
     this.pov.update((pov) => !pov);
-    this.alzate.set(true);
   }
 }
 

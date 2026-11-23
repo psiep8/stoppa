@@ -438,9 +438,30 @@ public class TavoloService {
 		boolean puoiContestare = puoiRispondere
 				&& Punteggio.calcola(mano.carteDi(indice)) >= mano.dichiarazione();
 
+		// Il tetto e' dieci gettoni: con la puntata massima a dieci non esiste un
+		// "undici", quindi la minima resta dieci e si puo' solo vedere o passare.
+		int puntataMinima = Math.min(mano.puntataMassima() + 1, Mano.TETTO_PUNTATA);
+
 		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
-				partita.finita(), List.copyOf(tavolo.eventi), mano.puntataMassima() + 1, Mano.TETTO_PUNTATA,
-				puoiDichiarare, puoiRispondere, puoiContestare, Punteggio.calcola(mano.carteDi(indice)));
+				partita.finita(), List.copyOf(tavolo.eventi), puntataMinima, Mano.TETTO_PUNTATA,
+				puoiDichiarare, puoiRispondere, puoiContestare, Punteggio.calcola(mano.carteDi(indice)),
+				classifica(partita));
+	}
+
+	/** Classifica di fine partita, nell'ordine ufficiale del motore. */
+	private static List<ClassificaTavolo> classifica(Partita partita) {
+		if (!partita.finita()) {
+			return List.of();
+		}
+		List<Integer> ordine = partita.classifica();
+		List<ClassificaTavolo> righe = new ArrayList<>(ordine.size());
+		for (int posizione = 0; posizione < ordine.size(); posizione++) {
+			int i = ordine.get(posizione);
+			Giocatore giocatore = partita.giocatori().get(i);
+			righe.add(new ClassificaTavolo(posizione + 1, i, giocatore.nome(), giocatore.punteggio(),
+					giocatore.fiches(), giocatore.debito(), giocatore.cambi()));
+		}
+		return List.copyOf(righe);
 	}
 
 	private static List<CartaTavolo> carte(List<it.stoppa.backend.game.Carta> carte) {

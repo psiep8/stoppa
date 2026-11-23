@@ -43,10 +43,6 @@ export class Tavolo implements OnInit, OnDestroy {
   /** La vista POV: il tavolo davanti e le carte in mano, anche da PC. */
   protected readonly pov = this.vista.pov;
 
-  protected readonly alzate = this.vista.alzate;
-
-  private partenzaTocco?: number;
-
   private precedente: StatoTavolo | null = null;
 
   private trascinamento?: { elemento: HTMLElement; x: number; sinistra: number };
@@ -72,6 +68,12 @@ export class Tavolo implements OnInit, OnDestroy {
   protected readonly turnoNome = computed(
     () => this.stato()?.giocatori.find((giocatore) => giocatore.diTurno)?.nome ?? '',
   );
+
+  /** L'ultima mano: il pulsante chiude la partita invece di aprirne un'altra. */
+  protected readonly ultimaMano = computed(() => {
+    const mano = this.stato()?.mano;
+    return !!mano && mano.numero >= mano.maniTotali;
+  });
 
   /** Il posto di chi ha vinto la mano: le fiches puntate volano lì. */
   protected readonly vincitoreIndice = computed(() => {
@@ -118,24 +120,6 @@ export class Tavolo implements OnInit, OnDestroy {
     const carte = this.io()?.carte ?? [];
     const centro = (carte.length - 1) / 2;
     return `rotate(${(indice - centro) * 3.5}deg)`;
-  }
-
-  protected iniziaGesto(evento: PointerEvent): void {
-    this.partenzaTocco = evento.clientY;
-  }
-
-  /** Giù per abbassare le carte e vedere il tavolo, su per riprenderle. */
-  protected finisciGesto(evento: PointerEvent): void {
-    if (this.partenzaTocco === undefined) {
-      return;
-    }
-    const scarto = evento.clientY - this.partenzaTocco;
-    this.partenzaTocco = undefined;
-    if (scarto > 30) {
-      this.alzate.set(false);
-    } else if (scarto < -30) {
-      this.alzate.set(true);
-    }
   }
 
   protected colore(indice: number): string {
@@ -312,15 +296,6 @@ export class Tavolo implements OnInit, OnDestroy {
 
   private applica(nuovo: StatoTavolo): void {
     this.riproduciSuoni(this.precedente, nuovo);
-    const prima = this.precedente;
-    // la POV abbassa le carte quando il tavolo ha qualcosa da leggere (esito o
-    // dichiarazione) e le rialza sulla mano nuova
-    const daLeggere = nuovo.mano.chiusa || nuovo.mano.inDichiarazione;
-    if (prima && daLeggere && !(prima.mano.chiusa || prima.mano.inDichiarazione)) {
-      this.vista.alzate.set(false);
-    } else if (prima && nuovo.mano.numero !== prima.mano.numero) {
-      this.vista.alzate.set(true);
-    }
     this.precedente = nuovo;
     this.stato.set(nuovo);
     if (this.puntata() < nuovo.puntataMinima || this.puntata() > nuovo.puntataMassima) {

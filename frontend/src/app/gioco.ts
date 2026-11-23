@@ -43,6 +43,17 @@ export type ManoTavolo = {
   bluffRimasti: number;
 };
 
+/** Una riga della classifica di fine partita. */
+export type ClassificaTavolo = {
+  posizione: number;
+  indice: number;
+  nome: string;
+  punteggio: number;
+  fiches: number;
+  debito: number;
+  cambi: number;
+};
+
 export type StatoTavolo = {
   tuoIndice: number;
   nomeTuo: string;
@@ -59,6 +70,8 @@ export type StatoTavolo = {
   puoiContestare: boolean;
   /** Il punto delle tue carte: serve per dire la verita'. */
   tuoiPunti: number;
+  /** Classifica ordinata, popolata solo a partita finita. */
+  classifica: ClassificaTavolo[];
 };
 
 export type PostoLobby = { indice: number; nome: string; bot: boolean };
