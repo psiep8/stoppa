@@ -27,6 +27,10 @@ schermata finale con classifica.
 | Media | “Prossima mano” chiamabile da tutti; “Nuova partita” visibile a tutti (409); dichiarazione precompilata a 20; comandi visibili a mano chiusa; POV predefinita anche su desktop; mano e comandi sotto la piega a 1280×720; nessun punto durante le puntate; tabella mobile stretta |
 | Bassa | Posti POV 3+1; lobby senza selettore “5 giocatori”; rimozione posti con un clic; “Carte a testa 3”; eventi in prima persona; apostrofo ASCII negli errori |
 
+> **Aggiornamento (commit `66e60a1`)**: G1, G2, G3 e G5 sono risolti. Il resto del
+> report descrive il comportamento al momento del giro ed è lasciato com'era; ogni
+> voce corretta ha in coda la nota con il fix.
+
 ![La POV: carte e comandi non convivono](qa-pov-scambio.png)
 
 A sinistra le carte alzate: tavolo sfocato, nessun comando. A destra il tavolo chiaro:
@@ -53,7 +57,7 @@ comandi visibili, carte sparite. Stessa mano, stesso momento.
 
 ## Problemi trovati
 
-### G1 — POV: le carte e i comandi si escludono (alta)
+### G1 — POV: le carte e i comandi si escludono (alta) — risolto
 
 È il difetto principale. In `styles.css`:
 
@@ -87,7 +91,14 @@ La schermata affiancata qui sopra è la prova visiva.
 **Effetto:** sul telefono si punta e si dichiara senza vedere la propria mano; chi non
 scopre il gesto non trova i comandi. È il primo punto da correggere.
 
-### G2 — Nella POV non ci sono le proprie fiches, il debito o il proprio nome (alta)
+**Come è stato corretto (commit `66e60a1`).** La POV non è più una scena a strati con
+il gesto di trascinamento: è una colonna `tavolo → mano → comandi`, con le carte e la
+barra Passa/Vedo/Punta sempre visibili insieme. Sono spariti `Vista.alzate`, le classi
+`.pov.alzate`/`.pov.chiaro`, le regole che nascondevano `.pov-mano` e `.pov-comandi` e
+il suggerimento “Scorri giù per vedere il tavolo”. Su schermi bassi le carte si
+ridimensionano, così a 1280×720 la barra comandi resta dentro la piega.
+
+### G2 — Nella POV non ci sono le proprie fiches, il debito o il proprio nome (alta) — risolto
 
 La POV mostra solo `avversari()`; la striscia con tutti i giocatori (`striscia`) esiste
 solo nella vista non-POV. Marta, che aveva 7 e poi 4 gettoni, non ha mai visto il proprio
@@ -95,7 +106,11 @@ saldo nella POV; la schermata mostra solo Peppa, Bot 1, Bot 2 e Bot 3. Mancano a
 debito e il proprio nome. Anche nella vista “Tavolo” la sua scheda era oltre il bordo
 destro della striscia orizzontale, quindi il saldo non era visibile senza trascinare.
 
-### G3 — Con la puntata massima a 10 il client propone “Punta 11” (alta)
+**Come è stato corretto (commit `66e60a1`).** Sopra le carte c'è ora il proprio posto
+(`.pov-io`): nome, gettoni, debito e gettoni sul tavolo, con la pila colorata del
+proprio indice. È visibile in ogni fase della mano, anche a carte coperte.
+
+### G3 — Con la puntata massima a 10 il client propone “Punta 11” (alta) — risolto
 
 Riprodotto dal vivo:
 
@@ -114,6 +129,13 @@ mostra 11 gettoni a tutti. La causa è `puntataMinima = max + 1` senza limite a 
 `applica()` corregge `puntata` a 11, ma il massimo resta 10; `−` e `+` si bloccano
 entrambi e l'unica azione rimasta è Vedo o Passa. Il server è corretto; il client no.
 
+**Come è stato corretto (commit `66e60a1`).** `TavoloService.statoPer` manda
+`puntataMinima = min(puntataMassima + 1, Mano.TETTO_PUNTATA)`, quindi a quota 10 la
+minima resta 10. Il pulsante “Punta” è inoltre disabilitato quando la puntata scelta
+non supera la massima (non si rilancia, si vede): a quota 10 l'azione proposta è
+“Vedo”. Verificato dal vivo con Peppa a 10 e i bot a 10: a Marta compaiono `Punta 10`
+disabilitato, `Vedo 10` attivo, `−`/`+` disabilitati, nessun 11 e nessun 409.
+
 ### G4 — “Nuova partita” azzera una mano aperta, senza conferma (alta)
 
 Riprodotto nella mano 1: dopo “Passi” e le puntate dei bot lo stato aveva 4 eventi
@@ -126,7 +148,7 @@ Il controllo del creatore è solo lato server; l'interfaccia mostra il pulsante 
 Non c'è `window.confirm`, non c'è undo. Chi crea la stanza può cancellare la partita in
 corso per sbaglio; chi non la crea riceve un 409.
 
-### G5 — La partita finisce senza classifica né “Partita finita” (alta)
+### G5 — La partita finisce senza classifica né “Partita finita” (alta) — risolto
 
 Dopo la mano 3 lo stato è `finita = true`, ma la schermata mostra ancora l'esito
 dell'ultima mano e il pulsante “Esporta Riepilogo Stoppata”. Non c'è un titolo di fine
@@ -137,6 +159,14 @@ sotto la piega; sulla POV mobile si vede solo l'export.
 Inoltre, sull'ultima mano il pulsante centrale dice ancora **“Prossima mano”**: solo
 dopo averlo premuto `finita` diventa true. Un giocatore non sa che quella era l'ultima
 mano e non sa che il clic chiuderà la partita.
+
+**Come è stato corretto (commit `66e60a1`).** Lo stato del tavolo espone `classifica`
+(posizione, nome, punto, gettoni, debito, cambi), popolata dal motore solo a
+`finita = true`. A partita finita compare una schermata finale che copre il tavolo:
+“Partita finita · N mani”, il vincitore con i suoi punti e la classifica completa con
+la propria riga evidenziata, più “Esporta Riepilogo Stoppata” e “Torna alla lobby”.
+Sull'ultima mano il pulsante centrale dice “Fine partita” invece di “Prossima mano”.
+Verificato su desktop 1280×720 e su mobile 390×844 con una partita a 5 giocatori.
 
 ![Fine partita su mobile](qa-fine-mobile-390.png)
 
@@ -302,13 +332,13 @@ Poi:
 
 ## Priorità consigliate
 
-1. **POV**: rendere visibili insieme carte e comandi (barra fissa in basso, o tavolo
+1. **(fatto)** **POV**: rendere visibili insieme carte e comandi (barra fissa in basso, o tavolo
    dietro le carte senza nasconderle); aggiungere le proprie fiches/debito.
-2. **Tetto 10**: `puntataMinima = min(max + 1, 10)` e “Punta” disabilitato a 10;
+2. **(fatto)** **Tetto 10**: `puntataMinima = min(max + 1, 10)` e “Punta” disabilitato a 10;
    non mostrare 11 a chi non è di turno.
 3. **Nuova partita**: solo a partita finita, solo creatore, con conferma; nasconderla
    agli altri.
-4. **Fine partita**: schermata con “Partita finita”, vincitore e classifica; sull'ultima
+4. **(fatto)** **Fine partita**: schermata con “Partita finita”, vincitore e classifica; sull'ultima
    mano il pulsante deve dire “Fine partita”.
 5. **Dichiarazione**: precompilare con il proprio punto (o l'ultima dichiarazione).
 6. **Prossima mano**: limitarla al cartaro o renderla idempotente; nasconderla agli altri.
