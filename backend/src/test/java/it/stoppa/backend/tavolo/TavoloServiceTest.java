@@ -179,9 +179,10 @@ class TavoloServiceTest {
 			}
 			if (stato.mano().inDichiarazione()) {
 				if (stato.puoiDichiarare()) {
-					stato = tavolo.dichiara(CODICE, creatore, 20);
+					stato = tavolo.dichiara(CODICE, creatore, 1);
 				} else if (stato.puoiRispondere()) {
-					stato = tavolo.contesta(CODICE, creatore);
+					stato = stato.puoiContestare() ? tavolo.contesta(CODICE, creatore)
+							: tavolo.accetta(CODICE, creatore);
 				}
 				continue;
 			}

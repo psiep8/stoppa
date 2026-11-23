@@ -61,6 +61,8 @@ export type StatoTavolo = {
   puntataMassima: number;
   puoiDichiarare: boolean;
   puoiRispondere: boolean;
+  /** Solo chi ha davvero il punto dichiarato puo' contestare. */
+  puoiContestare: boolean;
 };
 
 export type PostoLobby = { indice: number; nome: string; bot: boolean };

@@ -343,7 +343,7 @@ public class TavoloService {
 			}
 			String nome = tavolo.partita.giocatori().get(giocatore).nome();
 			int reali = Punteggio.calcola(mano.carteDi(giocatore));
-			if (reali >= mano.dichiarazione() || tavolo.random.nextInt(100) < 15) {
+			if (reali >= mano.dichiarazione()) {
 				tavolo.partita.contesta(giocatore);
 				aggiungiEvento(tavolo, nome + " contesta");
 			} else {
@@ -435,10 +435,13 @@ public class TavoloService {
 		boolean puoiDichiarare = mano.inDichiarazione() && mano.dichiarazione() == 0 && mano.dichiarante() == indice;
 		boolean puoiRispondere = mano.inDichiarazione() && mano.dichiarazione() > 0 && mano.dichiarante() != indice
 				&& mano.attivi().contains(indice) && !mano.accettato().contains(indice);
+		// non si contesta per finta: serve almeno il punto dichiarato in mano
+		boolean puoiContestare = puoiRispondere
+				&& Punteggio.calcola(mano.carteDi(indice)) >= mano.dichiarazione();
 
 		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
 				partita.finita(), List.copyOf(tavolo.eventi), partita.finita() ? classifica(tavolo) : List.of(),
-				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere);
+				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere, puoiContestare);
 	}
 
 	private List<ClassificaTavolo> classifica(PartitaTavolo tavolo) {

@@ -90,8 +90,13 @@
                 @if (s.puoiRispondere) {
                   <div class="dichiarazione-azioni">
                     <button type="button" class="ghost" (click)="accetta()" [disabled]="attesa()">Accetto</button>
-                    <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                    @if (s.puoiContestare) {
+                      <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                    }
                   </div>
+                  @if (!s.puoiContestare) {
+                    <p class="dichiarazione-nota">Hai meno di {{ s.mano.dichiarazione }} punti: non puoi contestare.</p>
+                  }
                 } @else {
                   <p class="pov-turno">In attesa delle risposte…</p>
                 }
@@ -278,8 +283,13 @@
                 @if (s.puoiRispondere) {
                   <div class="dichiarazione-azioni">
                     <button type="button" class="ghost" (click)="accetta()" [disabled]="attesa()">Accetto</button>
-                    <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                    @if (s.puoiContestare) {
+                      <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                    }
                   </div>
+                  @if (!s.puoiContestare) {
+                    <p class="dichiarazione-nota">Hai meno di {{ s.mano.dichiarazione }} punti: non puoi contestare.</p>
+                  }
                 } @else {
                   <p class="testo">In attesa delle risposte…</p>
                 }

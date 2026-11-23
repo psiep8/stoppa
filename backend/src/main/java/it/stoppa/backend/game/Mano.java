@@ -203,9 +203,17 @@ public final class Mano {
 		this.dichiarazione = punti;
 	}
 
-	/** Un altro giocatore contesta: si girano le carte e vince il punto piu' alto. */
+	/**
+	 * Un altro giocatore contesta: si girano le carte e vince il punto piu' alto.
+	 * Non si contesta per finta: chi ha meno del punto dichiarato non puo' farlo.
+	 */
 	public void contesta(int giocatore) {
 		verificaRisposta(giocatore);
+		int suoi = Punteggio.calcola(carte.get(giocatore));
+		if (suoi < dichiarazione) {
+			throw new IllegalStateException(
+					"non puoi contestare: hai " + suoi + " punti contro i " + dichiarazione + " dichiarati");
+		}
 		int migliore = -1;
 		for (int g : attivi) {
 			migliore = Math.max(migliore, Punteggio.calcola(carte.get(g)));

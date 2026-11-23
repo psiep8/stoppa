@@ -141,9 +141,9 @@ class ManoTest {
 	}
 
 	@Test
-	void chiBluffaTroppoVieneSmentito() {
+	void chiBluffaAlDiSottoDelPuntoAltroVieneSmentito() {
 		Mano mano = new Mano(1, 0, giocatori, List.of(
-				List.of(new Carta(Seme.DENARI, Valore.SETTE)),
+				List.of(new Carta(Seme.DENARI, Valore.DUE)),
 				List.of(new Carta(Seme.COPPE, Valore.SETTE)),
 				List.of(new Carta(Seme.SPADE, Valore.QUATTRO)),
 				List.of(new Carta(Seme.BASTONI, Valore.TRE))));
@@ -152,13 +152,27 @@ class ManoTest {
 		mano.vedo();
 		mano.vedo();
 
-		mano.dichiara(mano.dichiarante(), 40);
+		mano.dichiara(mano.dichiarante(), 20);
 		mano.contesta(1);
 
 		assertTrue(mano.chiusa());
-		assertEquals("non-sei-buono", mano.esitoDichiarazione(),
-				"decl=" + mano.dichiarazione() + " vincitori=" + mano.vincitori() + " punti="
-						+ Punteggio.calcola(mano.carteVincenti()) + " dichiarante=" + mano.dichiarante());
+		assertEquals(List.of(1), mano.vincitori());
+		assertEquals("non-sei-buono", mano.esitoDichiarazione());
+	}
+
+	@Test
+	void nonSiPuoContestareConMenoDelPuntoDichiarato() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		mano.dichiara(mano.dichiarante(), 20);
+		IllegalStateException errore = assertThrows(IllegalStateException.class, () -> mano.contesta(3));
+
+		assertTrue(errore.getMessage().contains("contestare"), errore.getMessage());
+		assertFalse(mano.chiusa());
 	}
 
 	@Test

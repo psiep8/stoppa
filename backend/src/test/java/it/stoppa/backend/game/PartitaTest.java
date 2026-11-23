@@ -64,7 +64,7 @@ class PartitaTest {
 		partita.vedo();
 
 		assertTrue(partita.mano().inDichiarazione());
-		partita.dichiara(partita.mano().dichiarante(), 20);
+		partita.dichiara(partita.mano().dichiarante(), 1);
 		partita.contesta((partita.mano().dichiarante() + 1) % 4);
 
 		assertTrue(partita.mano().chiusa());

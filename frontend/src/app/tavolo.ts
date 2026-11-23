@@ -318,11 +318,10 @@ export class Tavolo implements OnInit, OnDestroy {
   private applica(nuovo: StatoTavolo): void {
     this.riproduciSuoni(this.precedente, nuovo);
     const prima = this.precedente;
-    // a mano chiusa la POV abbassa le carte da sola: il risultato si vede subito
-    if (prima && nuovo.mano.chiusa && !prima.mano.chiusa) {
-      this.vista.alzate.set(false);
-    } else if (prima && nuovo.mano.inDichiarazione && !prima.mano.inDichiarazione) {
-      // la dichiarazione si fa sul tavolo: le carte si abbassano per mostrarla
+    // la POV abbassa le carte quando il tavolo ha qualcosa da leggere (esito o
+    // dichiarazione) e le rialza sulla mano nuova
+    const daLeggere = nuovo.mano.chiusa || nuovo.mano.inDichiarazione;
+    if (prima && daLeggere && !(prima.mano.chiusa || prima.mano.inDichiarazione)) {
       this.vista.alzate.set(false);
     } else if (prima && nuovo.mano.numero !== prima.mano.numero) {
       this.vista.alzate.set(true);

@@ -932,6 +932,12 @@ button:disabled {
   text-align: left;
 }
 
+.dichiarazione-nota {
+  margin: 0;
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
 .dichiarazione.compatta .dichiarazione-azioni {
   gap: 0.3rem;
 }
