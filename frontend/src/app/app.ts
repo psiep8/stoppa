@@ -6,6 +6,8 @@ import { RichiestaAccesso } from './gioco';
 import { PartitaSalvata, cancellaPartita, leggiPartita, salvaPartita } from './partita-salvata';
 import { Suoni } from './suoni';
 import { Tavolo } from './tavolo';
+import { Voce } from './voce';
+import { VocePannello } from './voce-pannello';
 
 type Schermata = 'home' | PartitaSalvata['schermata'];
 
@@ -13,12 +15,14 @@ type Schermata = 'home' | PartitaSalvata['schermata'];
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
-  imports: [Home, Lobby, Tavolo],
+  imports: [Home, Lobby, Tavolo, VocePannello],
 })
 export class App {
   private readonly suoni = inject(Suoni);
 
   private readonly canale = inject(CanaleStanza);
+
+  private readonly voce = inject(Voce);
 
   protected readonly schermata = signal<Schermata>('home');
   protected readonly nome = signal(nomeSalvato());
@@ -50,6 +54,7 @@ export class App {
   }
 
   protected vaiAllaLobby(richiesta: RichiestaAccesso): void {
+    this.voce.spegni();
     this.nome.set(richiesta.nome);
     try {
       localStorage.setItem('stoppa.nome', richiesta.nome);
@@ -73,6 +78,7 @@ export class App {
   }
 
   protected tornaHome(): void {
+    this.voce.spegni();
     this.canale.chiudi();
     cancellaPartita();
     this.stanza.set('');

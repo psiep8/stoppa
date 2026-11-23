@@ -69,12 +69,18 @@ class ManoTest {
 	}
 
 	@Test
-	void quandoTuttiPareggianoSiGiranoLeCarte() {
+	void quandoTuttiPareggianoSiApreLaDichiarazione() {
 		Mano mano = mano();
 		mano.punta(3);
 		mano.vedo();
 		mano.vedo();
 		mano.vedo();
+
+		assertTrue(mano.inDichiarazione());
+		assertFalse(mano.chiusa());
+
+		mano.dichiara(mano.dichiarante(), 20);
+		mano.contesta((mano.dichiarante() + 1) % 4);
 
 		assertTrue(mano.chiusa());
 		assertEquals(12, mano.totalePuntate());
@@ -105,8 +111,62 @@ class ManoTest {
 		mano.vedo();
 		mano.vedo();
 
+		assertTrue(mano.inDichiarazione());
+		mano.dichiara(mano.dichiarante(), 21);
+		mano.contesta(0);
+
 		assertTrue(mano.chiusa());
 		assertEquals(List.of(0), mano.vincitori());
+		assertEquals("buono-di-mano", mano.esitoDichiarazione());
+	}
+
+	@Test
+	void unaDichiarazioneAccettataDaTuttiVinceAncheSenzaCarteAlte() {
+		Mano mano = mano();
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		mano.dichiara(mano.dichiarante(), 50);
+		for (int giocatore : mano.attivi()) {
+			if (giocatore != mano.dichiarante()) {
+				mano.accetta(giocatore);
+			}
+		}
+
+		assertTrue(mano.chiusa());
+		assertEquals(List.of(mano.dichiarante()), mano.vincitori());
+		assertEquals("accettata", mano.esitoDichiarazione());
+	}
+
+	@Test
+	void chiBluffaTroppoVieneSmentito() {
+		Mano mano = new Mano(1, 0, giocatori, List.of(
+				List.of(new Carta(Seme.DENARI, Valore.SETTE)),
+				List.of(new Carta(Seme.COPPE, Valore.SETTE)),
+				List.of(new Carta(Seme.SPADE, Valore.QUATTRO)),
+				List.of(new Carta(Seme.BASTONI, Valore.TRE))));
+		mano.punta(3);
+		mano.vedo();
+		mano.vedo();
+		mano.vedo();
+
+		mano.dichiara(mano.dichiarante(), 40);
+		mano.contesta(1);
+
+		assertTrue(mano.chiusa());
+		assertEquals("non-sei-buono", mano.esitoDichiarazione(),
+				"decl=" + mano.dichiarazione() + " vincitori=" + mano.vincitori() + " punti="
+						+ Punteggio.calcola(mano.carteVincenti()) + " dichiarante=" + mano.dichiarante());
+	}
+
+	@Test
+	void nonSiPuoDichiarareFuoriDallaDichiarazione() {
+		Mano mano = mano();
+		mano.punta(2);
+
+		assertThrows(IllegalStateException.class, () -> mano.dichiara(0, 20));
 	}
 
 	@Test

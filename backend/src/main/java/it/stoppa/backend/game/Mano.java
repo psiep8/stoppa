@@ -20,8 +20,11 @@ public final class Mano {
 
 	public static final int TETTO_PUNTATA = 10;
 
+	/** Il massimo che si puo' dichiarare a voce: il punto piu' alto possibile. */
+	public static final int TETTO_DICHIARAZIONE = Punteggio.MASSIMO;
+
 	public enum Fase {
-		PUNTATE, CHIUSA
+		PUNTATE, DICHIARAZIONE, CHIUSA
 	}
 
 	private final int numero;
@@ -45,6 +48,18 @@ public final class Mano {
 	private int puntataMassima;
 
 	private Fase fase = Fase.PUNTATE;
+
+	/** Chi apre le dichiarazioni: l'ultimo rilancio rimasto in gioco. */
+	private int dichiarante = -1;
+
+	/** Quanto ha dichiarato: zero finche' non parla. */
+	private int dichiarazione;
+
+	/** Chi ha accettato la dichiarazione senza contestarla. */
+	private final Set<Integer> accettato = new LinkedHashSet<>();
+
+	/** Come e' finita la dichiarazione: accettata, buono, buono-di-mano, non-sei-buono. */
+	private String esito = "";
 
 	private boolean senzaPuntate;
 
@@ -114,12 +129,144 @@ public final class Mano {
 		return puntataMassima;
 	}
 
+	/** Chi ha puntato, in ordine: serve a sapere chi parla per primo a fine mano. */
+	public List<Integer> ordinePuntate() {
+		return List.copyOf(ordinePuntate);
+	}
+
 	public Set<Integer> attivi() {
 		return Set.copyOf(attivi);
 	}
 
 	public int giocatoreDiTurno() {
 		return ordine.get(indiceTurno);
+	}
+
+	public boolean inDichiarazione() {
+		return fase == Fase.DICHIARAZIONE;
+	}
+
+	public int dichiarante() {
+		return dichiarante;
+	}
+
+	public int dichiarazione() {
+		return dichiarazione;
+	}
+
+	public String esitoDichiarazione() {
+		return esito;
+	}
+
+	public Set<Integer> accettato() {
+		return Set.copyOf(accettato);
+	}
+
+	/**
+	 * Le puntate sono chiuse: si passa alle dichiarazioni. Parla l'ultimo che ha
+	 * rialzato ed e' ancora in mano, altrimenti chi ha chiamato per primo.
+	 */
+	private void apriDichiarazione() {
+		fase = Fase.DICHIARAZIONE;
+		dichiarazione = 0;
+		accettato.clear();
+		esito = "";
+		dichiarante = -1;
+		for (int i = ordinePuntate.size() - 1; i >= 0; i--) {
+			if (attivi.contains(ordinePuntate.get(i))) {
+				dichiarante = ordinePuntate.get(i);
+				break;
+			}
+		}
+		if (dichiarante < 0) {
+			for (int giocatore : attivi) {
+				dichiarante = giocatore;
+				break;
+			}
+		}
+	}
+
+	/** Chi apre dice il suo punteggio: puo' essere vero o un bluff. */
+	public void dichiara(int giocatore, int punti) {
+		if (fase != Fase.DICHIARAZIONE) {
+			throw new IllegalStateException("non c'e' una dichiarazione aperta");
+		}
+		if (giocatore != dichiarante) {
+			throw new IllegalStateException("parla solo chi ha aperto la mano");
+		}
+		if (dichiarazione > 0) {
+			throw new IllegalStateException("la dichiarazione e' gia' stata fatta");
+		}
+		if (punti < 1 || punti > TETTO_DICHIARAZIONE) {
+			throw new IllegalArgumentException("si dichiara da 1 a " + TETTO_DICHIARAZIONE + " punti");
+		}
+		this.dichiarazione = punti;
+	}
+
+	/** Un altro giocatore contesta: si girano le carte e vince il punto piu' alto. */
+	public void contesta(int giocatore) {
+		verificaRisposta(giocatore);
+		int migliore = -1;
+		for (int g : attivi) {
+			migliore = Math.max(migliore, Punteggio.calcola(carte.get(g)));
+		}
+		List<Integer> pari = new ArrayList<>();
+		for (int g : attivi) {
+			if (Punteggio.calcola(carte.get(g)) == migliore) {
+				pari.add(g);
+			}
+		}
+		int vincitore = pari.getFirst();
+		if (pari.size() > 1) {
+			for (int g : ordinePuntate) {
+				if (pari.contains(g)) {
+					vincitore = g;
+					break;
+				}
+			}
+		}
+		int puntiVincitore = Punteggio.calcola(carte.get(vincitore));
+		boolean dichiaranteAllaPari = Punteggio.calcola(carte.get(dichiarante)) == dichiarazione;
+		if (vincitore == dichiarante && puntiVincitore >= dichiarazione) {
+			esito = "buono";
+		} else if (puntiVincitore == dichiarazione && dichiaranteAllaPari) {
+			// stesso punto detto, ma il vincitore viene prima in ordine: "di mano"
+			esito = "buono-di-mano";
+		} else {
+			esito = "non-sei-buono";
+		}
+		vince(vincitore);
+	}
+
+	/**
+	 * Un altro giocatore accetta senza contestare: se accettano tutti, la
+	 * dichiarazione vale e il piatto va a chi ha parlato.
+	 */
+	public void accetta(int giocatore) {
+		verificaRisposta(giocatore);
+		accettato.add(giocatore);
+		for (int g : attivi) {
+			if (g != dichiarante && !accettato.contains(g)) {
+				return;
+			}
+		}
+		esito = "accettata";
+		vince(dichiarante);
+	}
+
+	private void verificaRisposta(int giocatore) {
+		if (fase != Fase.DICHIARAZIONE) {
+			throw new IllegalStateException("non c'e' una dichiarazione aperta");
+		}
+		if (dichiarazione == 0) {
+			throw new IllegalStateException("prima parla chi ha aperto la mano");
+		}
+		if (!attivi.contains(giocatore)) {
+			throw new IllegalStateException("non sei piu' in questa mano");
+		}
+		if (giocatore == dichiarante) {
+			throw new IllegalStateException("non puoi rispondere a te stesso");
+		}
 	}
 
 	public void passa() {
@@ -189,16 +336,15 @@ public final class Mano {
 			return;
 		}
 		else if (tuttiPareggiati()) {
-			rivela();
+			apriDichiarazione();
 			return;
 		}
 
 		int prossimo = prossimoTurno();
-		if (prossimo < 0) {
+				if (prossimo < 0) {
 			if (puntataMassima > 0) {
-				rivela();
-			}
-			else {
+				apriDichiarazione();
+			} else {
 				chiudiSenzaPuntate();
 			}
 			return;
@@ -226,30 +372,6 @@ public final class Mano {
 			}
 		}
 		return true;
-	}
-
-	private void rivela() {
-		List<Integer> candidati = new ArrayList<>(attivi);
-		int migliore = -1;
-		for (int giocatore : candidati) {
-			migliore = Math.max(migliore, Punteggio.calcola(carte.get(giocatore)));
-		}
-		int vincitore = candidati.getFirst();
-		List<Integer> pari = new ArrayList<>();
-		for (int giocatore : candidati) {
-			if (Punteggio.calcola(carte.get(giocatore)) == migliore) {
-				pari.add(giocatore);
-			}
-		}
-		if (pari.size() > 1) {
-			for (int giocatore : ordinePuntate) {
-				if (pari.contains(giocatore)) {
-					vincitore = giocatore;
-					break;
-				}
-			}
-		}
-		vince(vincitore);
 	}
 
 	private void vince(int giocatore) {

@@ -79,6 +79,7 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
               type="button"
               class="posto occupato"
               [class.mio]="i === mio()"
+              [style.--i]="i"
               (click)="togli(i)"
               [disabled]="avviata() || i === mio() || !creatore()"
             >
@@ -90,6 +91,7 @@ import { IngressoLobby, PostoLobby, StanzaLobby, StatoTavolo, inviaApi } from '.
             <button
               type="button"
               class="posto libero"
+              [style.--i]="i"
               (click)="aggiungiBot()"
               [disabled]="attesa() || avviata() || !creatore()"
             >

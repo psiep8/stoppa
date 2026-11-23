@@ -5,12 +5,26 @@ export type AvvisoCanale =
   | { tipo: 'stato'; stato: StatoTavolo }
   | { tipo: 'errore'; messaggio: string; motivo?: string };
 
+export type PartecipanteVoce = { id: string; nome: string; muto: boolean };
+
+export type DatiVoce =
+  | { genere: 'offerta' | 'risposta'; sdp: RTCSessionDescriptionInit }
+  | { genere: 'ice'; candidato: RTCIceCandidateInit };
+
+export type AvvisoVoce =
+  | { tipo: 'voce'; roster: { mio: string; partecipanti: PartecipanteVoce[] } }
+  | { tipo: 'voce'; da: string; dati: DatiVoce };
+
 type Messaggio = {
   tipo?: string;
   stanza?: StanzaLobby;
   stato?: StatoTavolo;
   messaggio?: string;
   motivo?: string;
+  mio?: string;
+  partecipanti?: PartecipanteVoce[];
+  da?: string;
+  dati?: DatiVoce;
 };
 
 /**
@@ -31,6 +45,10 @@ export class CanaleStanza {
   private riconnessione?: ReturnType<typeof setTimeout>;
 
   private ascoltatori = new Set<(avviso: AvvisoCanale) => void>();
+
+  private ascoltatoriVoce = new Set<(avviso: AvvisoVoce) => void>();
+
+  private ascoltatoriApertura = new Set<() => void>();
 
   /** Apre il canale della stanza; se e' gia' quello giusto chiede una risincronizzazione. */
   apri(codice: string, sessione: string): void {
@@ -67,6 +85,17 @@ export class CanaleStanza {
     return () => this.ascoltatori.delete(ascoltatore);
   }
 
+  ascoltaVoce(ascoltatore: (avviso: AvvisoVoce) => void): () => void {
+    this.ascoltatoriVoce.add(ascoltatore);
+    return () => this.ascoltatoriVoce.delete(ascoltatore);
+  }
+
+  /** A ogni apertura del socket, riconnessioni comprese. */
+  ascoltaApertura(ascoltatore: () => void): () => void {
+    this.ascoltatoriApertura.add(ascoltatore);
+    return () => this.ascoltatoriApertura.delete(ascoltatore);
+  }
+
   /** Manda un messaggio sul canale; false se non e' aperto (si usa la REST). */
   invia(messaggio: object): boolean {
     const socket = this.socket;
@@ -84,6 +113,7 @@ export class CanaleStanza {
 
     socket.onopen = () => {
       this.invia({ tipo: 'entra', codice: this.codice, sessione: this.sessione });
+      this.ascoltatoriApertura.forEach((ascoltatore) => ascoltatore());
     };
 
     socket.onmessage = (evento) => this.ricevi(String(evento.data));
@@ -106,6 +136,18 @@ export class CanaleStanza {
       const messaggio = JSON.parse(dato) as Messaggio;
       if (messaggio.tipo === 'stanza' && messaggio.stanza) {
         this.stanza.set(messaggio.stanza);
+        return;
+      }
+      if (messaggio.tipo === 'voce') {
+        const voce: AvvisoVoce | null =
+          messaggio.mio && messaggio.partecipanti
+            ? { tipo: 'voce', roster: { mio: messaggio.mio, partecipanti: messaggio.partecipanti } }
+            : messaggio.da && messaggio.dati
+              ? { tipo: 'voce', da: messaggio.da, dati: messaggio.dati }
+              : null;
+        if (voce) {
+          this.ascoltatoriVoce.forEach((ascoltatore) => ascoltatore(voce));
+        }
         return;
       }
       const avviso: AvvisoCanale | null =

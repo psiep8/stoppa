@@ -103,6 +103,21 @@ public final class Partita {
 		dopoAzione();
 	}
 
+	public void dichiara(int giocatore, int punti) {
+		mano.dichiara(giocatore, punti);
+		dopoAzione();
+	}
+
+	public void contesta(int giocatore) {
+		mano.contesta(giocatore);
+		dopoAzione();
+	}
+
+	public void accetta(int giocatore) {
+		mano.accetta(giocatore);
+		dopoAzione();
+	}
+
 	public void prossimaMano() {
 		if (fase == Fase.FINITA) {
 			throw new IllegalStateException("la partita e' finita");

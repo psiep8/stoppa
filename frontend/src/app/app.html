@@ -31,6 +31,10 @@
     </div>
   </header>
 
+  @if (schermata() !== 'home') {
+    <app-voce />
+  }
+
   @switch (schermata()) {
     @case ('home') {
       <app-home [nomeIniziale]="nome()" [codiceIniziale]="stanza()" (entra)="vaiAllaLobby($event)" />

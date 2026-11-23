@@ -73,6 +73,32 @@ public class TavoloController {
 		return tavolo.punta(codice, sessione, richiesta.gettoni());
 	}
 
+	@PostMapping("/dichiara")
+	public StatoTavolo dichiara(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione,
+			@RequestBody DichiarazioneRichiesta richiesta) {
+		return tavolo.dichiara(codice, sessione, richiesta.punti());
+	}
+
+	@PostMapping("/contesta")
+	public StatoTavolo contesta(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return tavolo.contesta(codice, sessione);
+	}
+
+	@PostMapping("/accetta")
+	public StatoTavolo accetta(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
+		return tavolo.accetta(codice, sessione);
+	}
+
+	@PostMapping("/mostra-fiches")
+	public StatoTavolo mostraFiches(@PathVariable String codice,
+			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione,
+			@RequestBody MostraFichesRichiesta richiesta) {
+		return tavolo.mostraFiches(codice, sessione, richiesta.mostra());
+	}
+
 	@PostMapping("/prossima-mano")
 	public StatoTavolo prossimaMano(@PathVariable String codice,
 			@RequestHeader(value = SessioniService.HEADER, required = false) String sessione) {
@@ -80,6 +106,12 @@ public class TavoloController {
 	}
 
 	public record PuntataRichiesta(int gettoni) {
+	}
+
+	public record MostraFichesRichiesta(boolean mostra) {
+	}
+
+	public record DichiarazioneRichiesta(int punti) {
 	}
 
 }

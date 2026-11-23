@@ -1,13 +1,208 @@
 <section class="scena">
   @if (stato(); as s) {
+    @if (pov()) {
+    <div
+      class="pov"
+      [class.alzate]="alzate()"
+      [class.chiaro]="!alzate()"
+      (pointerdown)="iniziaGesto($event)"
+      (pointerup)="finisciGesto($event)"
+      (pointercancel)="finisciGesto($event)"
+    >
+      <button
+        type="button"
+        class="ghost pov-cambia"
+        (click)="mostraFiches()"
+        [disabled]="attesa()"
+        [attr.aria-label]="io()?.fichesInVista ? 'Copri le fiches agli altri' : 'Mostra le fiches agli altri'"
+      >
+        {{ io()?.fichesInVista ? 'Copri' : 'Mostra' }}
+      </button>
+
+      <div class="pov-tavolo">
+        <div class="pov-avversari">
+          @for (g of avversari(); track g.indice) {
+            <div class="pov-posto" [class.turno]="g.diTurno">
+              <span class="pov-nome">{{ g.nome }}</span>
+              <app-pila
+                [quantita]="g.fiches < 0 ? 3 : g.fiches"
+                [colore]="colore(g.indice)"
+                [coperte]="g.fiches < 0"
+                [piccola]="true"
+              />
+            </div>
+          }
+        </div>
+
+        <div class="pov-centro">
+          @if (s.mano.chiusa) {
+            <p class="pov-occhiello">Mano {{ s.mano.numero }} di {{ s.mano.maniTotali }}</p>
+            @if (s.mano.senzaPuntate) {
+              <p class="pov-esito">Nessuno ha puntato</p>
+            } @else {
+              <p class="pov-esito">{{ s.mano.vincitori.join(' e ') }} vince la mano</p>
+              <div class="fumetti">
+                @if (s.mano.esitoDichiarazione === 'non-sei-buono') {
+                  <p class="fumetto bluff" style="--i: 0">
+                    <span class="chi">{{ s.mano.dichiarante }}</span>
+                    «Ho detto {{ s.mano.dichiarazione }} punti.»
+                  </p>
+                  <p class="fumetto risposta" style="--i: 1">
+                    <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                    «Non sei buono: ne ho {{ s.mano.puntiVincenti }}.»
+                  </p>
+                } @else if (s.mano.esitoDichiarazione === 'buono-di-mano') {
+                  <p class="fumetto risposta" style="--i: 0">
+                    <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                    «Sono buono io di mano: {{ s.mano.puntiVincenti }} punti.»
+                  </p>
+                } @else if (s.mano.esitoDichiarazione === 'buono') {
+                  <p class="fumetto risposta" style="--i: 0">
+                    <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                    «Sono buono io: ne ho {{ s.mano.puntiVincenti }}.»
+                  </p>
+                } @else if (s.mano.esitoDichiarazione === 'accettata') {
+                  <p class="fumetto" style="--i: 0">
+                    <span class="chi">{{ s.mano.dichiarante }}</span>
+                    «Nessuno contesta: è mia con {{ s.mano.dichiarazione }} punti.»
+                  </p>
+                }
+              </div>
+              <div class="pov-vinte">
+                @for (c of s.mano.carteVincenti; track c.file) {
+                  <img class="carta gira" [src]="immagine(c.file)" [alt]="descrizione(c)" />
+                }
+              </div>
+            }
+            @if (!s.finita) {
+              <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
+            } @else {
+              <button type="button" class="cta" (click)="vediTavolo()">Classifica</button>
+            }
+          } @else if (s.mano.inDichiarazione) {
+            <section class="dichiarazione compatta">
+              <p class="pov-occhiello">Dichiarazioni</p>
+              @if (s.mano.dichiarazione > 0) {
+                <p class="fumetto bluff" style="--i: 0">
+                  <span class="chi">{{ s.mano.dichiarante }}</span>
+                  «Ho {{ s.mano.dichiarazione }} punti.»
+                </p>
+                @if (s.puoiRispondere) {
+                  <div class="dichiarazione-azioni">
+                    <button type="button" class="ghost" (click)="accetta()" [disabled]="attesa()">Accetto</button>
+                    <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                  </div>
+                } @else {
+                  <p class="pov-turno">In attesa delle risposte…</p>
+                }
+              } @else if (s.puoiDichiarare) {
+                <div class="dichiarazione-azioni">
+                  <button type="button" class="ghost passo" (click)="menoDichiarazione()" [disabled]="attesa()" aria-label="Un punto in meno">−</button>
+                  <input
+                    class="dichiarazione-numero"
+                    type="number"
+                    min="1"
+                    max="55"
+                    [value]="dichiarazione()"
+                    (input)="scriviDichiarazione($event)"
+                    aria-label="Punti da dichiarare"
+                  />
+                  <button type="button" class="ghost passo" (click)="piuDichiarazione()" [disabled]="attesa()" aria-label="Un punto in più">+</button>
+                  <button type="button" class="cta" (click)="dichiara()" [disabled]="attesa()">Dichiara</button>
+                </div>
+              } @else {
+                <p class="pov-turno">{{ s.mano.dichiarante }} sta parlando…</p>
+              }
+            </section>
+          } @else {
+            <app-piatto [quantita]="s.mano.piatto" [seme]="codice()" />
+            <p class="pov-occhiello">nel piatto</p>
+            <p class="pov-turno" [class.mio]="s.toccaATe">
+              @if (s.toccaATe) {
+                Tocca a te
+              } @else {
+                {{ turnoNome() }} sta giocando…
+              }
+            </p>
+          }
+
+          <app-puntate
+            class="pov-puntate"
+            [giocatori]="s.giocatori"
+            [tuoIndice]="s.tuoIndice"
+            [chiusa]="s.mano.chiusa"
+            [vincitore]="vincitoreIndice()"
+            [compatta]="true"
+          />
+        </div>
+      </div>
+
+      <div class="pov-mano">
+        <div class="pov-carte">
+          @for (c of io()?.carte ?? []; track c.file; let i = $index) {
+            <img class="carta pov-carta" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
+          }
+        </div>
+        <p class="pov-suggerimento">Scorri giù per vedere il tavolo</p>
+      </div>
+
+      @if (!s.finita && !s.mano.inDichiarazione) {
+      <div class="pov-comandi">
+        <div class="pov-azioni">
+        <button type="button" class="ghost" (click)="passa()" [disabled]="!s.toccaATe || attesa()">Passa</button>
+        <button
+          type="button"
+          class="ghost"
+          (click)="vedo()"
+          [disabled]="!s.toccaATe || attesa() || s.mano.puntataMassima === 0"
+        >
+          Vedo
+          @if (costoVedo() > 0) {
+            <span class="costo">{{ costoVedo() }}</span>
+          }
+        </button>
+        </div>
+        <div class="pov-puntata">
+        <button
+          type="button"
+          class="ghost passo"
+          (click)="meno()"
+          [disabled]="!s.toccaATe || attesa() || puntata() <= s.puntataMinima"
+          aria-label="Togli un gettone"
+        >
+          −
+        </button>
+        <app-pila [quantita]="puntata()" colore="oro" />
+        <button
+          type="button"
+          class="ghost passo"
+          (click)="piu()"
+          [disabled]="!s.toccaATe || attesa() || puntata() >= s.puntataMassima"
+          aria-label="Aggiungi un gettone"
+        >
+          +
+        </button>
+        <button type="button" class="cta" (click)="punta()" [disabled]="!s.toccaATe || attesa()">
+          Punta {{ puntata() }}
+        </button>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
     <div class="rail">
       <div class="feltro">
         <div class="avversari">
-          @for (g of avversari(); track g.indice) {
-            <article class="posto" [class.turno]="g.diTurno" [class.fuori]="!g.inGioco">
+          @for (g of avversari(); track g.indice; let i = $index) {
+            <article class="posto" [class.turno]="g.diTurno" [class.fuori]="!g.inGioco" [style.--i]="i">
               <header class="posto-testa">
                 <span class="posto-nome">{{ g.nome }}</span>
-                <span class="ficha piccola oro">{{ g.fiches }}</span>
+                <app-pila
+                  [quantita]="g.fiches < 0 ? 3 : g.fiches"
+                  [colore]="colore(g.indice)"
+                  [coperte]="g.fiches < 0"
+                  [piccola]="true"
+                />
               </header>
               <div class="dorsi">
                 @for (d of dorsi(g.numeroCarte); track d) {
@@ -35,6 +230,33 @@
                 <p class="testo">1 gettone al cartaro.</p>
               } @else {
                 <p class="esito-titolo">{{ s.mano.vincitori.join(' e ') }}<span> vince la mano</span></p>
+                <div class="fumetti">
+                  @if (s.mano.esitoDichiarazione === 'non-sei-buono') {
+                    <p class="fumetto bluff" style="--i: 0">
+                      <span class="chi">{{ s.mano.dichiarante }}</span>
+                      «Ho detto {{ s.mano.dichiarazione }} punti.»
+                    </p>
+                    <p class="fumetto risposta" style="--i: 1">
+                      <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                      «Non sei buono: ne ho {{ s.mano.puntiVincenti }}.»
+                    </p>
+                  } @else if (s.mano.esitoDichiarazione === 'buono-di-mano') {
+                    <p class="fumetto risposta" style="--i: 0">
+                      <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                      «Sono buono io di mano: {{ s.mano.puntiVincenti }} punti.»
+                    </p>
+                  } @else if (s.mano.esitoDichiarazione === 'buono') {
+                    <p class="fumetto risposta" style="--i: 0">
+                      <span class="chi">{{ s.mano.vincitori[0] }}</span>
+                      «Sono buono io: ne ho {{ s.mano.puntiVincenti }}.»
+                    </p>
+                  } @else if (s.mano.esitoDichiarazione === 'accettata') {
+                    <p class="fumetto" style="--i: 0">
+                      <span class="chi">{{ s.mano.dichiarante }}</span>
+                      «Nessuno contesta: è mia con {{ s.mano.dichiarazione }} punti.»
+                    </p>
+                  }
+                </div>
                 <div class="carte-vinte">
                   @for (c of s.mano.carteVincenti; track c.file; let i = $index) {
                     <img class="carta gira" [src]="immagine(c.file)" [alt]="descrizione(c)" [style.--i]="i" />
@@ -45,13 +267,48 @@
                 <button type="button" class="cta" (click)="prossimaMano()" [disabled]="attesa()">Prossima mano</button>
               }
             </div>
+          } @else if (s.mano.inDichiarazione) {
+            <section class="dichiarazione">
+              <p class="occhiello">Dichiarazioni</p>
+              @if (s.mano.dichiarazione > 0) {
+                <p class="fumetto bluff" style="--i: 0">
+                  <span class="chi">{{ s.mano.dichiarante }}</span>
+                  «Ho {{ s.mano.dichiarazione }} punti.»
+                </p>
+                @if (s.puoiRispondere) {
+                  <div class="dichiarazione-azioni">
+                    <button type="button" class="ghost" (click)="accetta()" [disabled]="attesa()">Accetto</button>
+                    <button type="button" class="cta" (click)="contesta()" [disabled]="attesa()">Contesta</button>
+                  </div>
+                } @else {
+                  <p class="testo">In attesa delle risposte…</p>
+                }
+              } @else if (s.puoiDichiarare) {
+                <div class="dichiarazione-azioni">
+                  <button type="button" class="ghost passo" (click)="menoDichiarazione()" [disabled]="attesa()" aria-label="Un punto in meno">−</button>
+                  <input
+                    class="dichiarazione-numero"
+                    type="number"
+                    min="1"
+                    max="55"
+                    [value]="dichiarazione()"
+                    (input)="scriviDichiarazione($event)"
+                    aria-label="Punti da dichiarare"
+                  />
+                  <button type="button" class="ghost passo" (click)="piuDichiarazione()" [disabled]="attesa()" aria-label="Un punto in più">+</button>
+                  <button type="button" class="cta" (click)="dichiara()" [disabled]="attesa()">Dichiara</button>
+                </div>
+              } @else {
+                <p class="testo">{{ s.mano.dichiarante }} sta parlando…</p>
+              }
+            </section>
           } @else {
             <div class="piatto">
-              <span class="ficha oro">{{ s.mano.piatto }}</span>
+              <app-piatto [quantita]="s.mano.piatto" [seme]="codice()" />
               <span class="occhiello">nel piatto</span>
             </div>
             @if (s.mano.puntataMassima > 0) {
-              <p class="sul-tavolo"><span class="ficha">{{ s.mano.puntataMassima }}</span> puntata più alta</p>
+              <p class="sul-tavolo"><app-pila [quantita]="s.mano.puntataMassima" colore="oro" [piccola]="true" /> puntata più alta</p>
             }
             <p class="turno" [class.mio-turno]="s.toccaATe">
               @if (s.toccaATe) {
@@ -61,6 +318,13 @@
               }
             </p>
           }
+
+          <app-puntate
+            [giocatori]="s.giocatori"
+            [tuoIndice]="s.tuoIndice"
+            [chiusa]="s.mano.chiusa"
+            [vincitore]="vincitoreIndice()"
+          />
         </div>
       </div>
     </div>
@@ -72,12 +336,22 @@
       (pointerup)="fineTrascinamento($event)"
       (pointercancel)="fineTrascinamento($event)"
     >
-      @for (g of s.giocatori; track g.indice) {
-        <article class="scheda" [class.tuo]="g.indice === s.tuoIndice" [class.turno]="g.diTurno">
+      @for (g of s.giocatori; track g.indice; let i = $index) {
+        <article class="scheda" [class.tuo]="g.indice === s.tuoIndice" [class.turno]="g.diTurno" [style.--i]="i">
           <span class="scheda-nome">{{ g.nome }}</span>
-          <span class="scheda-fiches"><span class="ficha piccola oro">{{ g.fiches }}</span></span>
+          <span class="scheda-fiches">
+            <app-pila
+              [quantita]="g.fiches < 0 ? 3 : g.fiches"
+              [colore]="colore(g.indice)"
+              [coperte]="g.fiches < 0"
+              [piccola]="true"
+            />
+          </span>
           @if (g.puntata > 0) {
             <span class="scheda-nota">{{ g.puntata }} in gioco</span>
+          }
+          @if (g.fiches < 0) {
+            <span class="scheda-nota">fiches coperte</span>
           }
           @if (g.debito > 0) {
             <span class="scheda-nota rosso">debito {{ g.debito }}</span>
@@ -96,6 +370,7 @@
         }
       </div>
 
+      @if (!s.mano.inDichiarazione) {
       <div class="comandi">
         <div class="comandi-riga">
           <button type="button" class="ghost" (click)="passa()" [disabled]="!s.toccaATe || attesa()">Passa</button>
@@ -112,21 +387,31 @@
           </button>
         </div>
         <div class="comandi-riga">
-          <input
-            type="range"
-            [min]="s.puntataMinima"
-            [max]="s.puntataMassima"
-            step="1"
-            [value]="puntata()"
-            (input)="cambiaPuntata($event)"
-            [disabled]="!s.toccaATe || attesa()"
-            aria-label="Gettoni da puntare"
-          />
+          <button
+            type="button"
+            class="ghost passo"
+            (click)="meno()"
+            [disabled]="!s.toccaATe || attesa() || puntata() <= s.puntataMinima"
+            aria-label="Togli un gettone"
+          >
+            −
+          </button>
+          <app-pila [quantita]="puntata()" colore="oro" />
+          <button
+            type="button"
+            class="ghost passo"
+            (click)="piu()"
+            [disabled]="!s.toccaATe || attesa() || puntata() >= s.puntataMassima"
+            aria-label="Aggiungi un gettone"
+          >
+            +
+          </button>
           <button type="button" class="cta" (click)="punta()" [disabled]="!s.toccaATe || attesa()">
             Punta {{ puntata() }}
           </button>
         </div>
       </div>
+      }
     </div>
     }
 
@@ -137,6 +422,15 @@
         }
       </div>
       <div class="registro-azioni">
+        <button
+          type="button"
+          class="ghost"
+          (click)="mostraFiches()"
+          [disabled]="attesa()"
+          [attr.aria-label]="io()?.fichesInVista ? 'Copri le fiches agli altri' : 'Mostra le fiches agli altri'"
+        >
+          {{ io()?.fichesInVista ? 'Copri' : 'Mostra' }}
+        </button>
         <button type="button" class="ghost" (click)="esci.emit()">Lobby</button>
         <button type="button" class="ghost" (click)="nuovaPartita()" [disabled]="attesa()">Nuova partita</button>
       </div>
@@ -148,12 +442,12 @@
           <h2 class="vincitore-nome">{{ primo.nome }} vince la partita</h2>
         }
         <ol>
-          @for (riga of s.classifica; track riga.nome) {
-            <li [class.vincitore]="riga.posizione === 1">
+          @for (riga of s.classifica; track riga.nome; let i = $index) {
+            <li [class.vincitore]="riga.posizione === 1" [style.--i]="i">
               <span class="pos">{{ riga.posizione }}</span>
               <span class="nome">{{ riga.nome }}</span>
               <span class="punti">{{ riga.punteggio }} punti</span>
-              <span class="ficha piccola oro">{{ riga.fiches }}</span>
+              <app-pila [quantita]="riga.fiches" [colore]="colore(riga.posizione - 1)" [piccola]="true" />
             </li>
           }
         </ol>
@@ -161,6 +455,7 @@
           Scarica il verbale
         </button>
       </section>
+    }
     }
   } @else {
     <p class="caricamento">Caricamento…</p>

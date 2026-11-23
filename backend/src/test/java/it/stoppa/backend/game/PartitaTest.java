@@ -63,6 +63,10 @@ class PartitaTest {
 		partita.vedo();
 		partita.vedo();
 
+		assertTrue(partita.mano().inDichiarazione());
+		partita.dichiara(partita.mano().dichiarante(), 20);
+		partita.contesta((partita.mano().dichiarante() + 1) % 4);
+
 		assertTrue(partita.mano().chiusa());
 		int vincitore = partita.mano().vincitori().getFirst();
 		assertEquals(16, partita.giocatori().get(vincitore).fiches());

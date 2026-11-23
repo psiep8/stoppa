@@ -27,6 +27,8 @@
   /* due verdi: il baize del piano e il panno del tavolo */
   --baize: #081f17;
   --feltro: #14503a;
+  /* panno di lana: rumore fine generato in casa, nessuna immagine da scaricare */
+  --panno: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.09'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   --feltro-scuro: #0d3827;
   --feltro-nero: #051a12;
 
@@ -307,11 +309,709 @@ button:disabled {
   --chip: #2c5677;
 }
 
+.ficha.nero {
+  --chip: #232826;
+}
+
+.ficha.bianco {
+  --chip: #d8d1be;
+}
+
+.ficha.viola {
+  --chip: #66426f;
+}
+
+.ficha.arancio {
+  --chip: #b4632a;
+}
+
 .ficha.piccola {
   width: 22px;
   height: 22px;
   font-size: 0.6rem;
   --spicchio: 9deg;
+}
+
+/* ---------------- movimento ---------------- */
+
+/* La home sale, la lobby scivola, il tavolo avanza: ogni schermata ha un
+   gesto suo, e i figli entrano scaglionati invece che tutti insieme. */
+@keyframes entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scivola {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes avanza {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dissolvi {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* la ficha che cade sul panno: entra dall'alto e si posa girata */
+@keyframes caduta {
+  from {
+    opacity: 0;
+    transform: translateY(-26px) rotate(var(--r)) scale(var(--s));
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sotto {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes respiro {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* --- home --- */
+
+.home {
+  animation: entra 0.5s var(--molla) backwards;
+}
+
+.home .titolo {
+  animation: entra 0.55s 0.05s var(--molla) backwards;
+}
+
+.home .sommario {
+  animation: entra 0.55s 0.12s var(--molla) backwards;
+}
+
+.home .accesso {
+  animation: entra 0.55s 0.18s var(--molla) backwards;
+}
+
+.home .dati-partita {
+  animation: entra 0.55s 0.24s var(--molla) backwards;
+}
+
+.home .vetrina {
+  animation: avanza 0.7s 0.1s var(--molla) backwards;
+}
+
+/* le carte si aprono a ventaglio quando ci passi sopra */
+.home .vetrina-carta {
+  transition:
+    rotate 0.45s var(--molla),
+    translate 0.45s var(--molla);
+}
+
+.home .vetrina:hover .c1 {
+  rotate: -15deg;
+  translate: -72px 16px;
+}
+
+.home .vetrina:hover .c2 {
+  rotate: -1deg;
+  translate: 0 -10px;
+}
+
+.home .vetrina:hover .c3 {
+  rotate: 14deg;
+  translate: 70px 20px;
+}
+
+.home .vetrina figcaption::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.5rem;
+  background: var(--oro);
+}
+
+/* --- lobby --- */
+
+.lobby {
+  animation: scivola 0.45s var(--molla) backwards;
+}
+
+.lobby .testata {
+  animation: entra 0.45s 0.05s var(--molla) backwards;
+}
+
+.lobby .posto {
+  animation: entra 0.4s var(--molla) backwards;
+  animation-delay: calc(var(--i, 0) * 30ms + 0.12s);
+}
+
+/* --- tavolo --- */
+
+/* il tavolo prende tutta l'altezza del telefono: niente vuoto sotto */
+.app > app-tavolo {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+}
+
+.app > app-tavolo > .scena {
+  height: 100%;
+}
+
+.scena {
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  animation: avanza 0.5s var(--molla) backwards;
+}
+
+/* il bordo imbottito del tavolo, con le borchie dorate lungo i lati */
+.scena .rail {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  padding: 12px;
+  border-radius: 24px;
+  background-color: #0a2a20;
+  background-image: var(--panno);
+  box-shadow:
+    inset 0 0 0 1px rgba(207, 166, 79, 0.24),
+    inset 0 2px 0 rgba(242, 232, 213, 0.05),
+    0 22px 44px rgba(0, 0, 0, 0.42);
+  overflow: hidden;
+}
+
+.scena .rail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(circle, rgba(207, 166, 79, 0.55) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(207, 166, 79, 0.55) 1.5px, transparent 2px);
+  background-size: 30px 12px;
+  background-position: 15px 0, 0 calc(100% - 12px);
+  background-repeat: repeat-x;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.scena .feltro {
+  border-radius: 12px;
+}
+
+.scena .feltro {
+  min-height: 0;
+}
+
+.scena .feltro {
+  animation: avanza 0.55s 0.05s var(--molla) backwards;
+}
+
+/* filo d'oro incassato nel panno, come il bordo di un tavolo vero */
+.scena .feltro::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(242, 232, 213, 0.1);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* nei posti stretti la pila va a capo sotto il nome invece di uscire */
+.scena .posto-testa {
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.scena .avversari .posto {
+  animation: entra 0.45s var(--molla) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms + 0.14s);
+}
+
+.scena .striscia .scheda {
+  animation: entra 0.4s var(--molla) backwards;
+  animation-delay: calc(var(--i, 0) * 30ms + 0.2s);
+}
+
+
+.scena .esito {
+  animation: dissolvi 0.45s var(--molla) backwards;
+}
+
+.scena .turno.mio-turno {
+  animation: respiro 2.4s ease-in-out infinite;
+}
+
+.scena .classifica {
+  animation: avanza 0.5s 0.1s var(--molla) backwards;
+}
+
+.scena .classifica .vincitore-nome::after {
+  content: '';
+  display: block;
+  width: 4.5rem;
+  height: 2px;
+  margin-top: 0.55rem;
+  background: var(--oro);
+  transform-origin: left;
+  animation: sotto 0.55s 0.35s var(--molla) backwards;
+}
+
+.scena .classifica li {
+  animation: entra 0.35s var(--molla) backwards;
+  animation-delay: calc(var(--i, 0) * 40ms + 0.2s);
+}
+
+/* --- vista POV: il tavolo di fronte, le carte in mano --- */
+
+.pov {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  touch-action: pan-x;
+}
+
+.pov-tavolo {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.8rem;
+  margin: 0.3rem 0.3rem 0;
+  padding: 0.9rem 0.8rem 3.4rem;
+  border: 1px solid var(--feltro-nero);
+  border-radius: 5px;
+  background-color: var(--feltro);
+  background-image: var(--panno);
+  box-shadow:
+    inset 0 0 0 8px #0a2a20,
+    inset 0 0 0 9px rgba(207, 166, 79, 0.26),
+    0 24px 48px rgba(0, 0, 0, 0.4);
+  transform: perspective(1200px) rotateX(9deg);
+  transform-origin: 50% 100%;
+  transition:
+    filter 0.45s ease,
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+
+.pov.alzate .pov-tavolo {
+  filter: blur(5px) brightness(0.78);
+  opacity: 0.85;
+  transform: perspective(1200px) rotateX(13deg) scale(1.03);
+}
+
+.pov-avversari {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.pov-posto {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--bordo);
+  border-radius: 2px;
+  background: var(--carta);
+  font-size: 0.78rem;
+}
+
+.pov-posto.turno {
+  border-color: var(--oro);
+}
+
+.pov-nome {
+  font-weight: 600;
+}
+
+.pov-centro {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.pov-occhiello {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--testo-feltro-tenue);
+}
+
+.pov-esito {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.pov-turno {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--testo-feltro-tenue);
+}
+
+.pov-turno.mio {
+  color: var(--oro-chiaro);
+  animation: respiro 2.4s ease-in-out infinite;
+}
+
+.pov-vinte {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.pov-vinte .carta {
+  width: 46px;
+}
+
+/* la mano in primo piano: carte grandi, appoggiate in piedi */
+.pov-mano {
+  position: absolute;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.4rem;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  padding-bottom: 0.5rem;
+  transition:
+    transform 0.5s var(--molla),
+    opacity 0.4s ease;
+}
+
+.pov.chiaro .pov-mano {
+  opacity: 0;
+  transform: translateY(130%);
+  pointer-events: none;
+}
+
+.pov-carte {
+  display: flex;
+  justify-content: center;
+  perspective: 800px;
+}
+
+.pov-carta {
+  width: min(30vw, 128px);
+  margin-left: -14px;
+  transform-origin: 50% 100%;
+  transform: rotateX(-10deg) rotate(calc((var(--i, 1) - 1) * 10deg)) translateY(calc(var(--i, 0) * 4px));
+  box-shadow: 0 24px 34px rgba(0, 0, 0, 0.48);
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.pov-carta:first-child {
+  margin-left: 0;
+}
+
+.pov-suggerimento {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--testo-feltro-tenue);
+}
+
+/* i comandi compaiono quando le carte sono abbassate */
+.pov-comandi {
+  position: absolute;
+  z-index: 4;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  pointer-events: none;
+}
+
+.pov.chiaro .pov-comandi {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.pov-azioni,
+.pov-puntata {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pov-comandi .ghost,
+.pov-comandi .cta {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.68rem;
+}
+
+.pov-cambia {
+  position: absolute;
+  z-index: 5;
+  right: 0.3rem;
+  top: 0.3rem;
+  max-width: 48%;
+  padding: 0.3rem 0.55rem;
+  overflow: hidden;
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* la POV si puo' aprire anche da PC: resta larga come un tavolo, non come un telefono */
+@media (min-width: 621px) {
+  .pov {
+    width: min(100%, 900px);
+    justify-self: center;
+  }
+
+  .pov-carta {
+    width: min(34vw, 168px);
+  }
+}
+
+/* ---------- dichiarazioni a fine mano, a fumetti ---------- */
+
+.fumetti {
+  display: grid;
+  justify-items: start;
+  gap: 0.3rem;
+  margin: 0.15rem 0 0.2rem;
+}
+
+.fumetto {
+  position: relative;
+  margin: 0;
+  max-width: 20rem;
+  padding: 0.38rem 0.62rem;
+  border-radius: 3px;
+  background: var(--crema);
+  color: #10251b;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  text-align: left;
+  animation: entra 0.45s var(--molla) backwards;
+  animation-delay: calc(0.5s + var(--i, 0) * 0.55s);
+}
+
+.fumetto .chi {
+  display: block;
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5b6a60;
+}
+
+.fumetto::after {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  bottom: -6px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top-color: var(--crema);
+  border-bottom: 0;
+}
+
+.fumetto.bluff {
+  border-left: 2px solid #9a4230;
+}
+
+.fumetto.risposta {
+  background: #f7edd6;
+  border-left: 2px solid var(--oro);
+  animation-delay: calc(1.05s + var(--i, 0) * 0.4s);
+}
+
+.fumetto.risposta::after {
+  border-top-color: #f7edd6;
+}
+
+/* ---------- dichiarazione a voce, prima di girare le carte ---------- */
+
+.dichiarazione {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.dichiarazione-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.dichiarazione-numero {
+  width: 4.4rem;
+  padding: 0.45rem 0.3rem;
+  border: 1px solid var(--bordo);
+  border-radius: 2px;
+  background: rgba(5, 26, 18, 0.55);
+  color: var(--crema);
+  font: inherit;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.dichiarazione-numero:focus-visible {
+  outline: 1px solid var(--oro);
+  outline-offset: 2px;
+}
+
+.dichiarazione .fumetto {
+  text-align: left;
+}
+
+.dichiarazione.compatta .dichiarazione-azioni {
+  gap: 0.3rem;
+}
+
+.dichiarazione.compatta .dichiarazione-numero {
+  width: 3.6rem;
+  font-size: 0.95rem;
+}
+
+/* POV: fumetti e puntate più stretti */
+.pov .fumetto {
+  max-width: 15rem;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.62rem;
+}
+
+.pov-puntate {
+  margin-top: 0.3rem;
+}
+
+/* sugli schermi stretti le pile degli avversari stanno dentro la carta */
+@media (max-width: 620px) {
+  .avversari app-pila .pila .disco {
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+  }
+
+  .avversari app-pila .pila .disco:first-child {
+    margin-left: 0;
+  }
+
+  .avversari app-pila .conto {
+    font-size: 0.66rem;
+  }
+}
+
+/* --- voce --- */
+
+app-voce {
+  animation: entra 0.4s var(--molla) backwards;
+}
+
+app-voce .voci li {
+  animation: dissolvi 0.3s backwards;
+}
+
+/* la spia del microfono respira finché è acceso */
+app-voce .microfono[aria-pressed='true'] {
+  position: relative;
+}
+
+app-voce .microfono[aria-pressed='true']::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-left: 0.15rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: respiro 2s ease-in-out infinite;
+}
+
+/* --- comandi --- */
+
+.cta,
+.ghost {
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.12s ease;
+}
+
+.cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.cta:active:not(:disabled),
+.ghost:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 /* ---------------- movimento ridotto ---------------- */

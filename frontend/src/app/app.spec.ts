@@ -19,6 +19,14 @@ class CanaleFinto {
     this.lettori.forEach((lettore) => lettore(avviso));
   }
 
+  ascoltaVoce(): () => void {
+    return () => undefined;
+  }
+
+  ascoltaApertura(): () => void {
+    return () => undefined;
+  }
+
   apri(): void {}
 
   chiudi(): void {}

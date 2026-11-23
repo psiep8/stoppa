@@ -90,17 +90,11 @@
 }
 
 .piatto {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
 }
 
-.piatto .ficha {
-  width: 40px;
-  height: 40px;
-  font-size: 0.95rem;
-  --spicchio: 11deg;
-}
 
 .sul-tavolo {
   margin: 0;
@@ -128,6 +122,7 @@
   justify-items: center;
   gap: 0.35rem;
 }
+
 
 .esito-titolo {
   margin: 0;
@@ -255,11 +250,6 @@
   font-size: 0.75rem;
 }
 
-input[type='range'] {
-  width: clamp(120px, 18vw, 150px);
-  accent-color: var(--oro);
-}
-
 /* ---------- registro ---------- */
 
 .registro {
@@ -385,6 +375,28 @@ input[type='range'] {
     font-size: 0.78rem;
   }
 
+  /* su telefono gli avversari stanno in tre colonne: niente carte tagliate */
+  .avversari {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    overflow: visible;
+  }
+
+  .avversari .posto {
+    min-width: 0;
+    gap: 0.05rem;
+    padding: 0.28rem 0.38rem;
+  }
+
+  .avversari .posto-nome {
+    font-size: 0.68rem;
+  }
+
+  .avversari .posto-piede {
+    min-height: 0;
+  }
+
   .dorso {
     width: 15px;
     margin-left: -7px;
@@ -406,47 +418,80 @@ input[type='range'] {
 
   .rail {
     border-radius: 28px;
-    padding: 6px;
+    padding: 9px;
   }
 
   .feltro {
-    border-radius: 22px;
-    min-height: 190px;
+    border-radius: 19px;
+    min-height: 170px;
+    gap: 0.55rem;
+    padding: 0.6rem;
+  }
+
+  .avversari .posto {
+    gap: 0.15rem;
+  }
+
+  .avversari .dorso {
+    width: 11px;
+  }
+
+  .avversari .posto-piede {
+    font-size: 0.6rem;
+  }
+
+  .centro {
+    gap: 0.4rem;
+  }
+
+  .scena {
+    gap: 0.45rem;
   }
 
   .mano-mia {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.45rem;
-    padding: 0.45rem 0.6rem;
+    gap: 0.3rem;
+    padding: 0.35rem 0.5rem;
   }
 
   .carte-mia {
-    min-height: 76px;
+    min-height: 64px;
   }
 
   .carta.mia {
-    width: 52px;
+    width: 46px;
   }
 
   .comandi {
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
   .comandi .cta {
-    padding: 0.45rem 0.85rem;
-    font-size: 0.86rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.82rem;
   }
 
   .scheda {
-    min-width: 116px;
+    min-width: 104px;
     gap: 0.1rem;
-    padding: 0.4rem 0.6rem;
+    padding: 0.4rem 0.55rem;
   }
 
-  .piatto .ficha {
-    width: 36px;
-    height: 36px;
+  .registro-righe {
+    max-height: 2.2rem;
+    overflow-y: auto;
+  }
+
+  .registro-azioni {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .registro-azioni .ghost,
+  .registro-azioni .cta {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .carte-mia {
@@ -516,9 +561,10 @@ input[type='range'] {
 }
 
 .scena .feltro {
-  border-radius: 3px;
+  border-radius: 12px;
   border: 1px solid var(--feltro-nero);
-  background: var(--feltro);
+  background-color: var(--feltro);
+  background-image: var(--panno);
 }
 
 .scena .posto {
@@ -597,42 +643,12 @@ input[type='range'] {
   border-top-color: var(--oro);
 }
 
-.scena .comandi input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 1.1rem;
-  background: transparent;
-  accent-color: var(--oro);
-}
-
-.scena .comandi input[type='range']::-webkit-slider-runnable-track {
-  height: 2px;
-  border-radius: 2px;
-  background: var(--bordo);
-}
-
-.scena .comandi input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  margin-top: -6px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  background: var(--oro);
-}
-
-.scena .comandi input[type='range']::-moz-range-track {
-  height: 2px;
-  border-radius: 2px;
-  background: var(--bordo);
-}
-
-.scena .comandi input[type='range']::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  background: var(--oro);
+.scena .passo {
+  min-width: 34px;
+  padding: 0.4rem 0.55rem;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 0;
 }
 
 .scena .registro {

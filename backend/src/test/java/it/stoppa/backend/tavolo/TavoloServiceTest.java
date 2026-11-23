@@ -177,6 +177,14 @@ class TavoloServiceTest {
 				stato = tavolo.prossimaMano(CODICE, creatore);
 				continue;
 			}
+			if (stato.mano().inDichiarazione()) {
+				if (stato.puoiDichiarare()) {
+					stato = tavolo.dichiara(CODICE, creatore, 20);
+				} else if (stato.puoiRispondere()) {
+					stato = tavolo.contesta(CODICE, creatore);
+				}
+				continue;
+			}
 			assertTrue(stato.toccaATe(), "dopo ogni mossa deve toccare al giocatore umano");
 			stato = stato.mano().puntataMassima() == 0 ? tavolo.passa(CODICE, creatore)
 					: tavolo.vedo(CODICE, creatore);

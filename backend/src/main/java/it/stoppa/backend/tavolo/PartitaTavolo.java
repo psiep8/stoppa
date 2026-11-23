@@ -25,6 +25,9 @@ final class PartitaTavolo {
 
 	final Random random = new Random();
 
+	/** Chi ha scelto di far vedere le proprie fiches: gli altri le vedono coperte. */
+	final Set<String> fichesInVista = new HashSet<>();
+
 	Partita partita;
 
 	PartitaTavolo(String codice, List<PostoTavolo> posti) {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import it.stoppa.backend.game.Giocatore;
 import it.stoppa.backend.game.Mano;
 import it.stoppa.backend.game.Partita;
+import it.stoppa.backend.game.Punteggio;
 import it.stoppa.backend.game.RiepilogoPartita;
 import it.stoppa.backend.lobby.Sessione;
 import it.stoppa.backend.lobby.SessioniService;
@@ -160,6 +161,45 @@ public class TavoloService {
 		return dopoLaMossa(accesso);
 	}
 
+	/**
+	 * Mostrare o coprire le proprie fiches: e' una scelta personale, gli altri
+	 * vedono una pila coperta e nessun numero.
+	 */
+	public synchronized StatoTavolo mostraFiches(String codice, String sessioneId, boolean mostra) {
+		Accesso accesso = accedi(codice, sessioneId);
+		if (mostra) {
+			accesso.tavolo.fichesInVista.add(sessioneId);
+		} else {
+			accesso.tavolo.fichesInVista.remove(sessioneId);
+		}
+		aggiungiEvento(accesso.tavolo, (mostra ? "Mostri" : "Copri") + " le fiches");
+		return annuncia(accesso);
+	}
+
+	/** Chi apre la mano dichiara il suo punteggio: vero o bluff che sia. */
+	public synchronized StatoTavolo dichiara(String codice, String sessioneId, int punti) {
+		Accesso accesso = accessoInDichiarazione(codice, sessioneId);
+		accesso.tavolo.partita.dichiara(accesso.indice(), punti);
+		aggiungiEvento(accesso.tavolo, "Dichiari " + punti);
+		return dopoLaMossa(accesso);
+	}
+
+	/** Contesta la dichiarazione: il server gira le carte e dice chi ha ragione. */
+	public synchronized StatoTavolo contesta(String codice, String sessioneId) {
+		Accesso accesso = accessoInDichiarazione(codice, sessioneId);
+		accesso.tavolo.partita.contesta(accesso.indice());
+		aggiungiEvento(accesso.tavolo, "Contesti");
+		return dopoLaMossa(accesso);
+	}
+
+	/** Accetta la dichiarazione senza contestarla. */
+	public synchronized StatoTavolo accetta(String codice, String sessioneId) {
+		Accesso accesso = accessoInDichiarazione(codice, sessioneId);
+		accesso.tavolo.partita.accetta(accesso.indice());
+		aggiungiEvento(accesso.tavolo, "Accetti");
+		return dopoLaMossa(accesso);
+	}
+
 	public synchronized StatoTavolo prossimaMano(String codice, String sessioneId) {
 		Accesso accesso = accedi(codice, sessioneId);
 		Partita partita = accesso.tavolo.partita;
@@ -193,6 +233,7 @@ public class TavoloService {
 		PartitaTavolo tavolo = accesso.tavolo;
 		tavolo.partita = tavolo.nuovaPartita();
 		tavolo.eventi.clear();
+		tavolo.fichesInVista.clear();
 		aggiungiEvento(tavolo, "Carte distribuite · " + tavolo.partita.maniTotali() + " mani");
 		giocaBot(tavolo);
 		if (tavolo.partita.mano().chiusa()) {
@@ -237,6 +278,17 @@ public class TavoloService {
 		return codice == null ? "" : codice.toUpperCase(Locale.ROOT);
 	}
 
+	private Accesso accessoInDichiarazione(String codice, String sessioneId) {
+		Accesso accesso = accedi(codice, sessioneId);
+		if (accesso.tavolo.partita.finita()) {
+			throw new IllegalStateException("la partita e' finita: comincia una nuova partita");
+		}
+		if (!accesso.tavolo.partita.mano().inDichiarazione()) {
+			throw new IllegalStateException("non c'e' una dichiarazione aperta");
+		}
+		return accesso;
+	}
+
 	private Accesso accessoDiTurno(String codice, String sessioneId) {
 		Accesso accesso = accedi(codice, sessioneId);
 		if (accesso.tavolo.partita.finita()) {
@@ -253,10 +305,54 @@ public class TavoloService {
 
 	private void giocaBot(PartitaTavolo tavolo) {
 		int guardia = 0;
-		while (!tavolo.partita.finita() && !tavolo.partita.mano().chiusa()
-				&& tavolo.posti.get(tavolo.partita.mano().giocatoreDiTurno()).bot() && guardia++ < 200) {
-			mossaBot(tavolo, tavolo.partita.mano().giocatoreDiTurno());
+		while (!tavolo.partita.finita() && !tavolo.partita.mano().chiusa() && guardia++ < 300) {
+			Mano mano = tavolo.partita.mano();
+			if (mano.inDichiarazione()) {
+				if (!dichiarazioneBot(tavolo, mano)) {
+					return;
+				}
+				continue;
+			}
+			if (!tavolo.posti.get(mano.giocatoreDiTurno()).bot()) {
+				return;
+			}
+			mossaBot(tavolo, mano.giocatoreDiTurno());
 		}
+	}
+
+	/**
+	 * I bot dichiarano e rispondono da soli; se tocca a un umano la partita si
+	 * ferma e aspetta la sua mossa.
+	 */
+	private boolean dichiarazioneBot(PartitaTavolo tavolo, Mano mano) {
+		if (mano.dichiarazione() == 0) {
+			int chi = mano.dichiarante();
+			if (chi < 0 || !tavolo.posti.get(chi).bot()) {
+				return false;
+			}
+			int reali = Punteggio.calcola(mano.carteDi(chi));
+			int finti = Math.min(reali + tavolo.random.nextInt(3), Mano.TETTO_DICHIARAZIONE);
+			tavolo.partita.dichiara(chi, Math.max(1, finti));
+			aggiungiEvento(tavolo, tavolo.partita.giocatori().get(chi).nome() + " dichiara " + finti);
+			return true;
+		}
+		for (int giocatore : mano.attivi()) {
+			if (giocatore == mano.dichiarante() || mano.accettato().contains(giocatore)
+					|| !tavolo.posti.get(giocatore).bot()) {
+				continue;
+			}
+			String nome = tavolo.partita.giocatori().get(giocatore).nome();
+			int reali = Punteggio.calcola(mano.carteDi(giocatore));
+			if (reali >= mano.dichiarazione() || tavolo.random.nextInt(100) < 15) {
+				tavolo.partita.contesta(giocatore);
+				aggiungiEvento(tavolo, nome + " contesta");
+			} else {
+				tavolo.partita.accetta(giocatore);
+				aggiungiEvento(tavolo, nome + " accetta");
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private void mossaBot(PartitaTavolo tavolo, int indice) {
@@ -311,23 +407,38 @@ public class TavoloService {
 		for (int i = 0; i < partita.giocatori().size(); i++) {
 			Giocatore giocatore = partita.giocatori().get(i);
 			boolean sonoIo = i == indice;
-			giocatori.add(new GiocatoreTavolo(i, giocatore.nome(), giocatore.fiches(), giocatore.debito(),
+			PostoTavolo posto = tavolo.posti.get(i);
+			// "fichesInVista" e' la scelta del giocatore, non il fatto che io le veda:
+			// le mie le vedo sempre, gli altri le vedono solo se le mostro.
+			boolean fichesInVista = posto.bot()
+					|| (posto.sessioneId() != null && tavolo.fichesInVista.contains(posto.sessioneId()));
+			giocatori.add(new GiocatoreTavolo(i, giocatore.nome(),
+					sonoIo || fichesInVista ? giocatore.fiches() : -1, giocatore.debito(),
 					mano.puntate().getOrDefault(i, 0), mano.attivi().contains(i),
-					!mano.chiusa() && mano.giocatoreDiTurno() == i, tavolo.posti.get(i).bot(), mano.carteDi(i).size(),
-					sonoIo ? carte(mano.carteDi(i)) : List.of()));
+					!mano.chiusa() && mano.giocatoreDiTurno() == i, posto.bot(), mano.carteDi(i).size(),
+					sonoIo ? carte(mano.carteDi(i)) : List.of(), fichesInVista));
 		}
 
+		int puntiVincenti = mano.chiusa() && !mano.senzaPuntate()
+				? Punteggio.calcola(mano.carteVincenti())
+				: 0;
+		String dichiarante = mano.dichiarante() >= 0 ? partita.giocatori().get(mano.dichiarante()).nome() : "";
 		ManoTavolo manoTavolo = new ManoTavolo(mano.numero(), partita.maniTotali(),
 				partita.giocatori().get(mano.cartaro()).nome(), partita.piatto(), mano.puntataMassima(), mano.chiusa(),
 				mano.senzaPuntate(),
 				mano.vincitori().stream().map(i -> partita.giocatori().get(i).nome()).toList(),
-				carte(mano.carteVincenti()));
+				carte(mano.carteVincenti()), dichiarante, puntiVincenti, mano.inDichiarazione(), mano.dichiarazione(),
+				mano.esitoDichiarazione());
 
-		boolean toccaATe = !partita.finita() && !mano.chiusa() && mano.giocatoreDiTurno() == indice;
+		boolean toccaATe = !partita.finita() && !mano.chiusa() && !mano.inDichiarazione()
+				&& mano.giocatoreDiTurno() == indice;
+		boolean puoiDichiarare = mano.inDichiarazione() && mano.dichiarazione() == 0 && mano.dichiarante() == indice;
+		boolean puoiRispondere = mano.inDichiarazione() && mano.dichiarazione() > 0 && mano.dichiarante() != indice
+				&& mano.attivi().contains(indice) && !mano.accettato().contains(indice);
 
 		return new StatoTavolo(indice, tavolo.posti.get(indice).nome(), giocatori, manoTavolo, toccaATe,
 				partita.finita(), List.copyOf(tavolo.eventi), partita.finita() ? classifica(tavolo) : List.of(),
-				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA);
+				mano.puntataMassima() + 1, Mano.TETTO_PUNTATA, puoiDichiarare, puoiRispondere);
 	}
 
 	private List<ClassificaTavolo> classifica(PartitaTavolo tavolo) {

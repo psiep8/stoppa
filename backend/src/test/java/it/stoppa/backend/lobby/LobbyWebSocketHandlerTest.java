@@ -207,6 +207,54 @@ class LobbyWebSocketHandlerTest {
 		}
 	}
 
+	@Test
+	void laVocePassaDaUnGiocatoreAllAltroSenzaEsporreLeSessioni() throws Exception {
+		IngressoLobby peppa = lobby.crea("Peppa");
+		String codice = peppa.stanza().codice();
+		IngressoLobby anna = lobby.entra(codice, "Anna");
+
+		Cliente uno = new Cliente(port);
+		Cliente due = new Cliente(port);
+		try {
+			uno.entra(codice, peppa.sessione());
+			due.entra(codice, anna.sessione());
+
+			uno.invia("{\"tipo\":\"voce-entra\"}");
+			uno.prossimo("\"mio\"");
+			due.invia("{\"tipo\":\"voce-entra\"}");
+
+			String rosterUno = uno.prossimo("\"nome\":\"Anna\"");
+			String rosterDue = due.prossimo("\"mio\"");
+			assertTrue(rosterDue.contains("\"nome\":\"Peppa\""), rosterDue);
+			assertFalse(rosterUno.contains(peppa.sessione()), "la sessione non deve uscire: " + rosterUno);
+			assertFalse(rosterUno.contains(anna.sessione()), "la sessione non deve uscire: " + rosterUno);
+
+			// il roster che riceve ognuno porta il proprio id in "mio"
+			String idPeppa = campo(rosterUno, "mio");
+			String idAnna = campo(rosterDue, "mio");
+			assertFalse(idPeppa.equals(idAnna));
+
+			uno.invia("{\"tipo\":\"voce\",\"a\":\"" + idAnna
+					+ "\",\"dati\":{\"genere\":\"offerta\",\"sdp\":{\"type\":\"offer\",\"sdp\":\"v=0\"}}}");
+			String offerta = due.prossimo("\"genere\":\"offerta\"");
+			assertTrue(offerta.contains("\"da\":\"" + idPeppa + "\""), offerta);
+			assertTrue(offerta.contains("v=0"), offerta);
+
+			due.invia("{\"tipo\":\"voce-muta\",\"muto\":true}");
+			String rosterMuto = uno.prossimo("\"muto\":true");
+			assertTrue(rosterMuto.contains("Anna"), rosterMuto);
+		} finally {
+			uno.close();
+			due.close();
+		}
+	}
+
+	private static String campo(String json, String nome) {
+		String chiave = "\"" + nome + "\":\"";
+		int inizio = json.indexOf(chiave) + chiave.length();
+		return json.substring(inizio, json.indexOf('"', inizio));
+	}
+
 	private HttpResponse<String> post(String percorso, String sessione) throws Exception {
 		HttpRequest richiesta = HttpRequest.newBuilder(URI.create("http://localhost:" + port + percorso))
 				.POST(HttpRequest.BodyPublishers.noBody())

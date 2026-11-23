@@ -16,6 +16,8 @@ export type GiocatoreTavolo = {
   bot: boolean;
   numeroCarte: number;
   carte: Carta[];
+  /** Falso quando il giocatore tiene le fiches coperte: fiches vale -1. */
+  fichesInVista: boolean;
 };
 
 export type ManoTavolo = {
@@ -28,6 +30,15 @@ export type ManoTavolo = {
   senzaPuntate: boolean;
   vincitori: string[];
   carteVincenti: Carta[];
+  /** Chi apre le dichiarazioni a fine mano (ultimo rilancio o primo puntatore). */
+  dichiarante: string;
+  puntiVincenti: number;
+  /** Fase di dichiarazione aperta: le carte sono ancora coperte. */
+  inDichiarazione: boolean;
+  /** Punti dichiarati da chi ha aperto (0 se non ha ancora parlato). */
+  dichiarazione: number;
+  /** Esito deciso dal server: accettata, buono, buono-di-mano, non-sei-buono. */
+  esitoDichiarazione: string;
 };
 
 export type ClassificaTavolo = {
@@ -48,6 +59,8 @@ export type StatoTavolo = {
   classifica: ClassificaTavolo[];
   puntataMinima: number;
   puntataMassima: number;
+  puoiDichiarare: boolean;
+  puoiRispondere: boolean;
 };
 
 export type PostoLobby = { indice: number; nome: string; bot: boolean };

@@ -1,12 +1,18 @@
 import { Component, OnDestroy, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { CanaleStanza } from './canale-stanza';
+import { coloreDi } from './colori';
 import { Carta, StatoTavolo, chiamataApi, etichettaSeme, etichettaValore } from './gioco';
+import { PiattoFiches } from './piatto-fiches';
+import { PilaFiches } from './pila-fiches';
+import { PuntateTavolo } from './puntate-tavolo';
 import { Suoni } from './suoni';
+import { Vista } from './vista';
 
 @Component({
   selector: 'app-tavolo',
   templateUrl: './tavolo.html',
   styleUrl: './tavolo.css',
+  imports: [PilaFiches, PiattoFiches, PuntateTavolo],
 })
 export class Tavolo implements OnInit, OnDestroy {
   readonly esci = output<void>();
@@ -16,6 +22,8 @@ export class Tavolo implements OnInit, OnDestroy {
   readonly codice = input.required<string>();
 
   readonly sessione = input.required<string>();
+
+  private readonly vista = inject(Vista);
 
   private readonly suoni = inject(Suoni);
 
@@ -28,6 +36,16 @@ export class Tavolo implements OnInit, OnDestroy {
   protected readonly attesa = signal(false);
 
   protected readonly puntata = signal(1);
+
+  /** Punti da dichiarare: si scelgono con i bottoni o si scrivono. */
+  protected readonly dichiarazione = signal(20);
+
+  /** La vista POV: il tavolo davanti e le carte in mano, anche da PC. */
+  protected readonly pov = this.vista.pov;
+
+  protected readonly alzate = this.vista.alzate;
+
+  private partenzaTocco?: number;
 
   private precedente: StatoTavolo | null = null;
 
@@ -55,7 +73,18 @@ export class Tavolo implements OnInit, OnDestroy {
     () => this.stato()?.giocatori.find((giocatore) => giocatore.diTurno)?.nome ?? '',
   );
 
+  /** Il posto di chi ha vinto la mano: le fiches puntate volano lì. */
+  protected readonly vincitoreIndice = computed(() => {
+    const stato = this.stato();
+    if (!stato || !stato.mano.chiusa || !stato.mano.vincitori.length) {
+      return -1;
+    }
+    const nome = stato.mano.vincitori[0];
+    return stato.giocatori.find((giocatore) => giocatore.nome === nome)?.indice ?? -1;
+  });
+
   ngOnInit(): void {
+    this.vista.inGioco.set(true);
     this.stacca = this.canale.ascolta((avviso) => {
       this.attesa.set(false);
       if (avviso.tipo === 'stato') {
@@ -69,7 +98,13 @@ export class Tavolo implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.vista.inGioco.set(false);
     this.stacca?.();
+  }
+
+  /** Dalla POV alla classifica finale: si passa al tavolo normale. */
+  protected vediTavolo(): void {
+    this.vista.alterna();
   }
 
   protected descrizione(carta: Carta): string {
@@ -90,8 +125,45 @@ export class Tavolo implements OnInit, OnDestroy {
     return `rotate(${(indice - centro) * 3.5}deg)`;
   }
 
-  protected cambiaPuntata(evento: Event): void {
-    this.puntata.set(Number((evento.target as HTMLInputElement).value));
+  protected iniziaGesto(evento: PointerEvent): void {
+    this.partenzaTocco = evento.clientY;
+  }
+
+  /** Giù per abbassare le carte e vedere il tavolo, su per riprenderle. */
+  protected finisciGesto(evento: PointerEvent): void {
+    if (this.partenzaTocco === undefined) {
+      return;
+    }
+    const scarto = evento.clientY - this.partenzaTocco;
+    this.partenzaTocco = undefined;
+    if (scarto > 30) {
+      this.alzate.set(false);
+    } else if (scarto < -30) {
+      this.alzate.set(true);
+    }
+  }
+
+  protected colore(indice: number): string {
+    return coloreDi(indice);
+  }
+
+  /** Un gettone in più, con il rumore della ficha che si posa. */
+  protected piu(): void {
+    const stato = this.stato();
+    if (!stato || this.puntata() >= stato.puntataMassima) {
+      return;
+    }
+    this.puntata.set(this.puntata() + 1);
+    this.suoni.fiche();
+  }
+
+  protected meno(): void {
+    const stato = this.stato();
+    if (!stato || this.puntata() <= stato.puntataMinima) {
+      return;
+    }
+    this.puntata.set(this.puntata() - 1);
+    this.suoni.fiche();
   }
 
   protected async carica(): Promise<void> {
@@ -113,6 +185,46 @@ export class Tavolo implements OnInit, OnDestroy {
   protected async punta(): Promise<void> {
     if (!this.inviaMossa({ tipo: 'punta', gettoni: this.puntata() })) {
       await this.azione('/punta', { gettoni: this.puntata() });
+    }
+  }
+
+  protected piuDichiarazione(): void {
+    this.dichiarazione.update((punti) => Math.min(55, punti + 1));
+  }
+
+  protected menoDichiarazione(): void {
+    this.dichiarazione.update((punti) => Math.max(1, punti - 1));
+  }
+
+  protected scriviDichiarazione(evento: Event): void {
+    const valore = Number((evento.target as HTMLInputElement).value);
+    this.dichiarazione.set(Number.isFinite(valore) ? Math.min(55, Math.max(1, Math.round(valore))) : 1);
+  }
+
+  protected async dichiara(): Promise<void> {
+    if (!this.inviaMossa({ tipo: 'dichiara', gettoni: this.dichiarazione() })) {
+      await this.azione('/dichiara', { punti: this.dichiarazione() });
+    }
+  }
+
+  protected async contesta(): Promise<void> {
+    if (!this.inviaMossa({ tipo: 'contesta' })) {
+      await this.azione('/contesta', {});
+    }
+  }
+
+  protected async accetta(): Promise<void> {
+    if (!this.inviaMossa({ tipo: 'accetta' })) {
+      await this.azione('/accetta', {});
+    }
+  }
+
+  /** Scelta personale: far vedere le proprie fiches, o tornare a coprirle. */
+  protected async mostraFiches(): Promise<void> {
+    const mostra = !(this.io()?.fichesInVista ?? false);
+    this.suoni.fiche();
+    if (!this.inviaMossa({ tipo: 'mostra-fiches', mostra })) {
+      await this.azione('/mostra-fiches', { mostra });
     }
   }
 
@@ -205,6 +317,13 @@ export class Tavolo implements OnInit, OnDestroy {
 
   private applica(nuovo: StatoTavolo): void {
     this.riproduciSuoni(this.precedente, nuovo);
+    const prima = this.precedente;
+    // a mano chiusa la POV abbassa le carte da sola: il risultato si vede subito
+    if (prima && nuovo.mano.chiusa && !prima.mano.chiusa) {
+      this.vista.alzate.set(false);
+    } else if (prima && nuovo.mano.numero !== prima.mano.numero) {
+      this.vista.alzate.set(true);
+    }
     this.precedente = nuovo;
     this.stato.set(nuovo);
     if (this.puntata() < nuovo.puntataMinima || this.puntata() > nuovo.puntataMassima) {
@@ -238,3 +357,4 @@ export class Tavolo implements OnInit, OnDestroy {
     }
   }
 }
+

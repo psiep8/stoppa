@@ -234,7 +234,8 @@ import { RichiestaAccesso } from './gioco';
         place-items: center;
         min-height: clamp(240px, 30vw, 340px);
         border-radius: 3px;
-        background: var(--feltro);
+        background-color: var(--feltro);
+        background-image: var(--panno);
         border: 1px solid var(--feltro-nero);
         overflow: hidden;
       }
