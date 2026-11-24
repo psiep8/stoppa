@@ -132,6 +132,97 @@ Coperto da test: `cd backend && ./mvnw verify`, `cd frontend && npm run build` e
 Le 40 carte napoletane e il dorso sono in `frontend/src/assets/carte/` come SVG
 (licenza CC0, vedi `LICENZA.md` accanto), in versione a colori pieni.
 
+## Deploy su Render
+
+Un solo contenitore: Angular viene compilato e copiato dentro il jar Spring Boot
+(`src/main/resources/static`), quindi `/api` e `/ws/lobby` rispondono sullo stesso
+dominio e non serve nessuna configurazione CORS. I file del deploy sono `Dockerfile`
+(tre stage: Node → Maven/JDK 25 → JRE 25), `.dockerignore` e `render.yaml`.
+
+Serve solo un account Render gratuito (piano free, nessuna carta richiesta) e il
+repository su GitHub con questi file su `main`.
+
+### Passaggi con il Blueprint (consigliato)
+
+1. Push su GitHub (il Blueprint legge i file dal branch predefinito, `main`).
+2. Su Render: **New → Blueprint**, scegli il repository `stoppa`, conferma il nome del
+   blueprint e premi **Apply**. Non serve compilare altro: `render.yaml` dichiara già
+   servizio web `stoppa`, `runtime: docker`, `plan: free`, `region: frankfurt`,
+   `healthCheckPath: /api/health`, `autoDeploy: true` e la variabile `STOPPA_ORIGINI`.
+3. Aspetta la fine della build (diversi minuti: `npm ci` + build Angular + `mvn package`
+   + download delle immagini JDK). Nel log compare **"Your service is live"**.
+4. Apri `https://<nome>.onrender.com/api/health`: deve rispondere
+   `{"status":"UP","game":"stoppa",...}`. Poi apri la home, crea una stanza e
+   verifica che il link d'invito punti al dominio Render.
+
+### Passaggi manuali (equivalente al Blueprint)
+
+**New → Web Service** → scegli il repository e compila:
+
+| Campo | Valore |
+| --- | --- |
+| Language / Runtime | Docker |
+| Branch | `main` |
+| Root Directory | (vuoto) |
+| Dockerfile Path | `./Dockerfile` |
+| Instance Type | Free |
+| Region | Frankfurt |
+| Health Check Path | `/api/health` |
+
+Poi in **Environment** aggiungi `STOPPA_ORIGINI` = `https://*.onrender.com` e premi
+**Create Web Service**. La porta non va impostata: Render inietta `PORT` e l'ENTRYPOINT
+del `Dockerfile` la usa (`--server.port=${PORT:-8080}`).
+
+### Se cambia il dominio: aggiornare STOPPA_ORIGINI
+
+`render.yaml` crea un servizio chiamato `stoppa`, quindi l'URL è
+`https://stoppa.onrender.com`. Se quel nome è già occupato Render ne assegna un altro
+(per esempio `https://stoppa-4f2k.onrender.com`), e lo stesso succede se rinomini il
+servizio o colleghi un dominio tuo.
+
+Il WebSocket accetta solo le origini elencate in `STOPPA_ORIGINI`, quindi con un
+dominio diverso da quello previsto l'handshake su `/ws/lobby` viene **rifiutato con
+403**: la pagina si carica, ma la lobby non riceve gli aggiornamenti della stanza.
+
+- Con il valore `https://*.onrender.com` (quello di `render.yaml`) ogni sottodominio
+  Render è già coperto: nessuna modifica necessaria finché resti su `*.onrender.com`.
+- Se hai messo il dominio esatto, aggiornalo: **Dashboard → servizio → Environment →
+  `STOPPA_ORIGINI` → valore nuovo → Save changes**. Render riavvia il servizio da solo.
+- Più origini insieme si scrivono separate da virgola, senza spazi:
+  `https://stoppa.onrender.com,https://stoppa.example.com`.
+- Per un dominio tuo: **Settings → Custom Domains → Add Custom Domain**, segui il CNAME
+  indicato e aggiungi l'origine `https://tuo-dominio` a `STOPPA_ORIGINI`.
+
+Come controllare: apri il sito, F12 → **Network** → filtro **WS**, ricarica la pagina e
+cerca la richiesta `/ws/lobby`. Deve essere **101 Switching Protocols**; un **403** è
+l'origine non ammessa (oppure il servizio ancora in fase di riavvio).
+
+### Limiti del piano free (verificati)
+
+- **512 MB di RAM e 0.1 CPU**: l'applicazione si avvia in circa 7 secondi e occupa
+  ~131 MB a regime; il `Dockerfile` imposta `-XX:MaxRAMPercentage=70` e `SerialGC`
+  proprio per questi numeri.
+- **Sleep dopo 15 minuti senza traffico**: il primo accesso successivo (cold start) può
+  richiedere 30-60 secondi. L'health check evita che Render mandi traffico a un
+  contenitore non ancora pronto.
+- **WebSocket supportati**, circa 200 connessioni contemporanee (thread pool Tomcat) cioè
+  una trentina di stanze da 6 giocatori. RAM e CPU non sono il collo di bottiglia: il
+  gioco è a turni.
+- **Stato in memoria**: stanze, sessioni e tavoli si perdono a ogni riavvio, sleep o
+  nuovo deploy. Chi era in partita riceve `motivo: "ricomincia"` e torna alla home; per
+  partite che sopravvivono ai riavvii serve un database (vedi «Cosa manca»).
+
+### Provare l'immagine in locale prima di fare push
+
+```bash
+docker build -t stoppa:deploy .
+docker run --rm -p 8095:8080 --memory=512m -e PORT=8080 \
+  -e STOPPA_ORIGINI=https://stoppa.onrender.com stoppa:deploy
+```
+
+Poi apri http://localhost:8095: la home deve mostrare le carte e `/api/health` deve
+rispondere `UP`. Il limite `--memory=512m` riproduce quello del piano free.
+
 ## CI
 
 `.github/workflows/ci.yml` compila e testa backend e frontend a ogni push e pull request.
