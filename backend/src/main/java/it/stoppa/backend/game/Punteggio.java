@@ -1,6 +1,5 @@
 package it.stoppa.backend.game;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -20,23 +19,32 @@ public final class Punteggio {
 	}
 
 	public static int calcola(List<Carta> carte) {
+		return carteDelPunto(carte).stream().mapToInt(Carta::punti).sum();
+	}
+
+	/**
+	 * Le carte che fanno il punto, non tutta la mano: la combinazione migliore
+	 * tra le carte piu' alte di un seme e la singola carta piu' alta. Se il punto
+	 * lo fanno due carte, la terza resta fuori anche quando e' in mano.
+	 */
+	public static List<Carta> carteDelPunto(List<Carta> carte) {
 		Objects.requireNonNull(carte, "carte");
 		int migliore = 0;
+		List<Carta> scelta = List.of();
 		for (Seme seme : Seme.values()) {
-			List<Integer> punti = new ArrayList<>();
-			for (Carta carta : carte) {
-				if (carta.seme() == seme) {
-					punti.add(carta.punti());
-				}
-			}
-			int somma = punti.stream()
-					.sorted(Comparator.reverseOrder())
+			List<Carta> stessoSeme = carte.stream()
+					.filter((carta) -> carta.seme() == seme)
+					.sorted(Comparator.comparingInt(Carta::punti).reversed())
 					.limit(MAX_CARTE_PER_SEME)
-					.mapToInt(Integer::intValue)
-					.sum();
-			migliore = Math.max(migliore, somma);
+					.toList();
+			int somma = stessoSeme.stream().mapToInt(Carta::punti).sum();
+			if (somma > migliore) {
+				migliore = somma;
+				scelta = stessoSeme;
+			}
 		}
-		return migliore;
+		// le carte restano nell'ordine della mano
+		return scelta.isEmpty() ? List.of() : carte.stream().filter(scelta::contains).toList();
 	}
 
 }

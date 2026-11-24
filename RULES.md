@@ -70,6 +70,8 @@ insieme e si rifa' il punto con lo stesso criterio: vince chi totalizza piu' pun
 
 - Le carte di chi non vince **non si mostrano mai**, neanche a fine partita: si
   vedono solo le carte vincenti di ogni mano.
+- Del vincitore si mostrano **solo le carte che fanno il punto**: se su tre carte
+  ne bastano due, la terza resta coperta.
 - I gettoni di tutti sono visibili. Il **pulsante a occhio** per decidere se
   mostrare i propri **non e' ancora implementato**: oggi i gettoni sono sempre
   visibili.

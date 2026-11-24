@@ -69,6 +69,24 @@ class ManoTest {
 	}
 
 	@Test
+	void delVincitoreSiMostranoSoloLeCarteCheFannoIlPunto() {
+		Mano mano = new Mano(1, 0, giocatori, List.of(
+				List.of(new Carta(Seme.DENARI, Valore.SETTE), new Carta(Seme.DENARI, Valore.SEI),
+						new Carta(Seme.COPPE, Valore.RE)),
+				List.of(new Carta(Seme.COPPE, Valore.CINQUE)),
+				List.of(new Carta(Seme.SPADE, Valore.CINQUE)),
+				List.of(new Carta(Seme.BASTONI, Valore.QUATTRO))));
+		mano.punta(2);
+		mano.passa();
+		mano.passa();
+		mano.passa();
+
+		assertEquals(List.of(new Carta(Seme.DENARI, Valore.SETTE), new Carta(Seme.DENARI, Valore.SEI)),
+				mano.carteVincenti());
+		assertEquals(39, Punteggio.calcola(mano.carteVincenti()));
+	}
+
+	@Test
 	void quandoTuttiPareggianoSiApreLaDichiarazione() {
 		Mano mano = mano();
 		mano.punta(3);

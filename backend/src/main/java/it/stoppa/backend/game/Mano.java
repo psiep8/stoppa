@@ -417,7 +417,8 @@ public final class Mano {
 
 	private void vince(int giocatore) {
 		vincitori = List.of(giocatore);
-		carteVincenti = carte.get(giocatore);
+		// si mostrano solo le carte che fanno il punto, non tutta la mano
+		carteVincenti = Punteggio.carteDelPunto(carte.get(giocatore));
 		fase = Fase.CHIUSA;
 	}
 

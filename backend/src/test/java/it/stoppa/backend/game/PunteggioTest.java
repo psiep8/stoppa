@@ -40,6 +40,33 @@ class PunteggioTest {
 	}
 
 	@Test
+	void conTreCarteNeMostraSoloDueSeIlPuntoLoFannoDue() {
+		List<Carta> carte = List.of(carta(Seme.DENARI, Valore.SETTE), carta(Seme.DENARI, Valore.SEI),
+				carta(Seme.COPPE, Valore.ASSO));
+
+		assertEquals(39, Punteggio.calcola(carte));
+		assertEquals(List.of(carta(Seme.DENARI, Valore.SETTE), carta(Seme.DENARI, Valore.SEI)),
+				Punteggio.carteDelPunto(carte));
+	}
+
+	@Test
+	void seIlPuntoELaCartaPiuAltaMostraSoloQuella() {
+		List<Carta> carte = List.of(carta(Seme.DENARI, Valore.DUE), carta(Seme.SPADE, Valore.SETTE),
+				carta(Seme.COPPE, Valore.RE));
+
+		assertEquals(List.of(carta(Seme.SPADE, Valore.SETTE)), Punteggio.carteDelPunto(carte));
+	}
+
+	@Test
+	void seIlPuntoLoFannoTreCarteLeMostraTutte() {
+		List<Carta> carte = List.of(carta(Seme.BASTONI, Valore.SETTE), carta(Seme.BASTONI, Valore.SEI),
+				carta(Seme.BASTONI, Valore.ASSO), carta(Seme.COPPE, Valore.RE));
+
+		assertEquals(3, Punteggio.carteDelPunto(carte).size());
+		assertEquals(55, Punteggio.calcola(Punteggio.carteDelPunto(carte)));
+	}
+
+	@Test
 	void senzaCarteIlPuntoEZero() {
 		assertEquals(0, Punteggio.calcola(List.of()));
 	}
