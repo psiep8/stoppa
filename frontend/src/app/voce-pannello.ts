@@ -43,6 +43,16 @@ import { Voce } from './voce';
       </button>
 
       @if (vista.inGioco()) {
+        @if (vista.pov()) {
+          <button
+            type="button"
+            class="ghost vista-tavolo"
+            (click)="vista.alternaImmersiva()"
+            [attr.aria-pressed]="vista.immersiva()"
+          >
+            {{ vista.immersiva() ? 'POV piatto' : 'POV 3D' }}
+          </button>
+        }
         <button
           type="button"
           class="ghost vista-tavolo"

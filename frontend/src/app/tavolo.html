@@ -50,16 +50,36 @@
     }
 
     @if (pov()) {
-    <div class="pov">
-      <button
-        type="button"
-        class="ghost pov-cambia"
-        (click)="mostraFiches()"
-        [disabled]="attesa()"
-        [attr.aria-label]="io()?.fichesInVista ? 'Copri le fiches agli altri' : 'Mostra le fiches agli altri'"
-      >
-        {{ io()?.fichesInVista ? 'Copri' : 'Mostra' }}
-      </button>
+    <div
+      class="pov"
+      [class.immersiva]="immersiva()"
+      [class.alzate]="alzate()"
+      (pointerdown)="iniziaGesto($event)"
+      (pointerup)="finisciGesto($event)"
+      (pointercancel)="finisciGesto($event)"
+    >
+      <div class="pov-strumenti">
+        @if (immersiva()) {
+          <button
+            type="button"
+            class="ghost pov-cambia"
+            (click)="alternaAlzate()"
+            [attr.aria-pressed]="!alzate()"
+            [attr.aria-label]="alzate() ? 'Abbassa le carte e mostra il tavolo' : 'Rialza le carte'"
+          >
+            {{ alzate() ? 'Vedi tavolo' : 'Vedi carte' }}
+          </button>
+        }
+        <button
+          type="button"
+          class="ghost pov-cambia"
+          (click)="mostraFiches()"
+          [disabled]="attesa()"
+          [attr.aria-label]="io()?.fichesInVista ? 'Copri le fiches agli altri' : 'Mostra le fiches agli altri'"
+        >
+          {{ io()?.fichesInVista ? 'Copri' : 'Mostra' }}
+        </button>
+      </div>
 
       <div class="pov-tavolo">
         <div class="pov-avversari">

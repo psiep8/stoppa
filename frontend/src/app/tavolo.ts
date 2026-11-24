@@ -43,6 +43,14 @@ export class Tavolo implements OnInit, OnDestroy {
   /** La vista POV: il tavolo davanti e le carte in mano, anche da PC. */
   protected readonly pov = this.vista.pov;
 
+  /** POV immersiva: tavolo in 3D sfocato e carte in primo piano. */
+  protected readonly immersiva = this.vista.immersiva;
+
+  /** Carte alzate (tavolo sfocato) o abbassate (tavolo chiaro e comandi). */
+  protected readonly alzate = this.vista.alzate;
+
+  private partenzaTocco?: number;
+
   private precedente: StatoTavolo | null = null;
 
   private trascinamento?: { elemento: HTMLElement; x: number; sinistra: number };
@@ -207,6 +215,33 @@ export class Tavolo implements OnInit, OnDestroy {
     }
   }
 
+  /** In POV immersiva: giù per abbassare le carte e vedere il tavolo. */
+  protected iniziaGesto(evento: PointerEvent): void {
+    if (!this.immersiva()) {
+      return;
+    }
+    this.partenzaTocco = evento.clientY;
+  }
+
+  /** Su per rialzare le carte; la soglia evita di scambiare un tocco per uno swipe. */
+  protected finisciGesto(evento: PointerEvent): void {
+    if (!this.immersiva() || this.partenzaTocco === undefined) {
+      return;
+    }
+    const scarto = evento.clientY - this.partenzaTocco;
+    this.partenzaTocco = undefined;
+    if (scarto > 30) {
+      this.vista.alzate.set(false);
+    } else if (scarto < -30) {
+      this.vista.alzate.set(true);
+    }
+  }
+
+  /** Alternativa al gesto, per chi non puo' trascinare (o da tastiera). */
+  protected alternaAlzate(): void {
+    this.vista.alzate.update((alzate) => !alzate);
+  }
+
   protected async prossimaMano(): Promise<void> {
     if (!this.inviaMossa({ tipo: 'prossima-mano' })) {
       await this.azione('/prossima-mano', {});
@@ -296,10 +331,29 @@ export class Tavolo implements OnInit, OnDestroy {
 
   private applica(nuovo: StatoTavolo): void {
     this.riproduciSuoni(this.precedente, nuovo);
+    this.aggiornaAlzate(nuovo);
     this.precedente = nuovo;
     this.stato.set(nuovo);
     if (this.puntata() < nuovo.puntataMinima || this.puntata() > nuovo.puntataMassima) {
       this.puntata.set(nuovo.puntataMinima);
+    }
+  }
+
+  /**
+   * In POV immersiva le carte si abbassano da sole quando c'e' da leggere
+   * (dichiarazione o mano chiusa) e si rialzano all'inizio della mano dopo.
+   */
+  private aggiornaAlzate(nuovo: StatoTavolo): void {
+    const prima = this.precedente;
+    if (!this.immersiva() || !prima) {
+      return;
+    }
+    const daLeggere = nuovo.mano.chiusa || nuovo.mano.inDichiarazione;
+    const eraDaLeggere = prima.mano.chiusa || prima.mano.inDichiarazione;
+    if (daLeggere && !eraDaLeggere) {
+      this.vista.alzate.set(false);
+    } else if (nuovo.mano.numero !== prima.mano.numero) {
+      this.vista.alzate.set(true);
     }
   }
 

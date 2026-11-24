@@ -602,6 +602,8 @@ button:disabled {
   overflow: hidden;
   isolation: isolate;
   touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .pov-tavolo {
@@ -781,17 +783,82 @@ button:disabled {
   font-size: 0.68rem;
 }
 
-.pov-cambia {
+.pov-strumenti {
   position: absolute;
   z-index: 5;
   right: 0.3rem;
   top: 0.3rem;
-  max-width: 48%;
+  display: flex;
+  gap: 0.3rem;
+  max-width: calc(100% - 0.6rem);
+}
+
+.pov-cambia {
   padding: 0.3rem 0.55rem;
   overflow: hidden;
   font-size: 0.64rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* --- POV immersiva: tavolo in 3D, carte in primo piano e swipe verticale --- */
+
+.pov.immersiva {
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  touch-action: pan-x;
+}
+
+.pov.immersiva .pov-tavolo {
+  padding-bottom: 3.4rem;
+}
+
+/* giu' per abbassare le carte, su per rialzarle */
+.pov.immersiva .pov-mano {
+  position: absolute;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.4rem;
+  z-index: 3;
+  padding-bottom: 0.5rem;
+  transition:
+    transform 0.5s var(--molla),
+    opacity 0.4s ease;
+}
+
+.pov.immersiva:not(.alzate) .pov-mano {
+  opacity: 0;
+  transform: translateY(130%);
+  pointer-events: none;
+}
+
+.pov.immersiva .pov-comandi {
+  position: absolute;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  z-index: 4;
+  border-top: 0;
+  background: transparent;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  pointer-events: none;
+}
+
+.pov.immersiva:not(.alzate) .pov-comandi {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* carte alzate: il tavolo si sfoca e si inclina, come guardato dal bordo */
+.pov.immersiva.alzate .pov-tavolo {
+  filter: blur(5px) brightness(0.78);
+  opacity: 0.85;
+  transform: perspective(1200px) rotateX(13deg) scale(1.03);
 }
 
 /* la POV si puo' aprire anche da PC: resta larga come un tavolo, non come un telefono */
