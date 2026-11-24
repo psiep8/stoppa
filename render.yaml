@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: stoppa
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Origini ammesse per il WebSocket. In locale il backend accetta anche
+      # localhost:4200; qui serve solo il dominio Render.
+      - key: STOPPA_ORIGINI
+        value: https://*.onrender.com

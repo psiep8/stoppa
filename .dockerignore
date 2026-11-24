@@ -1,0 +1,13 @@
+.git
+.gitignore
+.vscode
+.openidea
+.freebuff
+screenshots
+docs
+scripts
+backend/target
+backend-dev.log
+frontend/node_modules
+frontend/dist
+frontend/.angular
